@@ -1,0 +1,18 @@
+[
+  {
+    "id": "u-001",
+    "name": "admin",
+    "email": "admin",
+    "password": "admin",
+    "role": "student",
+    "isActive": true
+  },
+  {
+    "id": "u-002",
+    "name": "Carlos Salas",
+    "email": "casalass@sanmateo.edu.co",
+    "password": "abc123",
+    "role": "student",
+    "isActive": true
+  }
+]
