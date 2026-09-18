@@ -3,7 +3,7 @@
     "id": "u-001",
     "name": "admin",
     "email": "admin",
-    "password": "admin",
+    "password": "admin123",
     "role": "student",
     "isActive": true
   },

@@ -17,11 +17,11 @@
         }
       ]
     ],
-
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sanmateoapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -30,6 +30,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "79bda601-5291-4e97-90a6-6b77d0d1a873"
+      }
     }
   }
 }
