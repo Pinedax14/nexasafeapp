@@ -1,9 +1,9 @@
 # NexaSafe — Plan de Proyecto
 ### Sistema de alerta y acompañamiento en ruta casa–colegio
 **Marco ágil:** Scrum · **Modelo de entrega:** DevSecOps
-**Autor:** Juan Felipe Pineda Cardona
+**Equipo:** Juan Felipe Pineda Cardona · «integrante 2» · «integrante 3»
 **Programa:** Ingeniería de Sistemas — Fundación Universitaria San Mateo
-**Periodo:** 2026-2 · **Versión del documento:** 1.0
+**Periodo:** 2026-2 · **Versión del documento:** 1.1
 
 ---
 
@@ -57,13 +57,13 @@
 - Botón de pánico con ventana de cancelación por PIN y modo discreto.
 - Notificación push simultánea a guardianes, red de apoyo y puesto de control.
 - Confirmación de respuesta ("voy en camino") y cierre clasificado del incidente.
-- Dashboard institucional con alertas activas e histórico agregado.
-- Operación degradada sin datos: cola local + fallback SMS.
+- Vista institucional dentro de la misma app móvil, con alertas activas e histórico agregado.
+- Operación degradada sin datos: cola local + reenvío automático al recuperar la conexión.
 - Pipeline DevSecOps completo desde el Sprint 0.
 
 ### 2.2 Fuera del alcance
 
-- Integración técnica directa con la línea 123 o con sistemas de la Policía Nacional (requiere convenio interinstitucional; el escalamiento a autoridad es **humano**, ejecutado por el puesto de control).
+- Integración técnica directa con la línea 123 o con sistemas de la Policía Nacional (requiere convenio interinstitucional). En el alcance académico el escalamiento a la autoridad se **simula**: el sistema genera y registra el reporte de escalamiento, pero no lo transmite a ningún organismo real.
 - Wearables o botón físico externo.
 - Videollamada en vivo.
 - Versión iOS publicada en App Store (se desarrolla multiplataforma pero se distribuye Android vía EAS).
@@ -82,22 +82,22 @@
 ### 3.1 Vista de componentes
 
 ```
-┌───────────────────────────┐      ┌──────────────────────────┐
-│  App móvil (Expo/RN/TS)   │      │ Dashboard institucional  │
-│  Protegido · Guardián     │      │ (React + Vite, web)      │
-└─────────────┬─────────────┘      └────────────┬─────────────┘
-              │ HTTPS + WSS                     │
-              └─────────────┬───────────────────┘
-                            ▼
-              ┌─────────────────────────────┐
-              │   API Gateway (FastAPI)     │
-              │  Auth · Rate limit · Audit  │
-              └───┬─────────┬─────────┬─────┘
-                  │         │         │
-        ┌─────────▼──┐ ┌────▼─────┐ ┌─▼──────────────┐
-        │ PostgreSQL │ │  Redis   │ │ Expo Push /    │
-        │ + PostGIS  │ │ pub/sub  │ │ SMS gateway    │
-        └────────────┘ └──────────┘ └────────────────┘
+┌─────────────────────────────────────────────────┐
+│            App móvil (Expo / RN / TS)           │
+│   Protegido · Guardián · Puesto de control      │
+└───────────────────────┬─────────────────────────┘
+                        │ HTTPS + Realtime (WSS)
+                        ▼
+          ┌─────────────────────────────────┐
+          │            Supabase             │
+          │  Auth · RLS · Realtime · Audit  │
+          │  Edge Functions (Deno)          │
+          └───┬───────────┬───────────┬─────┘
+              │           │           │
+    ┌─────────▼──┐ ┌──────▼───┐ ┌─────▼──────────┐
+    │ PostgreSQL │ │ Storage  │ │ Expo Push /    │
+    │ + PostGIS  │ │          │ │ WhatsApp Cloud │
+    └────────────┘ └──────────┘ └────────────────┘
 ```
 
 ### 3.2 Stack
@@ -106,12 +106,12 @@
 |---|---|---|
 | Móvil | Expo SDK + React Native + TypeScript | Requisito de la asignatura; `expo-location`, `expo-task-manager`, `expo-secure-store` cubren background location y almacenamiento cifrado. |
 | Arquitectura móvil | Feature-based: `src/features/<f>/{data,domain,presentation}` + `src/core` | Continuidad con la estructura ya definida en el proyecto. |
-| Backend | Python 3.12 + FastAPI + Pydantic | Stack Python ya dominado; soporte nativo async y WebSockets para posición en vivo. |
-| Base de datos | PostgreSQL 16 + PostGIS | Consultas geoespaciales para corredor seguro y geocercas. |
-| Tiempo real | Redis pub/sub + WebSocket | Difusión de posición a N guardianes sin polling. |
+| Backend | Supabase — PostgreSQL gestionado + Auth + Realtime + Edge Functions (Deno/TypeScript) | Elimina el montaje, despliegue y mantenimiento de infraestructura propia; autenticación, autorización por RLS y tiempo real vienen resueltos. |
+| Base de datos | PostgreSQL 16 con extensión PostGIS (sobre Supabase) | Consultas geoespaciales para corredor seguro y geocercas. |
+| Tiempo real | Supabase Realtime (WebSocket sobre Postgres) | Difusión de posición a N guardianes sin polling ni servidor propio. |
 | Persistencia local | SQLite (`expo-sqlite`) + `expo-secure-store` | Cola offline y custodia del token/PIN. |
-| Notificaciones | Expo Push Notifications + gateway SMS | Doble canal para el escenario sin datos. |
-| Infraestructura | Docker Compose · GitHub Actions · EAS Build | Reproducible y suficiente para el alcance académico. |
+| Notificaciones | Expo Push Notifications + WhatsApp Cloud API (Meta) | Push como canal principal; WhatsApp a los contactos de seguridad y al puesto de control mediante plantilla aprobada. |
+| Infraestructura | Supabase CLI (migraciones versionadas) · GitHub Actions · EAS Build | Reproducible y suficiente para el alcance académico, sin contenedores propios que administrar. |
 
 ---
 
@@ -125,7 +125,7 @@
 | **Scrum Master** | Integrante rotativo del equipo | Facilita ceremonias, retira impedimentos, protege el sprint de cambios de alcance. |
 | **Development Team** | 3 integrantes: Móvil, Backend/Datos, DevSecOps/QA | Multifuncional y autoorganizado. Cada integrante rota por el rol de *Security Champion* cada dos sprints. |
 
-> **Nota de ajuste:** si el proyecto se ejecuta de forma individual, se conservan todas las ceremonias y artefactos, se asume el rol combinado Dev + Scrum Master, y la velocidad esperada se ajusta de 24 a **10–12 puntos por sprint**.
+> **Nota de ajuste:** el equipo es de 2–3 integrantes. Con 3 se mantiene la velocidad objetivo de 24 puntos por sprint; con 2 se ajusta a **16–18 puntos por sprint**, se combinan los roles Dev + Scrum Master y las historias `Should` se sacrifican primero.
 
 ### 4.2 Ceremonias
 
@@ -152,7 +152,7 @@
 |---|---|---|
 | **Product Backlog** | GitHub Projects (vista *Backlog*) | Product Goal |
 | **Sprint Backlog** | GitHub Projects (vista *Sprint actual*, columnas To Do / In Progress / In Review / Done) | Sprint Goal |
-| **Incremento** | Build firmado en EAS + API desplegada en staging | Definition of Done |
+| **Incremento** | Build firmado en EAS + proyecto Supabase de staging migrado | Definition of Done |
 | **Impediment Log** | Issues con etiqueta `impediment` | — |
 | **Risk & Security Register** | `/docs/security/risk-register.md` versionado en el repo | — |
 
@@ -181,19 +181,19 @@
 **Calidad de código**
 - [ ] Pull Request revisado y aprobado por al menos un par
 - [ ] Cobertura de pruebas unitarias ≥ 70 % en el módulo tocado
-- [ ] Lint y formateo sin errores (ESLint + Prettier / Ruff)
+- [ ] Lint y formateo sin errores (ESLint + Prettier)
 - [ ] Sin `TODO` ni código comentado en la rama principal
 
 **Seguridad — obligatorio, no negociable**
 - [ ] SAST (Semgrep) sin hallazgos *High* o *Critical*
-- [ ] SCA (npm audit / pip-audit) sin vulnerabilidades *Critical* explotables
+- [ ] SCA (`npm audit`) sin vulnerabilidades *Critical* explotables
 - [ ] Escaneo de secretos (Gitleaks) limpio
 - [ ] Ningún dato personal en logs (verificado manualmente en el PR)
-- [ ] Endpoints nuevos con autenticación, autorización por rol y rate limiting
+- [ ] Tablas y Edge Functions nuevas con RLS, autorización por rol y rate limiting
 
 **Documentación y entrega**
 - [ ] `README` / `CHANGELOG` actualizados
-- [ ] Documentación OpenAPI regenerada si cambió la API
+- [ ] Tipos de Supabase regenerados y políticas RLS actualizadas si cambió el esquema
 - [ ] Desplegado en el ambiente de *staging* por el pipeline
 - [ ] Demostrable en la Sprint Review
 
@@ -213,9 +213,9 @@
 | **E5** | Detección automática | Desvío del corredor, trayecto vencido, escalamiento. |
 | **E6** | Alerta de pánico | Disparo, cancelación por PIN, modo discreto, transmisión. |
 | **E7** | Respuesta | Recepción por guardián, confirmación "voy en camino", coordinación. |
-| **E8** | Dashboard institucional | Alertas activas, escalamiento a autoridad, histórico. |
+| **E8** | Vista institucional | Alertas activas, reporte de escalamiento, histórico. |
 | **E9** | Incidentes y bitácora | Registro auditable, cierre clasificado, mapa de calor. |
-| **E10** | Resiliencia offline | Cola local, reintentos, fallback SMS. |
+| **E10** | Resiliencia offline | Cola local, reintentos y reenvío automático al recuperar conexión. |
 | **E11** | Privacidad y cumplimiento | Consentimiento, retención, exportación y supresión de datos. |
 
 ### 7.2 Historias de usuario priorizadas
@@ -290,7 +290,7 @@ Y queda registrada la autorización de tratamiento de datos del representante le
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
 | E6-01 | Como protegido, quiero disparar una alerta manteniendo presionado el botón 3 s, para pedir ayuda sin toques accidentales. | 5 | M |
-| E6-02 | Como protegido, quiero disparar la alerta con triple pulsación del botón físico, para activarla sin sacar el celular. | 8 | S |
+| E6-02 | Como protegido, quiero disparar la alerta sacudiendo el celular durante un trayecto activo, para activarla sin mirar la pantalla. | 5 | S |
 | E6-03 | Como protegido, quiero cancelar la alerta con mi PIN dentro de 10 s, para corregir un disparo involuntario. | 3 | M |
 | E6-04 | Como protegido, quiero que la pantalla entre en modo discreto durante la alerta, para que un agresor no note que estoy transmitiendo. | 5 | M |
 | E6-05 | Como sistema, quiero enviar ubicación cada 5–10 s durante la alerta, para dar trazabilidad al desplazamiento. | 5 | M |
@@ -317,12 +317,12 @@ Y no vuelve a solicitarse confirmación
 | E7-02 | Como guardián, quiero marcar "voy en camino", para que los demás sepan que la alerta ya está siendo atendida. | 3 | M |
 | E7-03 | Como guardián, quiero ver quién más respondió y a qué hora, para coordinar sin duplicar esfuerzos. | 3 | S |
 
-#### E8 — Dashboard institucional
+#### E8 — Vista institucional (dentro de la app)
 
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
-| E8-01 | Como puesto de control, quiero un tablero con las alertas activas en mapa, para atenderlas en tiempo real. | 8 | M |
-| E8-02 | Como puesto de control, quiero generar un reporte de escalamiento con los datos del incidente, para entregarlo a la autoridad al llamar al 123. | 5 | M |
+| E8-01 | Como puesto de control, quiero una vista en la app con las alertas activas sobre un mapa, para atenderlas en tiempo real. | 8 | M |
+| E8-02 | Como puesto de control, quiero generar un reporte de escalamiento con los datos del incidente, para entregarlo a la autoridad (el envío a la autoridad se simula en la fase académica). | 5 | M |
 | E8-03 | Como coordinador, quiero un mapa de calor de incidentes por zona y franja horaria, para sustentar intervenciones en el barrio. | 8 | S |
 
 #### E9 — Incidentes y bitácora
@@ -338,7 +338,7 @@ Y no vuelve a solicitarse confirmación
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
 | E10-01 | Como sistema, quiero encolar la alerta localmente si no hay red, para enviarla apenas se recupere la conexión. | 8 | M |
-| E10-02 | Como sistema, quiero enviar SMS con la ubicación si no hay datos pero sí señal celular, para no perder la alerta. | 8 | S |
+| E10-02 | Como sistema, quiero reintentar el envío en segundo plano hasta confirmar la entrega, para no perder una alerta encolada. | 5 | S |
 | E10-03 | Como guardián, quiero ver la marca "última posición hace X min", para no confundir un dato viejo con uno actual. | 3 | M |
 
 #### E11 — Privacidad y cumplimiento
@@ -356,29 +356,42 @@ Y no vuelve a solicitarse confirmación
 
 ## 8. Roadmap de sprints
 
-**Velocidad objetivo:** 24 pts/sprint (equipo de 3) — se recalibra tras el Sprint 1 con la velocidad real.
+**Velocidad objetivo:** 24 pts/sprint (equipo de 3) — se recalibra tras el Sprint 1 con la velocidad real. Con equipo de 2 se ajusta a 16–18 pts y las historias `Should` se sacrifican primero.
 
 | Sprint | Fechas (2026) | Sprint Goal | Contenido | Pts |
 |---|---|---|---|---|
-| **0** | 1 – 11 sep | *La plataforma técnica y de seguridad está lista para producir código auditable.* | E0-01, E0-02, E0-03, E0-04, modelado de amenazas inicial | 18 |
-| **1** | 14 – 25 sep | *Un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.* | E1-01…E1-05, E11-01 | 24 |
-| **2** | 28 sep – 9 oct | *Un guardián puede definir la ruta segura y seguir en vivo el trayecto del protegido.* | E3-01, E3-02, E3-03, E4-01, E4-04, E2-01 | 26 |
-| **3** | 13 – 23 oct | *El sistema detecta desvíos y demoras y escala solo cuando el protegido no responde.* | E4-02, E4-03, E5-01, E5-02, E5-03 | 31 |
-| **4** | 26 oct – 6 nov | *El botón de pánico funciona de extremo a extremo con cancelación y modo discreto.* | E6-01, E6-03, E6-04, E6-05, E7-01, E7-02 | 26 |
-| **5** | 9 – 20 nov | *El colegio atiende alertas desde un tablero y deja bitácora del incidente.* | E8-01, E8-02, E9-01, E9-02, E10-03 | 24 |
-| **6** | 23 nov – 4 dic | *La app resiste la falta de conexión y cumple los requisitos de privacidad.* | E10-01, E11-02, E11-04, E5-04, hardening final, pentest interno | 24 |
-| **Cierre** | 7 – 11 dic | *Producto sustentado y documentado.* | Release candidate firmado, manual, video demo, informe final | — |
+| **0** | 22 sep – 2 oct | *La plataforma técnica y de seguridad está lista para producir código auditable.* | E0-01, E0-02, E0-03, E0-04, modelado de amenazas inicial | 18 |
+| **1** | 6 – 17 oct | *Un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.* | E1-01…E1-05, E11-01 | 24 |
+| **2** | 20 – 31 oct | *Un guardián puede definir la ruta y seguir en vivo el trayecto del protegido.* | E3-01, E3-02, E3-03, E4-01, E4-04, E2-01 | 26 |
+| **3** | 3 – 14 nov | *El botón de pánico funciona de extremo a extremo con cancelación y modo discreto.* | E4-02, E4-03, E6-01, E6-03, E6-05 | 26 |
+| **4** | 17 – 28 nov | *El puesto de control atiende alertas desde la app y deja bitácora del incidente.* | E6-04, E7-01, E7-02, E8-01, E9-01, E9-02, E11-04 | 27 |
+| **Cierre** | 24 – 28 nov (solapado) | *Producto sustentado y documentado.* | Release candidate firmado, manual, video demo, informe final | — |
+
+### Fuera del roadmap del semestre
+
+El backlog completo suma ≈ 210 puntos y la capacidad disponible hasta noviembre es de ≈ 121. Las siguientes historias quedan declaradas como **trabajo futuro**, no como alcance comprometido:
+
+| Épica / historia | Motivo |
+|---|---|
+| **E5 completa** — detección automática de desvío y trayecto vencido | Requiere corredor geoespacial y ubicación en segundo plano estables; se pospone a una segunda fase |
+| **E10 completa** — cola offline y reintentos | Depende de E4 y E6 consolidadas |
+| E2-02, E2-03 — permisos diferenciados y revocación de contactos | `Should` desplazadas por capacidad |
+| E6-02 — disparo por sacudida | `Should`; se implementa solo si sobra capacidad en el Sprint 4 |
+| E6-06 — captura de audio ambiente | `Could` |
+| E8-02, E8-03 — reporte de escalamiento y mapa de calor | `Should` |
+| E9-03, E11-02, E11-03 — histórico, purga automática y exportación | `Should` |
 
 ### Hitos
 
 | Hito | Fecha | Criterio de cumplimiento |
 |---|---|---|
-| **H1 — Pipeline verde** | 11 sep | Todo PR ejecuta lint + test + SAST + SCA automáticamente |
-| **H2 — Primer incremento demostrable** | 25 sep | Alta de usuario funcionando en dispositivo real |
-| **H3 — Núcleo funcional** | 23 oct | Trayecto en vivo con detección de desvío operando |
-| **H4 — MVP funcional completo** | 20 nov | Flujo alerta → notificación → respuesta → cierre completo |
-| **H5 — Release candidate** | 4 dic | Build firmado, sin hallazgos High/Critical abiertos |
-| **H6 — Sustentación** | 11 dic | Demo en vivo + informe + repositorio entregado |
+| **H0 — Documentación de ingeniería entregada** | 22 sep | Los cinco documentos exigidos radicados |
+| **H1 — Pipeline verde** | 2 oct | Todo PR ejecuta lint + test + SAST + SCA automáticamente |
+| **H2 — Primer incremento demostrable** | 17 oct | Alta de usuario funcionando en dispositivo real |
+| **H3 — Núcleo funcional** | 31 oct | Trayecto acompañado con ubicación en vivo operando |
+| **H4 — MVP funcional completo** | 14 nov | Flujo alerta → notificación → respuesta → cierre completo |
+| **H5 — Release candidate** | 25 nov | Build firmado, sin hallazgos High/Critical abiertos |
+| **H6 — Sustentación** | 28 nov | Demo en vivo + informe + repositorio entregado |
 
 ---
 
@@ -396,16 +409,16 @@ Y no vuelve a solicitarse confirmación
 | | Revisión de pares obligatoria | GitHub branch protection | Antes del merge |
 | | Estándar de codificación segura | OWASP MASVS (móvil) + ASVS (API) | Continuo |
 | **Build** | Análisis estático de código | Semgrep + CodeQL | En cada PR |
-| | Análisis de composición de software | `npm audit`, `pip-audit`, Dependabot | En cada PR + semanal |
+| | Análisis de composición de software | `npm audit`, Dependabot | En cada PR + semanal |
 | | Generación de SBOM | Syft (CycloneDX) | En cada release |
-| **Test** | Pruebas unitarias e integración | Jest + RNTL, Pytest | En cada PR |
+| **Test** | Pruebas unitarias e integración | Jest + RNTL, deno test | En cada PR |
 | | Pruebas E2E móviles | Maestro | Nocturno + pre-release |
 | | Análisis dinámico de la API | OWASP ZAP baseline | Nightly contra staging |
 | | Análisis del binario móvil | MobSF sobre el APK | Pre-release |
 | **Release** | Firma del artefacto y build reproducible | EAS Build + keystore en secretos | Al taggear versión |
 | | Gestión de secretos | GitHub Secrets + EAS Secrets, cero `.env` en repo | Continuo |
-| **Deploy** | Escaneo de imagen de contenedor | Trivy | Antes del despliegue |
-| | Infraestructura versionada | Docker Compose en el repo | Continuo |
+| **Deploy** | Verificación de políticas RLS y migraciones antes de aplicar | Supabase CLI + suite de pruebas de política | Antes del despliegue |
+| | Infraestructura versionada | Migraciones y políticas RLS en `supabase/` dentro del repo | Continuo |
 | **Operate** | Logs estructurados sin datos personales | JSON logging + redacción de PII | Runtime |
 | | Registro de auditoría append-only | Tabla `audit_log` en PostgreSQL | Runtime |
 | **Monitor** | Monitoreo de errores | Sentry (móvil + backend) | Runtime |
@@ -470,15 +483,15 @@ on: [pull_request, push]
 
 jobs:
   1_secrets_scan:      # Gitleaks — falla si hay credenciales en el diff
-  2_lint:              # ESLint + Prettier (móvil) · Ruff (backend)
-  3_typecheck:         # tsc --noEmit · mypy
-  4_unit_tests:        # Jest + RNTL · Pytest — umbral de cobertura 70 %
+  2_lint:              # ESLint + Prettier (móvil) · deno lint (Edge Functions)
+  3_typecheck:         # tsc --noEmit
+  4_unit_tests:        # Jest + RNTL · deno test — umbral de cobertura 70 %
   5_sast:              # Semgrep (reglas OWASP + react-native) · CodeQL
-  6_sca:               # npm audit --audit-level=high · pip-audit
-  7_build:             # expo prebuild + expo export · docker build API
-  8_container_scan:    # Trivy sobre la imagen del backend
-  9_deploy_staging:    # solo en develop — docker compose up + migraciones
-  10_dast:             # OWASP ZAP baseline contra staging (nightly)
+  6_sca:               # npm audit --audit-level=high · Dependabot
+  7_build:             # expo prebuild + expo export · supabase functions build
+  8_rls_policy_check:  # pruebas de políticas RLS contra base efímera de Supabase
+  9_deploy_staging:    # solo en develop — supabase db push + functions deploy
+  10_dast:             # OWASP ZAP baseline contra Edge Functions de staging (nightly)
   11_mobile_scan:      # MobSF sobre el APK (solo en release)
   12_sbom:             # Syft → CycloneDX adjunto al release
 ```
@@ -494,7 +507,7 @@ Metodología **STRIDE**, ejecutada por épica durante el refinement.
 | Amenaza | Escenario concreto en NexaSafe | Mitigación | Historia asociada |
 |---|---|---|---|
 | **S** — Spoofing | Un tercero se registra como guardián de un menor que no le corresponde. | Validación de matrícula por el colegio + invitación por enlace firmado con expiración. | E1-03, E2-01 |
-| **T** — Tampering | Manipulación de coordenadas mediante GPS falso para simular que el menor llegó. | Validación de plausibilidad (velocidad, saltos imposibles) en backend + detección de mock location. | E5-01 |
+| **T** — Tampering | Manipulación de coordenadas mediante GPS falso para simular que el menor llegó. | Validación de plausibilidad (velocidad, saltos imposibles) en Edge Function + detección de mock location. | E5-01 |
 | **R** — Repudiation | Un guardián niega haber recibido la alerta. | Bitácora append-only con acuse de recibo por dispositivo y timestamp del servidor. | E9-01 |
 | **I** — Information disclosure | Fuga del histórico de rutas de un menor: equivale a entregar su rutina diaria a un agresor. | Cifrado por columna, retención de 90 días, ubicación solo durante trayecto/alerta, RBAC estricto. | E11-02, E11-04 |
 | **D** — Denial of service | Inundación de alertas falsas que satura el puesto de control. | Rate limiting por usuario, priorización por historial de veracidad, cierre clasificado. | E9-02 |
@@ -530,8 +543,8 @@ Metodología **STRIDE**, ejecutada por épica durante el refinement.
 
 | Nivel | Cobertura objetivo | Herramienta | Ejecución |
 |---|---|---|---|
-| **Unitarias** | 70 % de lógica de dominio | Jest + RNTL, Pytest | Cada PR |
-| **Integración** | Endpoints críticos (alerta, trayecto, auth) | Pytest + httpx, base de datos efímera | Cada PR |
+| **Unitarias** | 70 % de lógica de dominio | Jest + RNTL, Deno test | Cada PR |
+| **Integración** | Flujos críticos (alerta, trayecto, auth) | Supabase local vía CLI con base efímera; pruebas de Edge Functions y de políticas RLS | Cada PR |
 | **E2E** | 5 flujos críticos | Maestro | Nightly |
 | **Seguridad** | SAST/SCA/DAST/MobSF | Ver sección 10 | Cada PR / nightly / release |
 | **Aceptación** | Criterios Gherkin de cada historia | Manual en dispositivo físico | Antes de la review |
@@ -598,10 +611,10 @@ En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproxim
 | R2 | Falsas alarmas frecuentes erosionan la confianza y la gente deja de atender | Media | Alto | Corredor de tolerancia configurable, temporizador de confirmación, sin sanción por falsa alarma |
 | R3 | El colegio no designa responsable del puesto de control | Media | Alto | Diseñar el flujo para que funcione solo con la red de apoyo si no hay institución activa |
 | R4 | Fuga de datos de menores | Baja | Crítico | Cifrado, minimización, retención corta, RBAC, auditoría, pentest interno en Sprint 6 |
-| R5 | Costos de servicio SMS para el fallback | Media | Medio | Limitar SMS a alertas (no a trayectos); usar sandbox del proveedor en fase académica |
+| R5 | El número de prueba de WhatsApp Cloud API solo alcanza 5 destinatarios verificados | Alta | Medio | Declarado como restricción de diseño (máx. 5 contactos de seguridad por usuario); el push permanece como canal principal sin ese límite |
 | R6 | Alcance excesivo para el tiempo disponible del semestre | Alta | Alto | MoSCoW estricto; las historias `Could` se sacrifican primero; revisión de alcance en el hito H3 |
 | R7 | Rotación o baja disponibilidad de un integrante | Media | Medio | Propiedad colectiva del código, documentación en el repo, sin conocimiento aislado en una persona |
-| R8 | Dependencia de Expo limita acceso a API nativa (botón físico) | Media | Medio | Validar con development build en Sprint 4; degradar E6-02 a `Could` si no es viable |
+| R8 | Falsos positivos del disparo por sacudida (correr, bus, guardar el celular) | Alta | Medio | Umbral calibrado + ventana de cancelación por PIN; la sacudida solo se activa en modo trayecto con la app en primer plano; degradar E6-02 a `Could` si no es viable |
 
 ---
 
@@ -609,14 +622,18 @@ En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproxim
 
 | Entregable | Formato | Fecha |
 |---|---|---|
+| Documento de requisitos del sistema | PDF | 22 sep |
+| Plan de desarrollo de software | PDF | 22 sep |
+| Cronograma y tareas del proyecto | PDF | 22 sep |
+| Documento de diseño arquitectónico | PDF | 22 sep |
+| Informe de pruebas de calidad y control de errores | PDF | 22 sep (v1, iteración 0) · actualizado al cierre |
 | Ficha técnica del proyecto integrador | PDF | Sprint 0 |
-| Documento de arquitectura y modelado de amenazas | Markdown en repo | Sprint 1 |
 | Evaluación de impacto en privacidad (PIA) | Markdown en repo | Sprint 1 |
 | Repositorio con historial de commits y PR | GitHub | Continuo |
 | Tablero Scrum con backlog, sprints y burndown | GitHub Projects | Continuo |
 | Actas de retrospectiva | Markdown en repo | Cada sprint |
-| APK firmado (release candidate) | Artefacto EAS | Sprint 6 |
-| SBOM y reporte consolidado de seguridad | CycloneDX + PDF | Sprint 6 |
+| APK firmado (release candidate) | Artefacto EAS | Sprint 4 |
+| SBOM y reporte consolidado de seguridad | CycloneDX + PDF | Sprint 4 |
 | Manual de usuario e instalación | PDF | Cierre |
 | Video demostrativo (5–7 min) | MP4 | Cierre |
 | Informe final y sustentación | PDF + presentación | Cierre |
@@ -632,27 +649,27 @@ nexasafe/
 │   ├── ISSUE_TEMPLATE/      # user-story.md, bug.md, security-finding.md
 │   └── pull_request_template.md
 ├── apps/
-│   ├── mobile/              # Expo + React Native + TypeScript
-│   │   └── src/
-│   │       ├── core/        # api, storage, permissions, theme, utils
-│   │       └── features/
-│   │           ├── auth/          {data,domain,presentation}
-│   │           ├── profile/
-│   │           ├── routes/
-│   │           ├── tracking/
-│   │           ├── alerts/
-│   │           ├── network/
-│   │           └── incidents/
-│   ├── api/                 # FastAPI
-│   │   ├── app/{routers,services,models,schemas,security}
-│   │   └── tests/
-│   └── dashboard/           # React + Vite
+│   └── mobile/              # Expo + React Native + TypeScript
+│       └── src/
+│           ├── core/        # api, storage, permissions, theme, utils
+│           └── features/
+│               ├── auth/          {data,domain,presentation}
+│               ├── profile/
+│               ├── routes/
+│               ├── tracking/
+│               ├── alerts/
+│               ├── network/
+│               ├── institution/   # vista del puesto de control
+│               └── incidents/
+├── supabase/
+│   ├── migrations/          # esquema versionado
+│   ├── functions/           # Edge Functions (Deno): notify-push, notify-whatsapp, escalate
+│   └── policies/            # políticas RLS documentadas y probadas
 ├── docs/
 │   ├── architecture/
 │   ├── security/            # threat-model.md, risk-register.md, exceptions.md
 │   ├── privacy/             # pia.md, politica-tratamiento.md
 │   └── scrum/               # sprint-XX/{planning,review,retro}.md
-├── infra/                   # docker-compose.yml, Dockerfile, migraciones
 ├── .pre-commit-config.yaml
 ├── .gitleaks.toml
 ├── semgrep.yml
@@ -695,3 +712,13 @@ Entonces <resultado esperado>
 ---
 
 *Documento vivo. Se actualiza al cierre de cada sprint con la velocidad real, los cambios de alcance y las acciones de mejora de la retrospectiva.*
+
+
+---
+
+## Registro de cambios
+
+| Versión | Fecha | Cambio |
+|---|---|---|
+| 1.0 | — | Versión inicial |
+| 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
