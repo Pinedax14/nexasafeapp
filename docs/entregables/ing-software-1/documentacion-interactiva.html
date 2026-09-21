@@ -1,0 +1,1843 @@
+<title>NexaSafe Ingeniería</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f4f6fa; --surface:#ffffff; --surface-2:#eef2f8; --surface-3:#e3e9f2;
+  --border:#d7deea; --text:#182333; --text-2:#4b5871; --text-3:#7c8aa3;
+  --accent:#1c4d8c; --accent-ink:#ffffff; --accent-2:#0e7d74; --accent-2-ink:#ffffff;
+  --accent-soft:#e5edfa; --accent-2-soft:#e2f4f1;
+  --mo-must:#1c4d8c; --mo-must-soft:#e5edfa;
+  --mo-should:#0e7d74; --mo-should-soft:#e2f4f1;
+  --mo-could:#6b7690; --mo-could-soft:#eaedf3;
+  --sev-critical:#c02f3a; --sev-critical-soft:#fbe6e8;
+  --sev-high:#c1631a; --sev-high-soft:#fbeadb;
+  --sev-medium:#a3821a; --sev-medium-soft:#f8f0d8;
+  --sev-low:#5c6b85; --sev-low-soft:#e9edf4;
+  --shadow:0 1px 2px rgba(24,35,51,.06), 0 8px 24px -12px rgba(24,35,51,.12);
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1220; --surface:#111a2c; --surface-2:#162136; --surface-3:#1d2b45;
+    --border:#2a3855; --text:#e8edf7; --text-2:#aab6cc; --text-3:#7d8bab;
+    --accent:#6b9bea; --accent-ink:#0b1220; --accent-2:#57cabd; --accent-2-ink:#06201d;
+    --accent-soft:#1b2c4c; --accent-2-soft:#123430;
+    --mo-must:#6b9bea; --mo-must-soft:#1b2c4c;
+    --mo-should:#57cabd; --mo-should-soft:#123430;
+    --mo-could:#93a0bf; --mo-could-soft:#1c2438;
+    --sev-critical:#ef6b74; --sev-critical-soft:#3a1a1e;
+    --sev-high:#f0a35f; --sev-high-soft:#3a2712;
+    --sev-medium:#e3c65a; --sev-medium-soft:#3a3312;
+    --sev-low:#9aa7c4; --sev-low-soft:#1d2740;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1220; --surface:#111a2c; --surface-2:#162136; --surface-3:#1d2b45;
+  --border:#2a3855; --text:#e8edf7; --text-2:#aab6cc; --text-3:#7d8bab;
+  --accent:#6b9bea; --accent-ink:#0b1220; --accent-2:#57cabd; --accent-2-ink:#06201d;
+  --accent-soft:#1b2c4c; --accent-2-soft:#123430;
+  --mo-must:#6b9bea; --mo-must-soft:#1b2c4c;
+  --mo-should:#57cabd; --mo-should-soft:#123430;
+  --mo-could:#93a0bf; --mo-could-soft:#1c2438;
+  --sev-critical:#ef6b74; --sev-critical-soft:#3a1a1e;
+  --sev-high:#f0a35f; --sev-high-soft:#3a2712;
+  --sev-medium:#e3c65a; --sev-medium-soft:#3a3312;
+  --sev-low:#9aa7c4; --sev-low-soft:#1d2740;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;}
+body{background:var(--bg); color:var(--text); font-family:"Public Sans", system-ui, sans-serif; -webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:"Manrope", system-ui, sans-serif; color:var(--text); text-wrap:balance; margin:0;}
+p{margin:0 0 .8em; color:var(--text-2); line-height:1.65;}
+a{color:var(--accent);}
+code, .mono{font-family:"JetBrains Mono", ui-monospace, monospace;}
+::selection{background:var(--accent-soft);}
+
+/* layout */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:300px; flex:none; background:var(--surface); border-right:1px solid var(--border);
+  position:sticky; top:0; height:100vh; overflow-y:auto; padding:18px 14px calc(20px + env(safe-area-inset-bottom,0px));
+  z-index:40;
+}
+.brand{display:flex; align-items:center; gap:10px; padding:6px 8px 16px;}
+.brand-mark{width:34px; height:34px; border-radius:9px; background:linear-gradient(155deg, var(--accent), var(--accent-2)); flex:none; display:flex; align-items:center; justify-content:center;}
+.brand-mark svg{width:19px; height:19px;}
+.brand-text{line-height:1.15;}
+.brand-text b{font-family:"Manrope"; font-size:15px; font-weight:800; display:block;}
+.brand-text span{font-size:11px; color:var(--text-3); letter-spacing:.03em;}
+
+.nav-group{margin-bottom:4px;}
+.nav-group summary{
+  list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
+  padding:9px 10px; border-radius:10px; font-family:"Manrope"; font-weight:700; font-size:12.5px;
+  color:var(--text-2);
+}
+.nav-group summary::-webkit-details-marker{display:none;}
+.nav-group summary:hover{background:var(--surface-2); color:var(--text);}
+.nav-num{
+  width:22px; height:22px; border-radius:7px; background:var(--surface-3); color:var(--text-2);
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex:none;
+}
+.nav-group[open] > summary .nav-num, .nav-group.doc-active > summary .nav-num{background:var(--accent); color:var(--accent-ink);}
+.nav-group summary .chev{margin-left:auto; color:var(--text-3); transition:transform .15s; font-size:10px;}
+.nav-group[open] summary .chev{transform:rotate(90deg);}
+.nav-links{display:flex; flex-direction:column; padding:2px 0 8px 40px; gap:1px;}
+.nav-link{
+  font-size:12.5px; color:var(--text-3); text-decoration:none; padding:6px 10px; border-radius:8px;
+  border-left:2px solid transparent; line-height:1.3;
+}
+.nav-link:hover{color:var(--text); background:var(--surface-2);}
+.nav-link.active{color:var(--accent); border-left-color:var(--accent); background:var(--accent-soft); font-weight:600;}
+
+.sidebar-overlay{display:none;}
+.nav-toggle{display:none;}
+
+/* main */
+.main{flex:1; min-width:0;}
+.topbar{
+  position:sticky; top:0; z-index:30; background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--border);
+  padding:12px 28px; display:flex; align-items:center; gap:14px;
+}
+.topbar h1{font-size:15px; font-weight:800;}
+.topbar .sub{font-size:12px; color:var(--text-3); font-weight:500;}
+.search-wrap{margin-left:auto; display:flex; align-items:center; gap:8px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:6px 10px; min-width:0; width:min(360px,42vw);}
+.search-wrap svg{flex:none; color:var(--text-3);}
+#searchInput{border:none; background:transparent; outline:none; color:var(--text); font-size:13px; width:100%; font-family:inherit;}
+.search-nav{display:flex; align-items:center; gap:4px; flex:none;}
+.search-nav button{border:none; background:var(--surface-3); color:var(--text-2); width:22px; height:22px; border-radius:6px; cursor:pointer; font-size:11px; display:flex; align-items:center; justify-content:center;}
+.search-nav button:hover{background:var(--accent); color:var(--accent-ink);}
+#searchCount{font-size:11px; color:var(--text-3); min-width:38px; text-align:center;}
+.progress{position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg, var(--accent), var(--accent-2)); z-index:50; width:0%; transition:width .1s;}
+mark.hit{background:var(--accent-2-soft); color:var(--text); border-radius:3px; padding:0 1px;}
+mark.hit.active{background:var(--accent); color:var(--accent-ink);}
+
+.content{padding:0 28px 90px; max-width:960px; margin:0 auto;}
+
+/* doc hero */
+.doc-hero{padding:56px 0 28px; border-bottom:1px solid var(--border); margin-bottom:40px; scroll-margin-top:70px;}
+.doc-hero:not(:first-of-type){padding-top:80px;}
+.kicker{display:inline-flex; align-items:center; gap:8px; font-family:"JetBrains Mono"; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); padding:5px 10px; border-radius:100px; font-weight:600; margin-bottom:16px;}
+.doc-hero h1{font-size:clamp(26px,4vw,38px); font-weight:800; line-height:1.12; margin-bottom:10px;}
+.doc-hero .lede{font-size:16px; color:var(--text-2); max-width:62ch; margin-bottom:20px;}
+.meta-row{display:flex; flex-wrap:wrap; gap:10px;}
+.meta-pill{display:flex; flex-direction:column; gap:1px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:7px 12px; box-shadow:var(--shadow);}
+.meta-pill b{font-size:12.5px; font-family:"JetBrains Mono"; font-weight:600;}
+.meta-pill span{font-size:10px; color:var(--text-3); text-transform:uppercase; letter-spacing:.05em;}
+
+/* sections */
+.section{scroll-margin-top:70px; margin-bottom:52px;}
+.section-head{display:flex; align-items:baseline; gap:12px; margin-bottom:14px;}
+.section-head .num{font-family:"JetBrains Mono"; color:var(--text-3); font-size:13px; font-weight:600;}
+.section-head h2{font-size:21px; font-weight:800;}
+.subsection{margin:26px 0 14px;}
+.subsection h3{font-size:15.5px; font-weight:700; margin-bottom:8px;}
+.lead{font-size:14.5px; max-width:72ch;}
+
+/* stat tiles */
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin:18px 0;}
+.stat-tile{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow);}
+.stat-tile b{display:block; font-family:"Manrope"; font-size:24px; font-weight:800; color:var(--accent); font-variant-numeric:tabular-nums;}
+.stat-tile span{font-size:11px; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em;}
+
+/* cards */
+.card-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:16px 0;}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow);}
+.card h4{font-size:13.5px; font-weight:700; margin-bottom:6px;}
+.card p{font-size:13px; margin:0;}
+.card .card-tag{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-3); font-weight:700; margin-bottom:6px; display:block;}
+
+/* badges */
+.badge{display:inline-flex; align-items:center; gap:4px; font-family:"JetBrains Mono"; font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:3px 8px; border-radius:6px; white-space:nowrap;}
+.badge-must{background:var(--mo-must-soft); color:var(--mo-must);}
+.badge-should{background:var(--mo-should-soft); color:var(--mo-should);}
+.badge-could{background:var(--mo-could-soft); color:var(--mo-could);}
+.badge-critical{background:var(--sev-critical-soft); color:var(--sev-critical);}
+.badge-high{background:var(--sev-high-soft); color:var(--sev-high);}
+.badge-medium{background:var(--sev-medium-soft); color:var(--sev-medium);}
+.badge-low{background:var(--sev-low-soft); color:var(--sev-low);}
+.badge-epic{background:var(--surface-3); color:var(--text-2);}
+.badge-neutral{background:var(--surface-3); color:var(--text-2);}
+
+/* tables */
+.table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); margin:16px 0;}
+table{border-collapse:collapse; width:100%; min-width:560px; font-size:13px; background:var(--surface);}
+thead th{background:var(--surface-2); text-align:left; font-family:"Manrope"; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-2); padding:10px 14px; border-bottom:1px solid var(--border); white-space:nowrap;}
+tbody td{padding:10px 14px; border-bottom:1px solid var(--border); color:var(--text-2); vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-2);}
+td.id-cell, td.mono-cell{font-family:"JetBrains Mono"; font-size:12px; color:var(--text); white-space:nowrap;}
+td.center{text-align:center;}
+table.compact td, table.compact th{padding:8px 12px;}
+tr[hidden]{display:none;}
+
+/* filter chips */
+.filter-row{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px;}
+.chip{border:1px solid var(--border); background:var(--surface); color:var(--text-2); font-size:12px; font-weight:600; padding:6px 13px; border-radius:100px; cursor:pointer; font-family:"Public Sans";}
+.chip:hover{border-color:var(--accent);}
+.chip.active{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+
+/* callouts */
+.callout{border:1px solid var(--border); border-left:3px solid var(--accent); background:var(--surface); border-radius:0 var(--radius) var(--radius) 0; padding:14px 18px; margin:16px 0; box-shadow:var(--shadow);}
+.callout.warn{border-left-color:var(--sev-high);}
+.callout.crit{border-left-color:var(--sev-critical);}
+.callout b{display:block; font-family:"Manrope"; font-size:12.5px; margin-bottom:4px;}
+.callout p{font-size:13px; margin:0;}
+
+/* checklist */
+.checklist{list-style:none; margin:12px 0; padding:0; display:flex; flex-direction:column; gap:7px;}
+.checklist li{display:flex; gap:10px; align-items:flex-start; font-size:13.5px; color:var(--text-2); background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:9px 12px;}
+.checklist li::before{content:"✓"; flex:none; width:18px; height:18px; border-radius:6px; background:var(--accent-2-soft); color:var(--accent-2); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px;}
+.checklist.dor li::before{background:var(--accent-soft); color:var(--accent);}
+
+/* flow */
+.flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:0; margin:18px 0;}
+.flow-step{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow); font-size:12.5px; color:var(--text-2); width:168px; flex:none; display:flex; flex-direction:column; gap:3px; justify-content:center;}
+.flow-step b{font-family:"Manrope"; font-size:12.5px; color:var(--text); font-weight:700;}
+.flow-step.accent{border-color:var(--accent); background:var(--accent-soft);}
+.flow-step.crit{border-color:var(--sev-critical); background:var(--sev-critical-soft);}
+.flow-arrow{display:flex; align-items:center; justify-content:center; width:36px; flex:none; color:var(--text-3); font-size:16px;}
+.flow-branch{width:100%; display:flex; justify-content:center; margin:2px 0 2px 0;}
+.flow-note{font-size:11.5px; color:var(--text-3); text-align:center; padding:2px 10px;}
+@media (max-width:700px){
+  .flow{flex-direction:column; align-items:center;}
+  .flow-arrow{transform:rotate(90deg); width:auto; height:22px;}
+  .flow-step{width:100%; max-width:280px;}
+}
+
+/* entity / erd */
+.entity-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin:16px 0;}
+.entity-card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 15px; box-shadow:var(--shadow);}
+.entity-card .ename{font-family:"JetBrains Mono"; font-weight:700; font-size:13px; color:var(--accent); display:block; margin-bottom:7px;}
+.entity-card ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:3px;}
+.entity-card li{font-family:"JetBrains Mono"; font-size:11.5px; color:var(--text-3);}
+.entity-card li b{color:var(--text-2); font-weight:600;}
+.relation-list{display:flex; flex-direction:column; gap:6px; margin:14px 0;}
+.relation-row{display:flex; align-items:center; gap:8px; font-size:13px; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:8px 12px; flex-wrap:wrap;}
+.relation-row .rel-e{font-family:"JetBrains Mono"; font-weight:700; color:var(--text);}
+.relation-row .rel-card{font-family:"JetBrains Mono"; font-size:10.5px; background:var(--surface-3); color:var(--text-2); padding:1px 7px; border-radius:5px;}
+.relation-row .rel-desc{color:var(--text-3); font-size:12px; margin-left:auto;}
+
+/* gantt */
+.gantt{margin:20px 0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 18px 14px; overflow-x:auto;}
+.gantt-inner{min-width:560px;}
+.gantt-months{position:relative; height:22px; border-bottom:1px solid var(--border); margin-bottom:6px;}
+.gantt-month{position:absolute; top:0; font-size:10.5px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; font-weight:700;}
+.gantt-rows{position:relative; padding-top:6px;}
+.gantt-row{display:flex; align-items:center; height:34px; position:relative;}
+.gantt-label{width:110px; flex:none; font-size:12px; font-weight:600; color:var(--text-2);}
+.gantt-track{position:relative; flex:1; height:100%;}
+.gantt-bar{position:absolute; top:7px; height:20px; border-radius:6px; background:var(--accent); box-shadow:var(--shadow);}
+.gantt-bar.s0{background:var(--text-3);}
+.gantt-bar.close{background:var(--accent-2);}
+.gantt-hitos{position:relative; height:34px; margin-top:2px;}
+.gantt-hito{position:absolute; top:0; display:flex; flex-direction:column; align-items:center; transform:translateX(-50%); gap:2px;}
+.gantt-hito .dot{width:9px; height:9px; border-radius:50%; background:var(--sev-high); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--sev-high);}
+.gantt-hito .lab{font-family:"JetBrains Mono"; font-size:9.5px; font-weight:700; color:var(--text-2); white-space:nowrap;}
+.gantt-vline{position:absolute; top:0; bottom:-186px; width:1px; background:repeating-linear-gradient(var(--border) 0 4px, transparent 4px 8px); z-index:0;}
+
+/* tree */
+.filetree{background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; font-family:"JetBrains Mono"; font-size:12px; line-height:1.85; color:var(--text-2); overflow-x:auto; white-space:pre;}
+.filetree .fc{color:var(--text-3); font-style:normal;}
+.filetree .fd{color:var(--accent); font-weight:700;}
+
+/* footer */
+.doc-footer{font-size:11.5px; color:var(--text-3); border-top:1px solid var(--border); padding-top:16px; margin-top:40px;}
+.end-footer{max-width:960px; margin:40px auto 0; padding:24px 28px 60px; text-align:center; color:var(--text-3); font-size:12px;}
+
+@media (max-width:880px){
+  .sidebar{position:fixed; left:0; top:0; transform:translateX(-100%); transition:transform .2s ease; width:82vw; max-width:320px; box-shadow:0 0 40px rgba(0,0,0,.3);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(10,14,24,.45); z-index:39;}
+  .sidebar-overlay.open{display:block;}
+  .nav-toggle{display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:var(--text); flex:none;}
+  .topbar{padding:12px 16px;}
+  .content{padding:0 16px 70px;}
+  .search-wrap{width:auto; flex:1;}
+  .topbar .sub{display:none;}
+}
+</style>
+
+<div class="progress" id="progressBar"></div>
+<div class="app">
+  <div class="sidebar-overlay" id="overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5v6c0 5.2 3.4 9.4 8 11 4.6-1.6 8-5.8 8-11V5l-8-3z" fill="white" opacity=".95"/><path d="M9 12l2 2 4-4" stroke="#1c4d8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="brand-text"><b>NexaSafe</b><span>Ingeniería de Software I · 2026-2</span></div>
+    </div>
+
+    <details class="nav-group" open data-doc="doc1">
+      <summary><span class="nav-num">01</span> Requisitos del sistema <span class="chev">▸</span></summary>
+      <div class="nav-links">
+        <a class="nav-link" href="#d1-intro">Introducción</a>
+        <a class="nav-link" href="#d1-general">Descripción general</a>
+        <a class="nav-link" href="#d1-rf">Requisitos funcionales</a>
+        <a class="nav-link" href="#d1-rnf">Requisitos no funcionales</a>
+        <a class="nav-link" href="#d1-cu">Casos de uso</a>
+        <a class="nav-link" href="#d1-trazabilidad">Matriz de trazabilidad</a>
+        <a class="nav-link" href="#d1-alcance">Alcance y supuestos</a>
+      </div>
+    </details>
+
+    <details class="nav-group" data-doc="doc2">
+      <summary><span class="nav-num">02</span> Plan de desarrollo <span class="chev">▸</span></summary>
+      <div class="nav-links">
+        <a class="nav-link" href="#d2-ciclo">Modelo de ciclo de vida</a>
+        <a class="nav-link" href="#d2-org">Organización del equipo</a>
+        <a class="nav-link" href="#d2-ceremonias">Ceremonias y cadencia</a>
+        <a class="nav-link" href="#d2-artefactos">Artefactos Scrum</a>
+        <a class="nav-link" href="#d2-dor-dod">Definition of Ready/Done</a>
+        <a class="nav-link" href="#d2-devsecops">Estrategia DevSecOps</a>
+        <a class="nav-link" href="#d2-riesgos">Gestión de riesgos</a>
+        <a class="nav-link" href="#d2-metricas">Métricas de seguimiento</a>
+        <a class="nav-link" href="#d2-comunicacion">Plan de comunicación</a>
+      </div>
+    </details>
+
+    <details class="nav-group" data-doc="doc3">
+      <summary><span class="nav-num">03</span> Cronograma y tareas <span class="chev">▸</span></summary>
+      <div class="nav-links">
+        <a class="nav-link" href="#d3-general">Cronograma general</a>
+        <a class="nav-link" href="#d3-hitos">Hitos</a>
+        <a class="nav-link" href="#d3-sprints">Detalle por sprint</a>
+        <a class="nav-link" href="#d3-ruta">Ruta crítica</a>
+        <a class="nav-link" href="#d3-capacidad">Capacidad y velocidad</a>
+        <a class="nav-link" href="#d3-riesgos">Riesgos de cronograma</a>
+      </div>
+    </details>
+
+    <details class="nav-group" data-doc="doc4">
+      <summary><span class="nav-num">04</span> Diseño arquitectónico <span class="chev">▸</span></summary>
+      <div class="nav-links">
+        <a class="nav-link" href="#d4-objetivos">Objetivos de diseño</a>
+        <a class="nav-link" href="#d4-componentes">Vista de componentes</a>
+        <a class="nav-link" href="#d4-stack">Stack tecnológico</a>
+        <a class="nav-link" href="#d4-movil">Arquitectura móvil</a>
+        <a class="nav-link" href="#d4-flujo">Flujo de datos</a>
+        <a class="nav-link" href="#d4-modelo">Modelo de datos</a>
+        <a class="nav-link" href="#d4-seguridad">Seguridad de la arquitectura</a>
+        <a class="nav-link" href="#d4-decisiones">Decisiones clave</a>
+        <a class="nav-link" href="#d4-repo">Estructura del repositorio</a>
+      </div>
+    </details>
+
+    <details class="nav-group" data-doc="doc5">
+      <summary><span class="nav-num">05</span> Pruebas y calidad <span class="chev">▸</span></summary>
+      <div class="nav-links">
+        <a class="nav-link" href="#d5-intro">Alcance de la iteración</a>
+        <a class="nav-link" href="#d5-estrategia">Estrategia de pruebas</a>
+        <a class="nav-link" href="#d5-e2e">Flujos E2E críticos</a>
+        <a class="nav-link" href="#d5-seguridad">Plan de pruebas de seguridad</a>
+        <a class="nav-link" href="#d5-criterios">Criterios de aceptación</a>
+        <a class="nav-link" href="#d5-metricas">Métricas de calidad</a>
+        <a class="nav-link" href="#d5-campo">Prueba de campo</a>
+        <a class="nav-link" href="#d5-hallazgos">Gestión de hallazgos</a>
+        <a class="nav-link" href="#d5-estado">Estado actual</a>
+      </div>
+    </details>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir navegación">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div>
+        <h1>NexaSafe</h1>
+        <div class="sub">Documentación de ingeniería · Fundación Universitaria San Mateo</div>
+      </div>
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="searchInput" type="text" placeholder="Buscar en los 5 documentos…" autocomplete="off">
+        <div class="search-nav">
+          <span id="searchCount"></span>
+          <button id="searchPrev" title="Anterior">▲</button>
+          <button id="searchNext" title="Siguiente">▼</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="content" id="content">
+
+      <!-- ============ DOC 1 — REQUISITOS ============ -->
+      <section class="doc-hero" id="doc1">
+        <span class="kicker">Documento 01 · v1.0</span>
+        <h1>Documento de Requisitos del Sistema</h1>
+        <p class="lede">NexaSafe — Sistema de alerta y acompañamiento en ruta casa–colegio. Especifica los requisitos funcionales y no funcionales que rigen la construcción, prueba y aceptación del incremento de software.</p>
+        <div class="meta-row">
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>Juan Felipe Pineda Cardona + 2</b><span>Equipo</span></div>
+          <div class="meta-pill"><b>Ingeniería de Sistemas</b><span>Programa</span></div>
+          <div class="meta-pill"><b>PLAN_NEXASAFE.md v1.1</b><span>Documento base</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="d1-intro">
+        <div class="section-head"><span class="num">1</span><h2>Introducción</h2></div>
+
+        <div class="subsection">
+          <h3>1.1 Propósito</h3>
+          <p class="lead">Este documento especifica los requisitos funcionales y no funcionales del sistema NexaSafe, una aplicación móvil de alerta y acompañamiento de trayecto casa–colegio dirigida a niñas, niños y mujeres de la comunidad educativa que se desplazan por zonas con riesgo de agresión, hurto o desaparición. Sirve como referencia contractual entre el equipo de desarrollo y el Product Owner (docente del proyecto integrador / representante simulado del colegio) para la construcción, prueba y aceptación del incremento de software durante el periodo 2026-2.</p>
+        </div>
+
+        <div class="subsection">
+          <h3>1.2 Alcance del producto</h3>
+          <p class="lead">NexaSafe permite a un acudiente (guardián) vincular a un menor o protegido, definir su ruta segura casa–colegio, acompañar en vivo el trayecto y activar una alerta silenciosa —manual o automática— que notifica simultáneamente a la red de apoyo y al puesto de control de la institución educativa. A diferencia de llamar a la línea 123 o escribir a un grupo de WhatsApp, el sistema detecta desviaciones de ruta de forma automática, opera en condiciones de conectividad degradada mediante una cola local, no expone al usuario mientras transmite (modo discreto) y deja una bitácora auditable de cada incidente.</p>
+        </div>
+
+        <div class="subsection">
+          <h3>1.3 Definiciones, acrónimos y abreviaturas</h3>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+            <tbody>
+              <tr><td class="mono-cell">Protegido</td><td>Menor de edad cuyo trayecto casa–colegio es monitoreado por la aplicación.</td></tr>
+              <tr><td class="mono-cell">Guardián</td><td>Acudiente o representante legal responsable de un protegido; administra su perfil, ruta y recibe alertas.</td></tr>
+              <tr><td class="mono-cell">Contacto de apoyo</td><td>Persona adicional invitada por el guardián para recibir notificaciones de alerta.</td></tr>
+              <tr><td class="mono-cell">Puesto de control</td><td>Rol institucional (colegio) que valida matrículas, visualiza alertas activas y atiende incidentes desde la propia app móvil.</td></tr>
+              <tr><td class="mono-cell">Corredor seguro</td><td>Franja geográfica de tolerancia alrededor de la ruta definida, dentro de la cual el trayecto se considera normal.</td></tr>
+              <tr><td class="mono-cell">Trayecto</td><td>Instancia de acompañamiento activo entre el inicio y el cierre (automático o manual) de un recorrido.</td></tr>
+              <tr><td class="mono-cell">Alerta</td><td>Evento de pánico disparado manual o automáticamente que notifica a la red de apoyo y al puesto de control.</td></tr>
+              <tr><td class="mono-cell">Modo discreto</td><td>Estado de interfaz que oculta cualquier indicio visible de que se está transmitiendo una alerta.</td></tr>
+              <tr><td class="mono-cell">RLS</td><td>Row Level Security — control de acceso a nivel de fila en PostgreSQL/Supabase.</td></tr>
+              <tr><td class="mono-cell">RF / RNF</td><td>Requisito funcional / Requisito no funcional.</td></tr>
+              <tr><td class="mono-cell">MoSCoW</td><td>Técnica de priorización: Must, Should, Could, Won't.</td></tr>
+              <tr><td class="mono-cell">PIA</td><td>Evaluación de impacto en privacidad (Privacy Impact Assessment).</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>1.4 Referencias</h3>
+          <ul class="checklist">
+            <li>PLAN_NEXASAFE.md v1.1 — Plan de proyecto NexaSafe (fuente principal de este documento).</li>
+            <li>requisitos_materias.md — Requisitos académicos de Ingeniería de Software I y Programación para Dispositivos Móviles.</li>
+            <li>Ley 1581 de 2012 y Decreto 1377 de 2013 (República de Colombia) — Protección de datos personales.</li>
+            <li>Sentencia C-748 de 2011, Corte Constitucional — Tratamiento de datos sensibles de menores.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="d1-general">
+        <div class="section-head"><span class="num">2</span><h2>Descripción general</h2></div>
+
+        <div class="subsection">
+          <h3>2.1 Perspectiva del producto</h3>
+          <p class="lead">NexaSafe es un producto nuevo, autocontenido, compuesto por una aplicación móvil multiplataforma (Expo + React Native + TypeScript) y un backend gestionado sobre Supabase (PostgreSQL + PostGIS, Auth, Realtime y Edge Functions). No reemplaza ni se integra técnicamente con la línea de emergencias 123 ni con sistemas de la Policía Nacional: en el alcance académico, el escalamiento a la autoridad se <b>simula</b> mediante un reporte generado y registrado por el sistema.</p>
+
+          <div class="flow">
+            <div class="flow-step accent"><b>Protegido</b>Inicia trayecto · dispara alerta</div>
+            <div class="flow-arrow">↘</div>
+            <div class="flow-step"><b>NexaSafe</b>App + Supabase</div>
+            <div class="flow-arrow">↙</div>
+            <div class="flow-step accent"><b>Guardián</b>Vincula · define ruta · sigue en vivo</div>
+          </div>
+          <div class="flow" style="margin-top:-8px">
+            <div class="flow-step"><b>Puesto de control</b>Valida · atiende · escala (simulado)</div>
+            <div class="flow-arrow">↗</div>
+            <div class="flow-step" style="opacity:0; pointer-events:none;"></div>
+            <div class="flow-arrow">↖</div>
+            <div class="flow-step"><b>Contacto de apoyo</b>Recibe alerta · confirma respuesta</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>2.2 Funciones principales del producto</h3>
+          <div class="card-grid">
+            <div class="card"><p>Registro de guardianes y vinculación de perfiles protegidos validados por la institución.</p></div>
+            <div class="card"><p>Gestión de rutas seguras con corredor geográfico y ventana horaria esperada.</p></div>
+            <div class="card"><p>Trayecto acompañado con ubicación en vivo y cierre automático por geocerca.</p></div>
+            <div class="card"><p>Detección automática de desvío de ruta y de trayecto vencido, con escalamiento progresivo.</p></div>
+            <div class="card"><p>Botón de pánico con ventana de cancelación por PIN y modo discreto de pantalla.</p></div>
+            <div class="card"><p>Notificación push simultánea a guardianes, red de apoyo y puesto de control.</p></div>
+            <div class="card"><p>Confirmación de respuesta ("voy en camino") y cierre clasificado del incidente.</p></div>
+            <div class="card"><p>Vista institucional integrada en la misma app, con alertas activas e histórico agregado.</p></div>
+            <div class="card"><p>Operación degradada sin datos: cola local y reenvío automático al recuperar la conexión.</p></div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>2.3 Características de los usuarios</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Perfil</th><th>Nivel técnico</th><th>Necesidades clave</th></tr></thead>
+            <tbody>
+              <tr><td><b>Protegido</b></td><td>Bajo–medio (niño/a o adolescente)</td><td>Interacción mínima, PIN corto en lugar de contraseña, feedback visual claro del estado de acompañamiento, disparo de alerta simple e infalible.</td></tr>
+              <tr><td><b>Guardián</b></td><td>Medio</td><td>Registro y gestión de perfiles, definición de rutas sobre mapa, visibilidad en vivo, notificaciones confiables incluso con el teléfono en silencio.</td></tr>
+              <tr><td><b>Contacto de apoyo</b></td><td>Medio–bajo</td><td>Recepción de alertas sin necesidad de configurar nada, opción de confirmar respuesta.</td></tr>
+              <tr><td><b>Puesto de control</b> (institución)</td><td>Medio</td><td>Panorama de alertas activas sobre mapa, generación de reporte de escalamiento, consulta de histórico para intervención en puntos críticos.</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>2.4 Restricciones generales</h3>
+          <ul class="checklist">
+            <li>La aplicación debe construirse con Expo SDK + React Native + TypeScript (requisito de la asignatura de Programación para Dispositivos Móviles).</li>
+            <li>El backend debe apoyarse en Supabase (PostgreSQL gestionado, Auth, Realtime y Edge Functions), sin infraestructura propia adicional.</li>
+            <li>La distribución se limita a Android vía EAS Build; no se publica versión iOS en App Store dentro del alcance académico.</li>
+            <li>El escalamiento a la autoridad (línea 123 / Policía Nacional) se simula; no existe integración real con organismos externos.</li>
+            <li>El tratamiento de datos de menores requiere autorización escrita previa del representante legal (Ley 1581 de 2012).</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="d1-rf">
+        <div class="section-head"><span class="num">3.1</span><h2>Requisitos funcionales</h2></div>
+        <p class="lead">Derivados directamente de las historias de usuario del Product Backlog, agrupados por épica. Prioridad MoSCoW: <span class="badge badge-must">MUST</span> obligatorio para el MVP académico, <span class="badge badge-should">SHOULD</span> deseable si hay capacidad, <span class="badge badge-could">COULD</span> se sacrifica primero.</p>
+
+        <div class="filter-row" id="rfFilters">
+          <button class="chip active" data-f="all">Todas (41)</button>
+          <button class="chip" data-f="MUST">MUST</button>
+          <button class="chip" data-f="SHOULD">SHOULD</button>
+          <button class="chip" data-f="COULD">COULD</button>
+        </div>
+
+        <div class="table-wrap"><table id="rfTable">
+          <thead><tr><th>ID</th><th>Descripción</th><th>Épica</th><th>Prioridad</th></tr></thead>
+          <tbody>
+            <tr data-p="MUST"><td class="id-cell">RF-01</td><td>El sistema debe permitir a un acudiente registrarse con correo y contraseña.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-02</td><td>El sistema debe permitir registrar un menor y vincularlo como protegido de un guardián, quedando en estado PENDIENTE_VALIDACION hasta la aprobación del colegio.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-03</td><td>El sistema debe permitir al colegio validar la matrícula del menor antes de activar su perfil.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-04</td><td>El sistema debe permitir a un protegido autenticarse con un PIN corto en lugar de contraseña.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-05</td><td>El sistema debe conservar la sesión cifrada en el dispositivo para evitar reautenticación en cada trayecto.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-06</td><td>El sistema debe permitir invitar contactos de apoyo mediante un enlace.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-07</td><td>El sistema debe permitir definir qué información ve cada contacto de apoyo (solo alertas vs. trayectos).</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-08</td><td>El sistema debe permitir revocar el acceso de un contacto de apoyo en cualquier momento.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-09</td><td>El sistema debe permitir definir la ruta casa–colegio sobre un mapa.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-10</td><td>El sistema debe permitir configurar un corredor de tolerancia en metros alrededor de la ruta.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-11</td><td>El sistema debe permitir definir la duración esperada del trayecto.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-12</td><td>El sistema debe permitir al protegido iniciar un trayecto acompañado con un solo toque.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-13</td><td>El sistema debe transmitir la ubicación del protegido en vivo al guardián durante el trayecto.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-14</td><td>El sistema debe cerrar automáticamente el trayecto al detectar la llegada al destino (geocerca).</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-15</td><td>El sistema debe mostrar al protegido un indicador permanente de que está siendo acompañado.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-16</td><td>El sistema debe detectar cuando el protegido sale del corredor seguro y marcar el trayecto como DESVIADO.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-17</td><td>El sistema debe preguntar "¿estás bien?" con temporizador de 60 s ante un desvío detectado.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-18</td><td>El sistema debe escalar automáticamente a ALERTA si no hay respuesta al temporizador de desvío.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-19</td><td>El sistema debe marcar el trayecto como vencido si excede la duración esperada configurada.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-20</td><td>El sistema debe permitir disparar una alerta manteniendo presionado el botón de pánico durante 3 s.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-21</td><td>El sistema debe permitir disparar la alerta sacudiendo el dispositivo durante un trayecto activo.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-22</td><td>El sistema debe permitir cancelar una alerta disparada mediante PIN dentro de una ventana de 10 s.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-23</td><td>El sistema debe activar un modo discreto de pantalla mientras la alerta está en curso.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-24</td><td>El sistema debe enviar la ubicación del protegido cada 5–10 s durante una alerta activa.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="COULD"><td class="id-cell">RF-25</td><td>El sistema debe permitir al guardián autorizar la captura de audio ambiente durante alertas.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-could">COULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-26</td><td>El sistema debe notificar por push con sonido prioritario a los guardianes ante una alerta activa.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-27</td><td>El sistema debe permitir a un guardián marcar "voy en camino" sobre una alerta.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-28</td><td>El sistema debe mostrar quién más respondió a la alerta y a qué hora.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-29</td><td>El sistema debe mostrar al puesto de control las alertas activas sobre un mapa dentro de la misma app.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-30</td><td>El sistema debe permitir generar un reporte de escalamiento con los datos del incidente (envío a la autoridad simulado).</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-31</td><td>El sistema debe generar un mapa de calor de incidentes por zona y franja horaria.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-32</td><td>El sistema debe registrar cada evento de un incidente con marca de tiempo inmutable (bitácora auditable).</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-33</td><td>El sistema debe permitir cerrar y clasificar una alerta para dejar constancia del desenlace.</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-34</td><td>El sistema debe permitir consultar el histórico de incidentes de un protegido.</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-35</td><td>El sistema debe encolar la alerta localmente si no hay red y enviarla al recuperar la conexión.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-36</td><td>El sistema debe reintentar el envío en segundo plano hasta confirmar la entrega.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-37</td><td>El sistema debe mostrar la marca "última posición hace X min" cuando el dato no es en vivo.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-38</td><td>El sistema debe registrar el consentimiento explícito y verificable del acudiente para tratar datos del menor.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-39</td><td>El sistema debe eliminar automáticamente los trayectos con más de 90 días de antigüedad.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="SHOULD"><td class="id-cell">RF-40</td><td>El sistema debe permitir exportar y solicitar la supresión de los datos del menor (habeas data).</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-41</td><td>El sistema no debe compartir la ubicación del protegido fuera de un trayecto o alerta activos.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="callout">
+          <b>Criterio de aceptación de referencia — RF-22 (E6-03)</b>
+          <p class="mono" style="font-size:12.5px; line-height:1.9;">Dado que se disparó una alerta<br>Cuando ingreso mi PIN correcto dentro de los 10 segundos<br>Entonces la alerta se cancela y nadie recibe notificación<br>Y queda un registro local del disparo cancelado</p>
+        </div>
+      </section>
+
+      <section class="section" id="d1-rnf">
+        <div class="section-head"><span class="num">3.2</span><h2>Requisitos no funcionales</h2></div>
+
+        <div class="subsection">
+          <h3>3.2.1 Seguridad</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>ID</th><th>Descripción</th><th>Criterio de verificación</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">RNF-01</td><td>Toda comunicación cliente–servidor debe cifrarse en tránsito.</td><td>TLS 1.3 obligatorio + certificate pinning en el cliente móvil.</td></tr>
+              <tr><td class="id-cell">RNF-02</td><td>Los datos sensibles deben cifrarse en reposo.</td><td>Cifrado a nivel de columna para documento, foto y ubicación histórica.</td></tr>
+              <tr><td class="id-cell">RNF-03</td><td>La autenticación debe usar tokens de vida corta.</td><td>JWT de 15 min + refresh token rotativo revocable.</td></tr>
+              <tr><td class="id-cell">RNF-04</td><td>La autorización debe verificarse por rol en cada endpoint.</td><td>RBAC: protegido, guardian, apoyo, institucion; pruebas de autorización en CI.</td></tr>
+              <tr><td class="id-cell">RNF-05</td><td>El PIN del protegido nunca debe almacenarse en texto plano.</td><td>Hash Argon2id, custodia en expo-secure-store.</td></tr>
+              <tr><td class="id-cell">RNF-06</td><td>El sistema debe mitigar abuso de endpoints críticos.</td><td>Rate limiting por IP y por usuario en alerta y autenticación.</td></tr>
+              <tr><td class="id-cell">RNF-07</td><td>El binario de producción debe dificultar la manipulación.</td><td>Detección de root/emulador y de mock location en modo release.</td></tr>
+              <tr><td class="id-cell">RNF-08</td><td>Todo pull request debe pasar controles automáticos de seguridad antes de fusionarse.</td><td>SAST (Semgrep/CodeQL) y SCA (npm audit) sin hallazgos High/Critical; escaneo de secretos limpio (Gitleaks).</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>3.2.2 Rendimiento y disponibilidad</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>ID</th><th>Descripción</th><th>Objetivo medible</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">RNF-09</td><td>La notificación de una alerta debe llegar en tiempo cercano al real.</td><td>&lt; 5 s con red disponible; &lt; 30 s tras reconexión.</td></tr>
+              <tr><td class="id-cell">RNF-10</td><td>La posición reportada debe ser suficientemente precisa en entorno urbano.</td><td>Error &lt; 20 m en zona urbana abierta.</td></tr>
+              <tr><td class="id-cell">RNF-11</td><td>El consumo energético del acompañamiento debe ser sostenible para un trayecto escolar.</td><td>&lt; 8 % de batería por hora de trayecto.</td></tr>
+              <tr><td class="id-cell">RNF-12</td><td>Las falsas alarmas automáticas deben mantenerse bajo control.</td><td>&lt; 10 % de los trayectos con falsa alarma.</td></tr>
+              <tr><td class="id-cell">RNF-13</td><td>El pipeline de integración debe entregar cambios a staging con baja latencia.</td><td>Lead time commit→staging &lt; 30 min; despliegue ≥ 1 vez por día hábil.</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>3.2.3 Usabilidad y accesibilidad</h3>
+          <ul class="checklist">
+            <li><b class="mono" style="color:var(--text)">RNF-14 · </b>El disparo de alerta debe ser ejecutable sin lectura de texto (mantener presionado o sacudir), pensado para uso bajo estrés.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-15 · </b>El PIN de acceso del protegido debe ser corto (numérico) y memorizable sin asistencia.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-16 · </b>El indicador de acompañamiento activo debe ser visible en todo momento sin interferir con el modo discreto durante una alerta.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-17 · </b>La app debe operar de forma comprensible sin conexión estable, informando siempre el estado de sincronización de datos.</li>
+          </ul>
+        </div>
+
+        <div class="subsection">
+          <h3>3.2.4 Compatibilidad y portabilidad</h3>
+          <ul class="checklist">
+            <li><b class="mono" style="color:var(--text)">RNF-18 · </b>La app debe ejecutarse en dispositivos Android 9 (API 28) o superior con GPS.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-19 · </b>La base de código debe mantenerse multiplataforma (Expo/React Native) aunque la distribución académica sea solo Android vía EAS Build.</li>
+          </ul>
+        </div>
+
+        <div class="subsection">
+          <h3>3.2.5 Privacidad y cumplimiento normativo</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>ID</th><th>Descripción</th><th>Marco normativo</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">RNF-20</td><td>El tratamiento de datos del menor requiere autorización previa, expresa e informada del representante legal.</td><td>Ley 1581 de 2012</td></tr>
+              <tr><td class="id-cell">RNF-21</td><td>La política de tratamiento de datos debe estar publicada y accesible dentro de la app y el repositorio.</td><td>Decreto 1377 de 2013</td></tr>
+              <tr><td class="id-cell">RNF-22</td><td>El tratamiento de datos de menores debe responder al interés superior del niño y a una finalidad única de protección.</td><td>Sentencia C-748 de 2011</td></tr>
+              <tr><td class="id-cell">RNF-23</td><td>La ubicación solo se recolecta durante trayecto o alerta activos (principio de finalidad).</td><td>Ley 1581 de 2012</td></tr>
+              <tr><td class="id-cell">RNF-24</td><td>Los trayectos no deben conservarse más allá de 90 días (principio de temporalidad).</td><td>Ley 1581 de 2012</td></tr>
+              <tr><td class="id-cell">RNF-25</td><td>El acudiente debe poder ejercer acceso, corrección y supresión de los datos del menor.</td><td>Habeas data</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>3.2.6 Mantenibilidad y calidad de código</h3>
+          <ul class="checklist">
+            <li><b class="mono" style="color:var(--text)">RNF-26 · </b>La cobertura de pruebas unitarias del módulo tocado en cada PR debe ser ≥ 70 %.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-27 · </b>Todo cambio de esquema de base de datos debe versionarse como migración y sus políticas RLS deben tener prueba asociada.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-28 · </b>El código en main debe estar libre de TODO y de código comentado.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="d1-cu">
+        <div class="section-head"><span class="num">4</span><h2>Casos de uso principales</h2></div>
+        <p class="lead">Flujos extremo a extremo declarados como obligatorios en la estrategia de pruebas.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>ID</th><th>Caso de uso</th><th>Actor principal</th><th>Descripción resumida</th></tr></thead>
+          <tbody>
+            <tr><td class="id-cell">CU-01</td><td>Alta y validación de protegido</td><td>Guardián, Institución</td><td>El guardián registra al menor; el sistema lo deja en estado pendiente hasta que el colegio valide la matrícula y el protegido pueda iniciar sesión con PIN.</td></tr>
+            <tr><td class="id-cell">CU-02</td><td>Trayecto acompañado con cierre automático</td><td>Protegido, Guardián</td><td>El protegido inicia el trayecto con un toque; el guardián sigue la ubicación en vivo; el trayecto se cierra solo al detectar la llegada.</td></tr>
+            <tr><td class="id-cell">CU-03</td><td>Desvío de ruta con escalamiento automático</td><td>Sistema, Protegido</td><td>El sistema detecta que el protegido salió del corredor seguro, pregunta si está bien con un temporizador de 60 s y escala a alerta si no hay respuesta.</td></tr>
+            <tr><td class="id-cell">CU-04</td><td>Botón de pánico con cancelación por PIN</td><td>Protegido</td><td>El protegido dispara la alerta; si ingresa su PIN dentro de 10 s se cancela sin notificar a nadie; si no, se envía de inmediato.</td></tr>
+            <tr><td class="id-cell">CU-05</td><td>Respuesta a alerta y cierre clasificado</td><td>Guardián, Puesto de control</td><td>Ante una alerta enviada, el guardián confirma "voy en camino"; el incidente se cierra y clasifica para quedar en la bitácora auditable.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d1-trazabilidad">
+        <div class="section-head"><span class="num">5</span><h2>Matriz de trazabilidad</h2></div>
+        <p class="lead">Relaciona cada caso de uso con las épicas y requisitos funcionales que lo sustentan.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Caso de uso</th><th>Épicas</th><th>Requisitos funcionales</th><th>Sprint objetivo</th></tr></thead>
+          <tbody>
+            <tr><td class="id-cell">CU-01</td><td>E1, E11</td><td>RF-01 a RF-05, RF-38</td><td>Sprint 1</td></tr>
+            <tr><td class="id-cell">CU-02</td><td>E3, E4</td><td>RF-09 a RF-15</td><td>Sprint 2 – Sprint 3</td></tr>
+            <tr><td class="id-cell">CU-03</td><td>E5</td><td>RF-16 a RF-19</td><td><span class="badge badge-medium">Trabajo futuro</span></td></tr>
+            <tr><td class="id-cell">CU-04</td><td>E6</td><td>RF-20 a RF-25</td><td>Sprint 3 – Sprint 4</td></tr>
+            <tr><td class="id-cell">CU-05</td><td>E7, E8, E9</td><td>RF-26 a RF-34</td><td>Sprint 4</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout warn">
+          <b>Nota de cobertura</b>
+          <p>El caso de uso CU-03 (detección automática de desvío) queda declarado como trabajo futuro en el roadmap del semestre 2026-2 por restricción de capacidad del equipo. Sus requisitos funcionales permanecen especificados en este documento para una segunda fase del proyecto.</p>
+        </div>
+      </section>
+
+      <section class="section" id="d1-alcance">
+        <div class="section-head"><span class="num">6</span><h2>Alcance, supuestos y restricciones</h2></div>
+
+        <div class="subsection">
+          <h3>6.1 Dentro del alcance (MVP académico)</h3>
+          <ul class="checklist">
+            <li>Registro de guardián y vinculación de perfiles protegidos validados por la institución.</li>
+            <li>Gestión de rutas seguras con corredor geográfico y horarios esperados.</li>
+            <li>Trayecto acompañado con ubicación en vivo y cierre automático por geocerca.</li>
+            <li>Detección automática de desvío y de trayecto vencido, con escalamiento.</li>
+            <li>Botón de pánico con ventana de cancelación por PIN y modo discreto.</li>
+            <li>Notificación push simultánea a guardianes, red de apoyo y puesto de control.</li>
+            <li>Confirmación de respuesta y cierre clasificado del incidente.</li>
+            <li>Vista institucional dentro de la misma app móvil.</li>
+            <li>Operación degradada sin datos: cola local y reenvío automático.</li>
+            <li>Pipeline DevSecOps completo desde el Sprint 0.</li>
+          </ul>
+        </div>
+
+        <div class="subsection">
+          <h3>6.2 Fuera del alcance</h3>
+          <div class="card-grid">
+            <div class="card"><p>Integración técnica directa con la línea 123 o sistemas de la Policía Nacional (requiere convenio interinstitucional); el escalamiento se simula.</p></div>
+            <div class="card"><p>Wearables o botón físico externo.</p></div>
+            <div class="card"><p>Videollamada en vivo.</p></div>
+            <div class="card"><p>Publicación de versión iOS en App Store.</p></div>
+            <div class="card"><p>Facturación o monetización.</p></div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>6.3 Supuestos</h3>
+          <ul class="checklist">
+            <li>El colegio designa un responsable del puesto de control con equipo y conexión.</li>
+            <li>Los menores portan un dispositivo Android 9+ con GPS.</li>
+            <li>Existe autorización escrita del representante legal para el tratamiento de datos del menor.</li>
+          </ul>
+        </div>
+
+        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1.</div>
+      </section>
+
+      <!-- ============ DOC 2 — PLAN DE DESARROLLO ============ -->
+      <section class="doc-hero" id="doc2">
+        <span class="kicker">Documento 02 · v1.0</span>
+        <h1>Plan de Desarrollo de Software</h1>
+        <p class="lede">NexaSafe — Marco Scrum con modelo de entrega DevSecOps. Define el ciclo de vida, la organización del equipo, las ceremonias y la forma en que la seguridad se integra como parte innegociable del proceso.</p>
+        <div class="meta-row">
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>Scrum</b><span>Marco ágil</span></div>
+          <div class="meta-pill"><b>2 semanas</b><span>Duración de sprint</span></div>
+          <div class="meta-pill"><b>DevSecOps</b><span>Modelo de entrega</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="d2-ciclo">
+        <div class="section-head"><span class="num">1–2</span><h2>Introducción y modelo de ciclo de vida</h2></div>
+        <p class="lead">Este plan define cómo el equipo construirá NexaSafe entre el 22 de septiembre y el 28 de noviembre de 2026: modelo de ciclo de vida, organización, ceremonias, artefactos, criterios de entrada/salida y la forma en que DevSecOps se integra como parte no negociable del proceso.</p>
+
+        <div class="stat-grid">
+          <div class="stat-tile"><b>Scrum</b><span>Marco ágil</span></div>
+          <div class="stat-tile"><b>2 sem.</b><span>Duración del sprint</span></div>
+          <div class="stat-tile"><b>2–3</b><span>Integrantes del equipo</span></div>
+          <div class="stat-tile"><b>DevSecOps</b><span>Modelo de entrega</span></div>
+        </div>
+
+        <div class="subsection">
+          <h3>2.1 Modelo seleccionado: Scrum</h3>
+          <p class="lead">Se adopta Scrum por tres factores del contexto: (1) los requisitos evolucionan a medida que se valida cada incremento con el docente y el "cliente simulado" del colegio; (2) el equipo es reducido (2–3 integrantes) y necesita ciclos cortos con retroalimentación frecuente; (3) la naturaleza sensible del dominio exige que cada incremento sea auditable y demostrable, lo cual encaja con la cadencia de Sprint Review.</p>
+        </div>
+
+        <div class="subsection">
+          <h3>2.2 Modelo de entrega: DevSecOps</h3>
+          <p class="lead">Sobre Scrum se superpone un modelo de entrega DevSecOps con principio rector <em>shift-left</em>: la seguridad no es una fase previa a la entrega, es un criterio de la Definition of Done que se ejecuta automáticamente en cada commit. Desde el Sprint 0 existe pipeline de integración continua con controles de seguridad automatizados, antes de construir la primera historia de negocio.</p>
+        </div>
+
+        <div class="subsection">
+          <h3>2.3 Por qué no cascada ni Kanban puro</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Modelo</th><th>Razón de descarte</th></tr></thead>
+            <tbody>
+              <tr><td><b>Cascada</b></td><td>Exige requisitos cerrados desde el inicio; el proyecto depende de decisiones que solo se validan con el uso (p. ej. tolerancia del corredor seguro, umbral de sacudida para el pánico).</td></tr>
+              <tr><td><b>Kanban puro</b></td><td>No exige una revisión periódica formal con el Product Owner; en un entregable académico con fechas de sustentación fijas, el ritmo de Sprint Review/Retrospective da puntos de control necesarios.</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="section" id="d2-org">
+        <div class="section-head"><span class="num">3</span><h2>Organización del equipo</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Rol</th><th>Responsable</th><th>Responsabilidades</th></tr></thead>
+          <tbody>
+            <tr><td><b>Product Owner</b></td><td>Docente del proyecto integrador (o representante del colegio como cliente simulado)</td><td>Prioriza el backlog, acepta o rechaza el incremento en la review, resuelve dudas de negocio.</td></tr>
+            <tr><td><b>Scrum Master</b></td><td>Integrante rotativo del equipo</td><td>Facilita ceremonias, retira impedimentos, protege el sprint de cambios de alcance.</td></tr>
+            <tr><td><b>Development Team</b></td><td>3 integrantes: Móvil, Backend/Datos, DevSecOps/QA</td><td>Equipo multifuncional y autoorganizado. Cada integrante rota por el rol de Security Champion cada dos sprints.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout">
+          <b>Ajuste por tamaño de equipo</b>
+          <p>El equipo es de 2 a 3 integrantes. Con 3, se mantiene la velocidad objetivo de 24 puntos por sprint. Con 2, se ajusta a 16–18 puntos por sprint, se combinan los roles de Dev y Scrum Master, y las historias <span class="badge badge-should">SHOULD</span> se sacrifican primero.</p>
+        </div>
+        <p class="lead">Cada historia de usuario es un issue en GitHub con plantilla que incluye título en formato de historia, criterios de aceptación en Gherkin, estimación en puntos y etiquetas (<code>epic:*</code>, <code>type:*</code>, <code>security</code>). La propiedad del código es colectiva: no hay conocimiento aislado en una sola persona (mitigación del riesgo R7).</p>
+      </section>
+
+      <section class="section" id="d2-ceremonias">
+        <div class="section-head"><span class="num">4</span><h2>Ceremonias y cadencia</h2></div>
+        <p class="lead">Ciclo de ceremonias dentro de un sprint de dos semanas, en orden de ejecución:</p>
+        <div class="flow">
+          <div class="flow-step accent"><b>Sprint Planning</b>2 h · lunes</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><b>Daily Scrum</b>15 min · diario</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><b>Refinement</b>1 h · miércoles sem.1</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step accent"><b>Sprint Review</b>1 h · viernes fin</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><b>Retrospective</b>45 min · tras la review</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><b>Security Review</b>30 min · previa a la review</div>
+        </div>
+        <p class="flow-note" style="text-align:left; margin:-6px 0 8px;">↻ el ciclo se repite cada sprint de 2 semanas</p>
+
+        <div class="table-wrap"><table>
+          <thead><tr><th>Ceremonia</th><th>Duración</th><th>Frecuencia</th><th>Salida</th></tr></thead>
+          <tbody>
+            <tr><td><b>Sprint Planning</b></td><td>2 h</td><td>Inicio de sprint (lunes)</td><td>Sprint Goal + Sprint Backlog comprometido</td></tr>
+            <tr><td><b>Daily Scrum</b></td><td>15 min</td><td>Diario (asíncrono por Discord si no hay presencialidad)</td><td>Impedimentos identificados</td></tr>
+            <tr><td><b>Refinement</b></td><td>1 h</td><td>Miércoles de la semana 1</td><td>Historias del siguiente sprint estimadas y con DoR</td></tr>
+            <tr><td><b>Sprint Review</b></td><td>1 h</td><td>Fin de sprint (viernes)</td><td>Incremento demostrado y feedback del PO</td></tr>
+            <tr><td><b>Sprint Retrospective</b></td><td>45 min</td><td>Fin de sprint, después de la review</td><td>1–2 acciones de mejora con responsable</td></tr>
+            <tr><td><b>Security Review</b></td><td>30 min</td><td>Fin de sprint, previa a la review</td><td>Hallazgos del pipeline triados y priorizados en backlog</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="subsection">
+          <h3>4.3 Cadencia</h3>
+          <ul class="checklist">
+            <li><b>Duración del sprint:</b> 2 semanas.</li>
+            <li><b>Sprint 0</b> dedicado a habilitación técnica y de seguridad (no produce valor de negocio, produce plataforma).</li>
+            <li><b>Sprint Goal único por sprint</b>, redactado en una sola frase orientada a resultado.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="d2-artefactos">
+        <div class="section-head"><span class="num">5</span><h2>Artefactos Scrum</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Artefacto</th><th>Herramienta</th><th>Compromiso asociado</th></tr></thead>
+          <tbody>
+            <tr><td><b>Product Backlog</b></td><td>GitHub Projects (vista Backlog)</td><td>Product Goal</td></tr>
+            <tr><td><b>Sprint Backlog</b></td><td>GitHub Projects (vista Sprint actual: To Do / In Progress / In Review / Done)</td><td>Sprint Goal</td></tr>
+            <tr><td><b>Incremento</b></td><td>Build firmado en EAS + proyecto Supabase de staging migrado</td><td>Definition of Done</td></tr>
+            <tr><td><b>Impediment Log</b></td><td>Issues con etiqueta <code>impediment</code></td><td>—</td></tr>
+            <tr><td><b>Risk &amp; Security Register</b></td><td><code>/docs/security/risk-register.md</code> versionado en el repo</td><td>—</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d2-dor-dod">
+        <div class="section-head"><span class="num">6</span><h2>Definition of Ready y Definition of Done</h2></div>
+
+        <div class="subsection">
+          <h3>6.1 Definition of Ready — para entrar al sprint</h3>
+          <ul class="checklist dor">
+            <li>Historia redactada en formato Como… quiero… para…</li>
+            <li>Criterios de aceptación en Gherkin (Dado/Cuando/Entonces)</li>
+            <li>Estimada por el equipo en puntos (Fibonacci)</li>
+            <li>Dependencias técnicas identificadas y desbloqueadas</li>
+            <li>Impacto en datos personales evaluado (¿toca datos de menores? ¿ubicación?)</li>
+            <li>Diseño/wireframe disponible si la historia tiene UI</li>
+            <li>Cabe holgadamente en un sprint (≤ 8 puntos; si no, se divide)</li>
+          </ul>
+        </div>
+
+        <div class="subsection">
+          <h3>6.2 Definition of Done — para cerrar una historia</h3>
+          <div class="card-grid">
+            <div class="card">
+              <span class="card-tag">Funcional</span>
+              <ul class="checklist" style="margin:0;">
+                <li>Todos los criterios de aceptación verificados</li>
+                <li>Probada en dispositivo Android físico, no solo en emulador</li>
+              </ul>
+            </div>
+            <div class="card">
+              <span class="card-tag">Calidad de código</span>
+              <ul class="checklist" style="margin:0;">
+                <li>Pull Request revisado y aprobado por al menos un par</li>
+                <li>Cobertura de pruebas unitarias ≥ 70 % en el módulo tocado</li>
+                <li>Lint y formateo sin errores (ESLint + Prettier)</li>
+                <li>Sin TODO ni código comentado en la rama principal</li>
+              </ul>
+            </div>
+            <div class="card">
+              <span class="card-tag" style="color:var(--sev-critical)">Seguridad — obligatorio</span>
+              <ul class="checklist" style="margin:0;">
+                <li>SAST (Semgrep) sin hallazgos High o Critical</li>
+                <li>SCA (npm audit) sin vulnerabilidades Critical explotables</li>
+                <li>Escaneo de secretos (Gitleaks) limpio</li>
+                <li>Ningún dato personal en logs (verificado manualmente en el PR)</li>
+                <li>Tablas y Edge Functions nuevas con RLS, autorización por rol y rate limiting</li>
+              </ul>
+            </div>
+            <div class="card">
+              <span class="card-tag">Documentación y entrega</span>
+              <ul class="checklist" style="margin:0;">
+                <li>README / CHANGELOG actualizados</li>
+                <li>Tipos de Supabase regenerados y políticas RLS actualizadas si cambió el esquema</li>
+                <li>Desplegado en el ambiente de staging por el pipeline</li>
+                <li>Demostrable en la Sprint Review</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="d2-devsecops">
+        <div class="section-head"><span class="num">7</span><h2>Estrategia DevSecOps — resumen ejecutivo</h2></div>
+        <p class="lead">El detalle completo del pipeline y el modelado de amenazas vive en el Documento de Diseño Arquitectónico. Este capítulo resume los elementos que afectan directamente la planificación del sprint.</p>
+
+        <div class="subsection">
+          <h3>7.1 Controles por fase del ciclo</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Fase</th><th>Práctica</th><th>Herramienta</th><th>Cuándo</th></tr></thead>
+            <tbody>
+              <tr><td><b>Plan</b></td><td>Modelado de amenazas STRIDE por épica</td><td>OWASP Threat Dragon</td><td>Refinement</td></tr>
+              <tr><td><b>Code</b></td><td>Pre-commit hooks, revisión de pares obligatoria</td><td>pre-commit, Gitleaks</td><td>Local / antes del merge</td></tr>
+              <tr><td><b>Build</b></td><td>SAST, SCA, SBOM</td><td>Semgrep, CodeQL, npm audit, Syft</td><td>En cada PR / cada release</td></tr>
+              <tr><td><b>Test</b></td><td>Unitarias, integración, E2E, DAST, MobSF</td><td>Jest, RNTL, Maestro, OWASP ZAP, MobSF</td><td>Cada PR / nocturno / prerelease</td></tr>
+              <tr><td><b>Release</b></td><td>Firma del artefacto, gestión de secretos</td><td>EAS Build + keystore, GitHub/EAS Secrets</td><td>Al taggear versión</td></tr>
+              <tr><td><b>Deploy</b></td><td>Verificación de políticas RLS antes de aplicar</td><td>Supabase CLI + suite de pruebas de política</td><td>Antes del despliegue</td></tr>
+              <tr><td><b>Operate / Monitor</b></td><td>Logs sin PII, auditoría append-only, errores</td><td>JSON logging, tabla audit_log, Sentry</td><td>Runtime continuo</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>7.2 Política de tratamiento de hallazgos</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Severidad</th><th>SLA de corrección</th><th>Efecto</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-critical">CRITICAL</span></td><td>24 h</td><td>Bloquea el merge y el despliegue</td></tr>
+              <tr><td><span class="badge badge-high">HIGH</span></td><td>Dentro del sprint actual</td><td>Bloquea el merge</td></tr>
+              <tr><td><span class="badge badge-medium">MEDIUM</span></td><td>Siguiente sprint</td><td>Advertencia; entra al backlog como issue security</td></tr>
+              <tr><td><span class="badge badge-low">LOW</span></td><td>Backlog priorizado</td><td>Registrado, sin bloqueo</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout crit">
+            <b>Sin excepciones permanentes</b>
+            <p>Toda excepción se documenta en <code>/docs/security/exceptions.md</code> con justificación, responsable y fecha de vencimiento.</p>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>7.3 Rol de Security Champion</h3>
+          <p class="lead">Un integrante del Development Team asume el rol por dos sprints: facilita el modelado de amenazas en el refinement, tría los hallazgos del pipeline antes de la Security Review, mantiene el registro de riesgos y las excepciones, y presenta el estado de seguridad en la Sprint Review (3 minutos fijos).</p>
+        </div>
+      </section>
+
+      <section class="section" id="d2-riesgos">
+        <div class="section-head"><span class="num">8</span><h2>Gestión de riesgos del proyecto</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>ID</th><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante (Xiaomi, Huawei).</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2; guía de exclusión de optimización; foreground service persistente.</td></tr>
+            <tr><td class="id-cell">R2</td><td>Falsas alarmas frecuentes erosionan la confianza y la gente deja de atender.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-high">Alto</span></td><td>Corredor de tolerancia configurable, temporizador de confirmación, sin sanción por falsa alarma.</td></tr>
+            <tr><td class="id-cell">R3</td><td>El colegio no designa responsable del puesto de control.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-high">Alto</span></td><td>Diseñar el flujo para que funcione solo con la red de apoyo si no hay institución activa.</td></tr>
+            <tr><td class="id-cell">R4</td><td>Fuga de datos de menores.</td><td><span class="badge badge-low">Baja</span></td><td><span class="badge badge-critical">Crítico</span></td><td>Cifrado, minimización, retención corta, RBAC, auditoría, pentest interno en Sprint 6.</td></tr>
+            <tr><td class="id-cell">R5</td><td>El número de prueba de WhatsApp Cloud API solo alcanza 5 destinatarios verificados.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-medium">Medio</span></td><td>Restricción de diseño (máx. 5 contactos de seguridad); el push permanece como canal principal sin ese límite.</td></tr>
+            <tr><td class="id-cell">R6</td><td>Alcance excesivo para el tiempo disponible del semestre.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>MoSCoW estricto; las historias COULD se sacrifican primero; revisión de alcance en el hito H3.</td></tr>
+            <tr><td class="id-cell">R7</td><td>Rotación o baja disponibilidad de un integrante.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-medium">Medio</span></td><td>Propiedad colectiva del código, documentación en el repo, sin conocimiento aislado en una persona.</td></tr>
+            <tr><td class="id-cell">R8</td><td>Falsos positivos del disparo por sacudida (correr, bus, guardar el celular).</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-medium">Medio</span></td><td>Umbral calibrado + ventana de cancelación por PIN; se activa solo en modo trayecto; degradar a COULD si no es viable.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d2-metricas">
+        <div class="section-head"><span class="num">9</span><h2>Métricas de seguimiento</h2></div>
+
+        <div class="subsection">
+          <h3>9.1 Métricas Scrum</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Métrica</th><th>Objetivo</th><th>Cómo se mide</th></tr></thead>
+            <tbody>
+              <tr><td>Velocidad</td><td>Estable ±15 % entre sprints</td><td>Puntos completados por sprint</td></tr>
+              <tr><td>Cumplimiento del Sprint Goal</td><td>≥ 85 % de los sprints</td><td>Aceptación en la review</td></tr>
+              <tr><td>Trabajo no planificado</td><td>≤ 15 % del sprint</td><td>Puntos de issues agregados en curso</td></tr>
+              <tr><td>Burndown</td><td>Descendente sin mesetas prolongadas</td><td>GitHub Projects</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>9.2 Métricas DevOps (DORA)</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Métrica</th><th>Objetivo</th></tr></thead>
+            <tbody>
+              <tr><td>Frecuencia de despliegue a staging</td><td>≥ 1 por día hábil</td></tr>
+              <tr><td>Lead time (commit → staging)</td><td>&lt; 30 min</td></tr>
+              <tr><td>Tasa de fallo en cambios</td><td>&lt; 15 %</td></tr>
+              <tr><td>Tiempo de recuperación (MTTR)</td><td>&lt; 2 h</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>9.3 Métricas de seguridad</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Métrica</th><th>Objetivo</th></tr></thead>
+            <tbody>
+              <tr><td>Vulnerabilidades Critical/High abiertas al cierre del sprint</td><td>0</td></tr>
+              <tr><td>Tiempo medio de remediación de hallazgos High</td><td>&lt; 5 días</td></tr>
+              <tr><td>Cobertura del pipeline de seguridad</td><td>100 % de los PR</td></tr>
+              <tr><td>Secretos filtrados detectados en main</td><td>0</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="section" id="d2-comunicacion">
+        <div class="section-head"><span class="num">10</span><h2>Plan de comunicación</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Canal</th><th>Propósito</th><th>Frecuencia</th></tr></thead>
+          <tbody>
+            <tr><td><b>Discord del equipo</b></td><td>Daily Scrum asíncrono, coordinación rápida</td><td>Diaria</td></tr>
+            <tr><td><b>GitHub Projects</b></td><td>Estado del Sprint Backlog y del Product Backlog</td><td>Continua</td></tr>
+            <tr><td><b>GitHub Issues / PR</b></td><td>Discusión técnica trazable de cada historia</td><td>Continua</td></tr>
+            <tr><td><b>Reunión de Sprint Review</b></td><td>Demostración del incremento y feedback del PO</td><td>Cada 2 semanas</td></tr>
+            <tr><td><b>Acta de retrospectiva</b></td><td>Registro de acciones de mejora con responsable</td><td>Cada 2 semanas</td></tr>
+          </tbody>
+        </table></div>
+        <div class="doc-footer">Plan de Desarrollo de Software — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1, secciones 4 a 6, 9 y 14 a 15.</div>
+      </section>
+
+      <!-- ============ DOC 3 — CRONOGRAMA ============ -->
+      <section class="doc-hero" id="doc3">
+        <span class="kicker">Documento 03 · v1.0</span>
+        <h1>Cronograma y Tareas del Proyecto</h1>
+        <p class="lede">NexaSafe — Roadmap de sprints, hitos y responsables. Desglose operativo del roadmap definido en el Plan de Desarrollo, con asignación de recursos por rol funcional.</p>
+        <div class="meta-row">
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>22 sep – 28 nov 2026</b><span>Periodo cubierto</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="d3-general">
+        <div class="section-head"><span class="num">1–2</span><h2>Introducción y cronograma general</h2></div>
+        <p class="lead">Desglose operativo del roadmap de sprints con el nivel de detalle necesario para la asignación de recursos exigida por Ingeniería de Software I.</p>
+
+        <div class="stat-grid">
+          <div class="stat-tile"><b>6</b><span>Sprints (incl. Sprint 0 y cierre)</span></div>
+          <div class="stat-tile"><b>68</b><span>Días calendario</span></div>
+          <div class="stat-tile"><b>≈121</b><span>Pts. de capacidad estimada</span></div>
+          <div class="stat-tile"><b>≈210</b><span>Pts. del backlog completo</span></div>
+        </div>
+
+        <div class="gantt">
+          <div class="gantt-inner">
+            <div class="gantt-months">
+              <span class="gantt-month" style="left:0%">Sep</span>
+              <span class="gantt-month" style="left:15%">Oct</span>
+              <span class="gantt-month" style="left:58%">Nov</span>
+            </div>
+            <div class="gantt-rows" id="ganttRows">
+              <div class="gantt-row"><div class="gantt-label">Sprint 0</div><div class="gantt-track"><div class="gantt-bar s0" style="left:0%; width:14.7%;" title="22 sep – 2 oct"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Sprint 1</div><div class="gantt-track"><div class="gantt-bar" style="left:20.6%; width:16.2%;" title="6 – 17 oct"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Sprint 2</div><div class="gantt-track"><div class="gantt-bar" style="left:41.2%; width:16.2%;" title="20 – 31 oct"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Sprint 3</div><div class="gantt-track"><div class="gantt-bar" style="left:61.8%; width:16.2%;" title="3 – 14 nov"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Sprint 4</div><div class="gantt-track"><div class="gantt-bar" style="left:82.4%; width:16.2%;" title="17 – 28 nov"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Cierre</div><div class="gantt-track"><div class="gantt-bar close" style="left:92.6%; width:5.9%;" title="24 – 28 nov, solapado"></div></div></div>
+            </div>
+            <div class="gantt-hitos" id="ganttHitos">
+              <div class="gantt-hito" style="left:0%"><span class="dot"></span><span class="lab">H0</span></div>
+              <div class="gantt-hito" style="left:14.7%"><span class="dot"></span><span class="lab">H1</span></div>
+              <div class="gantt-hito" style="left:36.8%"><span class="dot"></span><span class="lab">H2</span></div>
+              <div class="gantt-hito" style="left:57.4%"><span class="dot"></span><span class="lab">H3</span></div>
+              <div class="gantt-hito" style="left:77.9%"><span class="dot"></span><span class="lab">H4</span></div>
+              <div class="gantt-hito" style="left:94.1%"><span class="dot"></span><span class="lab">H5</span></div>
+              <div class="gantt-hito" style="left:98.5%"><span class="dot"></span><span class="lab">H6</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="flow-note" style="text-align:left; margin-top:-6px;">Figura 2.1 — posiciones a escala real de días · pase el cursor sobre una barra para ver las fechas exactas.</p>
+      </section>
+
+      <section class="section" id="d3-hitos">
+        <div class="section-head"><span class="num">3</span><h2>Hitos</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Hito</th><th>Fecha</th><th>Criterio de cumplimiento</th></tr></thead>
+          <tbody>
+            <tr><td class="id-cell">H0</td><td>22 sep</td><td>Documentación de ingeniería entregada — los cinco documentos exigidos radicados.</td></tr>
+            <tr><td class="id-cell">H1</td><td>2 oct</td><td>Pipeline verde — todo PR ejecuta lint + test + SAST + SCA automáticamente.</td></tr>
+            <tr><td class="id-cell">H2</td><td>17 oct</td><td>Primer incremento demostrable — alta de usuario funcionando en dispositivo real.</td></tr>
+            <tr><td class="id-cell">H3</td><td>31 oct</td><td>Núcleo funcional — trayecto acompañado con ubicación en vivo operando.</td></tr>
+            <tr><td class="id-cell">H4</td><td>14 nov</td><td>MVP funcional completo — flujo alerta → notificación → respuesta → cierre completo.</td></tr>
+            <tr><td class="id-cell">H5</td><td>25 nov</td><td>Release candidate — build firmado, sin hallazgos High/Critical abiertos.</td></tr>
+            <tr><td class="id-cell">H6</td><td>28 nov</td><td>Sustentación — demo en vivo, informe y repositorio entregados.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d3-sprints">
+        <div class="section-head"><span class="num">4</span><h2>Detalle de tareas por sprint</h2></div>
+        <p class="lead">Responsables por rol funcional: <b>Rol Móvil</b>, <b>Rol Backend/Datos</b> y <b>Rol DevSecOps/QA</b>. Con tres integrantes cada rol recae en una persona fija; el rol de Security Champion rota cada dos sprints. Con dos integrantes, Backend/Datos y DevSecOps/QA se combinan.</p>
+
+        <div class="subsection">
+          <h3>4.1 Sprint 0 — 22 sep a 2 oct <span class="badge badge-neutral">18 pts</span></h3>
+          <p class="lead" style="font-style:italic;">Sprint Goal: la plataforma técnica y de seguridad está lista para producir código auditable.</p>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">E0-01</td><td>Monorepo con ramas protegidas y plantillas de PR</td><td>Rol DevSecOps/QA</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E0-02</td><td>Pipeline de CI: lint, pruebas y build en cada PR</td><td>Rol DevSecOps/QA</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E0-03</td><td>SAST, SCA y escaneo de secretos automáticos</td><td>Rol DevSecOps/QA (Security Champion)</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E0-04</td><td>Ambientes dev y staging desplegados por pipeline</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">—</td><td>Modelado de amenazas inicial (STRIDE por épica)</td><td>Equipo completo, facilita Security Champion</td><td class="center">—</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>4.2 Sprint 1 — 6 a 17 oct <span class="badge badge-neutral">24 pts</span></h3>
+          <p class="lead" style="font-style:italic;">Sprint Goal: un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.</p>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">E1-01</td><td>Registro de acudiente con correo y contraseña</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E1-02</td><td>Alta de menor y vinculación como guardián</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E1-03</td><td>Validación de matrícula por el colegio</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E1-04</td><td>Ingreso del protegido con PIN corto</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E1-05</td><td>Sesión cifrada en el dispositivo</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E11-01</td><td>Consentimiento explícito y verificable del acudiente</td><td>Rol Backend/Datos + Rol Móvil (UI)</td><td class="center">5</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>4.3 Sprint 2 — 20 a 31 oct <span class="badge badge-neutral">26 pts</span></h3>
+          <p class="lead" style="font-style:italic;">Sprint Goal: un guardián puede definir la ruta y seguir en vivo el trayecto del protegido.</p>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">E3-01</td><td>Definir la ruta casa–colegio sobre un mapa</td><td>Rol Móvil</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E3-02</td><td>Configurar corredor de tolerancia en metros</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E3-03</td><td>Definir duración esperada del trayecto</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E4-01</td><td>Iniciar trayecto acompañado con un toque</td><td>Rol Móvil</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E4-04</td><td>Indicador permanente de acompañamiento activo</td><td>Rol Móvil</td><td class="center">2</td></tr>
+              <tr><td class="id-cell">E2-01</td><td>Invitar contactos de apoyo por enlace</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>4.4 Sprint 3 — 3 a 14 nov <span class="badge badge-neutral">26 pts</span></h3>
+          <p class="lead" style="font-style:italic;">Sprint Goal: el botón de pánico funciona de extremo a extremo con cancelación y modo discreto.</p>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">E4-02</td><td>Ubicación del protegido en vivo para el guardián</td><td>Rol Backend/Datos</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E4-03</td><td>Cierre automático del trayecto por geocerca</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E6-01</td><td>Disparo de alerta manteniendo presionado 3 s</td><td>Rol Móvil</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E6-03</td><td>Cancelación de alerta con PIN en 10 s</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E6-05</td><td>Envío de ubicación cada 5–10 s durante alerta</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>4.5 Sprint 4 — 17 a 28 nov <span class="badge badge-neutral">27 pts</span></h3>
+          <p class="lead" style="font-style:italic;">Sprint Goal: el puesto de control atiende alertas desde la app y deja bitácora del incidente.</p>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
+            <tbody>
+              <tr><td class="id-cell">E6-04</td><td>Modo discreto de pantalla durante la alerta</td><td>Rol Móvil</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E7-01</td><td>Notificación push con sonido prioritario</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E7-02</td><td>Marcar "voy en camino"</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E8-01</td><td>Vista institucional con alertas activas en mapa</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E9-01</td><td>Bitácora auditable con marca de tiempo inmutable</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
+              <tr><td class="id-cell">E9-02</td><td>Cierre clasificado de la alerta</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E11-04</td><td>No compartir ubicación fuera de trayecto/alerta activos</td><td>Rol Backend/Datos</td><td class="center">3</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>4.6 Cierre — 24 a 28 nov (solapado) <span class="badge badge-neutral">Sin puntos de historia</span></h3>
+          <div class="table-wrap"><table class="compact">
+            <thead><tr><th>Entregable de cierre</th><th>Responsable</th></tr></thead>
+            <tbody>
+              <tr><td>Release candidate firmado (EAS Build)</td><td>Rol DevSecOps/QA</td></tr>
+              <tr><td>SBOM y reporte consolidado de seguridad</td><td>Rol DevSecOps/QA (Security Champion)</td></tr>
+              <tr><td>Manual de usuario e instalación</td><td>Equipo completo</td></tr>
+              <tr><td>Video demostrativo (5–7 min)</td><td>Equipo completo</td></tr>
+              <tr><td>Informe final y sustentación</td><td>Equipo completo</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="section" id="d3-ruta">
+        <div class="section-head"><span class="num">5</span><h2>Ruta crítica y dependencias</h2></div>
+        <p class="lead">La ruta crítica atraviesa la plataforma técnica, la identidad y el flujo de trayecto/alerta, en ese orden. Ninguna épica de negocio puede construirse con controles de seguridad verificables antes de que exista pipeline (E0); ningún trayecto puede acompañarse sin un protegido validado (E1); y la respuesta institucional (E7–E9) depende de que exista una alerta real que atender (E4, E6).</p>
+
+        <div class="flow">
+          <div class="flow-step accent"><b>E0</b>Plataforma DevSecOps</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step accent"><b>E1</b>Identidad y vinculación</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step accent"><b>E3 + E4</b>Rutas y trayecto</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step accent"><b>E6</b>Alerta de pánico</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step accent"><b>E7+E8+E9</b>Respuesta y bitácora</div>
+        </div>
+
+        <div class="callout warn">
+          <b>Épicas fuera de la ruta crítica del semestre</b>
+          <p>E5 (detección automática de desvío) y E10 (resiliencia offline completa) dependen de que E3/E4 y E4/E6 estén consolidadas respectivamente; quedan declaradas como trabajo futuro por restricción de capacidad.</p>
+        </div>
+      </section>
+
+      <section class="section" id="d3-capacidad">
+        <div class="section-head"><span class="num">6</span><h2>Capacidad y velocidad del equipo</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Escenario</th><th>Velocidad objetivo</th><th>Implicación</th></tr></thead>
+          <tbody>
+            <tr><td><b>Equipo de 3 integrantes</b></td><td>24 pts/sprint</td><td>Roles Móvil, Backend/Datos y DevSecOps/QA separados; velocidad recalibrada tras el Sprint 1 con datos reales.</td></tr>
+            <tr><td><b>Equipo de 2 integrantes</b></td><td>16–18 pts/sprint</td><td>Se combinan los roles Dev y Scrum Master; las historias SHOULD se sacrifican primero.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout crit">
+          <b>Brecha de capacidad frente al backlog completo</b>
+          <p>El backlog completo suma ≈ 210 puntos. La capacidad disponible hasta finales de noviembre, sumando los 5 sprints planificados (18+24+26+26+27), es de ≈ 121 puntos. La diferencia (≈ 89 puntos) se resuelve declarando explícitamente como trabajo futuro: E5 completa, E10 completa, E2-02, E2-03, E6-02, E6-06, E8-02, E8-03, E9-03, E11-02 y E11-03.</p>
+        </div>
+      </section>
+
+      <section class="section" id="d3-riesgos">
+        <div class="section-head"><span class="num">7</span><h2>Riesgos de cronograma</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>ID</th><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Respuesta</th></tr></thead>
+          <tbody>
+            <tr><td class="id-cell">R6</td><td>Alcance excesivo para el tiempo disponible del semestre.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>MoSCoW estricto; historias COULD se sacrifican primero; revisión de alcance en el hito H3.</td></tr>
+            <tr><td class="id-cell">R7</td><td>Rotación o baja disponibilidad de un integrante.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-medium">Medio</span></td><td>Propiedad colectiva del código, documentación en el repo, sin conocimiento aislado en una persona.</td></tr>
+            <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2 para no comprometer el hito H3.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1, sección 8, con asignación de responsables por rol funcional.</div>
+      </section>
+
+      <!-- ============ DOC 4 — DISEÑO ARQUITECTÓNICO ============ -->
+      <section class="doc-hero" id="doc4">
+        <span class="kicker">Documento 04 · v1.0</span>
+        <h1>Documento de Diseño Arquitectónico</h1>
+        <p class="lede">NexaSafe — Componentes, flujo de datos y modelo de datos. Describe la arquitectura de software, sus decisiones y el porqué detrás de cada una.</p>
+        <div class="meta-row">
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>Expo + React Native</b><span>Móvil</span></div>
+          <div class="meta-pill"><b>Supabase</b><span>Backend</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="d4-objetivos">
+        <div class="section-head"><span class="num">1</span><h2>Introducción y objetivos de diseño</h2></div>
+        <p class="lead">Describe la arquitectura de software de NexaSafe: sus componentes, el flujo de datos entre ellos, el modelo de datos que sostiene el dominio y las decisiones de diseño que explican por qué el sistema está construido como está.</p>
+        <div class="card-grid">
+          <div class="card"><span class="card-tag">01 · Prioridad máxima</span><h4>Seguridad y privacidad por defecto</h4><p>El sistema trata datos sensibles de menores; cada decisión de arquitectura parte de minimizar exposición.</p></div>
+          <div class="card"><span class="card-tag">02</span><h4>Disponibilidad en red pobre</h4><p>El trayecto real ocurre en la calle, no en un entorno controlado.</p></div>
+          <div class="card"><span class="card-tag">03</span><h4>Velocidad de entrega</h4><p>Equipo de 2–3 personas, cero infraestructura propia que mantener.</p></div>
+          <div class="card"><span class="card-tag">04</span><h4>Auditabilidad</h4><p>Todo incidente debe poder reconstruirse después de ocurrido.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="d4-componentes">
+        <div class="section-head"><span class="num">2</span><h2>Vista de componentes</h2></div>
+        <div class="flow">
+          <div class="flow-step accent" style="width:220px;"><b>App móvil</b>Expo / React Native / TypeScript — Protegido · Guardián · Puesto de control</div>
+        </div>
+        <div class="flow-note" style="text-align:left; margin:2px 0 8px;">↓ HTTPS + Realtime (WSS)</div>
+        <div class="flow">
+          <div class="flow-step" style="width:112px;"><b>Auth</b></div>
+          <div class="flow-step" style="width:112px;"><b>RLS</b></div>
+          <div class="flow-step" style="width:112px;"><b>Realtime</b></div>
+          <div class="flow-step" style="width:112px;"><b>Edge Functions</b>Deno</div>
+        </div>
+        <p class="flow-note" style="text-align:left; margin:-8px 0 12px; font-style:italic;">Supabase — audit log append-only · políticas por fila y por rol</p>
+        <div class="flow">
+          <div class="flow-step"><b>PostgreSQL + PostGIS</b>Datos relacionales y geoespaciales</div>
+          <div class="flow-step"><b>Storage</b>Fotos y documentos</div>
+          <div class="flow-step"><b>Expo Push / WhatsApp Cloud API</b>Notificaciones al usuario</div>
+        </div>
+        <p class="lead">La app móvil es un único binario con tres experiencias condicionadas por el rol autenticado (protegido, guardián o puesto de control), no tres aplicaciones separadas. Supabase concentra autenticación, autorización (RLS), tiempo real y lógica de servidor (Edge Functions) sin que el equipo administre infraestructura propia. PostgreSQL con PostGIS resuelve las consultas geoespaciales del corredor seguro y las geocercas; Storage custodia fotos y documentos; Expo Push y WhatsApp Cloud API son los canales de notificación hacia el dispositivo del usuario final.</p>
+      </section>
+
+      <section class="section" id="d4-stack">
+        <div class="section-head"><span class="num">3</span><h2>Stack tecnológico</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Capa</th><th>Tecnología</th><th>Justificación</th></tr></thead>
+          <tbody>
+            <tr><td><b>Móvil</b></td><td>Expo SDK + React Native + TypeScript</td><td>Requisito de la asignatura; expo-location, expo-taskmanager, expo-secure-store cubren ubicación en segundo plano y almacenamiento cifrado.</td></tr>
+            <tr><td><b>Arquitectura móvil</b></td><td>Feature-based: src/features/&lt;f&gt;/{data,domain,presentation} + src/core</td><td>Continuidad con la estructura ya definida en el proyecto.</td></tr>
+            <tr><td><b>Backend</b></td><td>Supabase — PostgreSQL gestionado + Auth + Realtime + Edge Functions (Deno/TypeScript)</td><td>Elimina el montaje, despliegue y mantenimiento de infraestructura propia; autenticación, autorización por RLS y tiempo real vienen resueltos.</td></tr>
+            <tr><td><b>Base de datos</b></td><td>PostgreSQL 16 con extensión PostGIS (sobre Supabase)</td><td>Consultas geoespaciales para corredor seguro y geocercas.</td></tr>
+            <tr><td><b>Tiempo real</b></td><td>Supabase Realtime (WebSocket sobre Postgres)</td><td>Difusión de posición a N guardianes sin polling ni servidor propio.</td></tr>
+            <tr><td><b>Persistencia local</b></td><td>SQLite (expo-sqlite) + expo-secure-store</td><td>Cola offline y custodia del token/PIN.</td></tr>
+            <tr><td><b>Notificaciones</b></td><td>Expo Push Notifications + WhatsApp Cloud API (Meta)</td><td>Push como canal principal; WhatsApp a contactos de seguridad y puesto de control vía plantilla aprobada.</td></tr>
+            <tr><td><b>Infraestructura</b></td><td>Supabase CLI (migraciones versionadas) · GitHub Actions · EAS Build</td><td>Reproducible y suficiente para el alcance académico, sin contenedores propios.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d4-movil">
+        <div class="section-head"><span class="num">4</span><h2>Arquitectura móvil</h2></div>
+        <p class="lead">Organización por características (<em>feature-based</em>) con separación en tres capas dentro de cada feature, inspirada en Clean Architecture / MVVM. Ya está en uso en el prototipo actual del repositorio (feature <code>auth</code>) y se extiende al resto de features del dominio.</p>
+        <div class="flow">
+          <div class="flow-step accent"><b>presentation</b>screens · viewModels (hooks de estado)</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step accent"><b>domain</b>entidades · casos de uso · contratos de repositorio</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step accent"><b>data</b>repositorios concretos · cliente Supabase · SQLite local</div>
+        </div>
+        <p class="flow-note" style="text-align:left; margin:-4px 0 12px;"><code>src/core</code> — api · storage · permissions · theme · utils — compartido entre todas las features</p>
+        <div class="table-wrap"><table class="compact">
+          <thead><tr><th>Capa</th><th>Responsabilidad</th></tr></thead>
+          <tbody>
+            <tr><td class="mono-cell">domain</td><td>Entidades del negocio y contratos (interfaces de repositorio); no conoce Supabase ni React Native.</td></tr>
+            <tr><td class="mono-cell">data</td><td>Acceso a datos: repositorios concretos que implementan los contratos de domain contra Supabase o SQLite local.</td></tr>
+            <tr><td class="mono-cell">presentation</td><td>Pantallas y view-models; consume casos de uso de domain, nunca accede a data directamente.</td></tr>
+            <tr><td class="mono-cell">core</td><td>Infraestructura transversal: cliente API, almacenamiento seguro, permisos del dispositivo, tema visual y utilidades.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d4-flujo">
+        <div class="section-head"><span class="num">5</span><h2>Flujo de datos</h2></div>
+        <p class="lead">Tres flujos de datos críticos: trayecto acompañado, alerta de pánico y operación sin conexión. Corresponden a los casos de uso CU-02, CU-04/CU-05 y a la épica E10.</p>
+
+        <div class="subsection">
+          <h3>5.1 Trayecto acompañado con seguimiento en vivo</h3>
+          <div class="flow">
+            <div class="flow-step"><b>Protegido inicia trayecto</b>1 toque</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>App envía posición</b>periódica (expo-location)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Supabase Realtime</b>difunde por WSS</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Guardián ve ubicación</b>en vivo</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step accent"><b>Geocerca de llegada</b>cierre automático del trayecto</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>5.2 Alerta de pánico</h3>
+          <div class="flow">
+            <div class="flow-step crit"><b>Disparo</b>3 s o sacudida en trayecto</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Ventana de PIN</b>10 segundos</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Edge Function</b>crea el incidente y la bitácora</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Push simultáneo</b>guardianes + apoyo + puesto de control</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step accent"><b>Guardián confirma</b>"voy en camino"</div>
+          </div>
+          <p class="flow-note" style="text-align:left;">↳ PIN correcto en la ventana de 10 s → la alerta se cancela; nadie es notificado.</p>
+        </div>
+
+        <div class="subsection">
+          <h3>5.3 Operación degradada sin conexión</h3>
+          <div class="flow">
+            <div class="flow-step"><b>Sin red</b>el evento se guarda en cola SQLite local (expo-sqlite)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Reintento</b>en segundo plano</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><b>Conexión recuperada</b></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step accent"><b>Reenvío automático</b>a Supabase + confirmación de entrega</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="d4-modelo">
+        <div class="section-head"><span class="num">6</span><h2>Modelo de datos</h2></div>
+        <p class="lead">Modelo entidad-relación simplificado del dominio. No incluye tablas puramente técnicas; se centra en las entidades de negocio necesarias para sustentar los requisitos funcionales.</p>
+
+        <div class="entity-grid">
+          <div class="entity-card"><span class="ename">colegios</span><ul><li><b>id</b> PK</li><li>nombre, nit</li><li>responsable_control</li></ul></div>
+          <div class="entity-card"><span class="ename">guardianes</span><ul><li><b>id</b> PK</li><li>email, password_hash</li><li>creado_en</li></ul></div>
+          <div class="entity-card"><span class="ename">protegidos</span><ul><li><b>id</b> PK</li><li>guardian_id, colegio_id → FK</li><li>pin_hash, estado</li></ul></div>
+          <div class="entity-card"><span class="ename">contactos_apoyo</span><ul><li><b>id</b> PK</li><li>guardian_id → FK</li><li>alcance_visibilidad</li></ul></div>
+          <div class="entity-card"><span class="ename">rutas</span><ul><li><b>id</b> PK</li><li>protegido_id → FK</li><li>geometria, corredor_m</li></ul></div>
+          <div class="entity-card"><span class="ename">trayectos</span><ul><li><b>id</b> PK</li><li>protegido_id, ruta_id → FK</li><li>inicio_en, fin_en, estado</li></ul></div>
+          <div class="entity-card"><span class="ename">alertas</span><ul><li><b>id</b> PK</li><li>trayecto_id → FK</li><li>tipo, estado</li></ul></div>
+          <div class="entity-card"><span class="ename">eventos_incidente</span><ul><li><b>id</b> PK</li><li>alerta_id → FK</li><li>tipo_evento, timestamp</li></ul></div>
+          <div class="entity-card"><span class="ename">audit_log</span><ul><li><b>id</b> PK, actor_id</li><li>entidad, accion</li><li>timestamp (inmutable)</li></ul></div>
+        </div>
+
+        <div class="relation-list">
+          <div class="relation-row"><span class="rel-e">colegios</span><span class="rel-card">1:N</span><span>protegidos</span><span class="rel-desc">registra la matrícula</span></div>
+          <div class="relation-row"><span class="rel-e">guardianes</span><span class="rel-card">1:N</span><span>protegidos</span><span class="rel-desc">vincula al menor</span></div>
+          <div class="relation-row"><span class="rel-e">guardianes</span><span class="rel-card">1:N</span><span>contactos_apoyo</span><span class="rel-desc">invita a la red de apoyo</span></div>
+          <div class="relation-row"><span class="rel-e">protegidos</span><span class="rel-card">1:N</span><span>rutas</span><span class="rel-desc">rutas casa–colegio</span></div>
+          <div class="relation-row"><span class="rel-e">protegidos</span><span class="rel-card">1:N</span><span>trayectos</span><span class="rel-desc">instancias acompañadas</span></div>
+          <div class="relation-row"><span class="rel-e">rutas</span><span class="rel-card">1:N</span><span>trayectos</span><span class="rel-desc">cada trayecto sigue una ruta</span></div>
+          <div class="relation-row"><span class="rel-e">trayectos</span><span class="rel-card">1:N</span><span>alertas</span><span class="rel-desc">alertas disparadas en el trayecto</span></div>
+          <div class="relation-row"><span class="rel-e">alertas</span><span class="rel-card">1:N</span><span>eventos_incidente</span><span class="rel-desc">bitácora append-only</span></div>
+          <div class="relation-row"><span class="rel-e">audit_log</span><span class="rel-card">cross-cutting</span><span>registra accesos a protegidos, rutas y trayectos</span></div>
+        </div>
+
+        <div class="subsection">
+          <h3>6.1 Diccionario de datos resumido</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Entidad</th><th>Notas de diseño</th></tr></thead>
+            <tbody>
+              <tr><td class="mono-cell">protegidos.estado</td><td>Máquina de estados: PENDIENTE_VALIDACION → ACTIVO → INACTIVO. Solo el colegio puede mover a ACTIVO (RF-03).</td></tr>
+              <tr><td class="mono-cell">trayectos.estado</td><td>Máquina de estados: EN_CURSO → DESVIADO → ALERTA o EN_CURSO → CERRADO / VENCIDO.</td></tr>
+              <tr><td class="mono-cell">alertas.tipo</td><td>Enumera el origen: MANUAL_BOTON, MANUAL_SACUDIDA, AUTOMATICA_DESVIO.</td></tr>
+              <tr><td class="mono-cell">alertas.estado</td><td>Enumera el desenlace: ENVIADA, CANCELADA, ATENDIDA, CERRADA.</td></tr>
+              <tr><td class="mono-cell">eventos_incidente</td><td>Tabla append-only; ninguna fila se actualiza ni se borra (RF-32). Sustenta la bitácora auditable.</td></tr>
+              <tr><td class="mono-cell">audit_log</td><td>Cross-cutting: registra todo acceso de lectura o escritura a datos de un protegido, con actor, acción y timestamp de servidor.</td></tr>
+              <tr><td class="mono-cell">Retención</td><td>trayectos con más de 90 días se purgan automáticamente (RF-39); eventos_incidente se conserva 1 año.</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="section" id="d4-seguridad">
+        <div class="section-head"><span class="num">7</span><h2>Seguridad de la arquitectura</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Control</th><th>Implementación</th></tr></thead>
+          <tbody>
+            <tr><td><b>Cifrado en tránsito</b></td><td>TLS 1.3 obligatorio + certificate pinning en el cliente móvil.</td></tr>
+            <tr><td><b>Cifrado en reposo</b></td><td>Cifrado a nivel de columna para documento, foto y ubicación histórica.</td></tr>
+            <tr><td><b>Autenticación</b></td><td>JWT de vida corta (15 min) + refresh token rotativo revocable.</td></tr>
+            <tr><td><b>Autorización</b></td><td>RBAC: protegido, guardian, apoyo, institucion — verificada en cada endpoint.</td></tr>
+            <tr><td><b>Protección del PIN</b></td><td>Hash Argon2id, nunca en texto plano, almacenado en expo-secure-store.</td></tr>
+            <tr><td><b>Anti-abuso</b></td><td>Rate limiting por IP y por usuario en endpoints de alerta y autenticación.</td></tr>
+            <tr><td><b>Anti-tampering</b></td><td>Detección de root/emulador en modo release.</td></tr>
+            <tr><td><b>Minimización</b></td><td>Solo se persiste ubicación con trayecto o alerta activos; fuera de eso no se recolecta.</td></tr>
+            <tr><td><b>Trazabilidad</b></td><td>Todo acceso a datos de un menor queda en audit_log con actor, acción y timestamp.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d4-decisiones">
+        <div class="section-head"><span class="num">8</span><h2>Decisiones arquitectónicas clave</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Decisión</th><th>Razonamiento</th></tr></thead>
+          <tbody>
+            <tr><td><b>Backend en Supabase en lugar de propio</b></td><td>Un equipo de 2–3 personas no puede sostener un backend a medida (FastAPI + Redis + Docker) con la misma calidad de seguridad que una plataforma gestionada con Auth, RLS y Realtime ya endurecidos.</td></tr>
+            <tr><td><b>Vista institucional en la misma app, sin dashboard web</b></td><td>Reduce la superficie de código a mantener y de ataque a asegurar; el puesto de control necesita mapa y lista de alertas, no un panel administrativo completo.</td></tr>
+            <tr><td><b>WhatsApp Cloud API como canal secundario</b></td><td>El número de prueba solo soporta 5 destinatarios verificados (riesgo R5); el push permanece como canal principal sin ese límite.</td></tr>
+            <tr><td><b>Disparo de pánico por sacudida, no botón físico</b></td><td>Evita depender de hardware adicional que el usuario deba comprar y llevar; se limita a modo trayecto con la app en primer plano para reducir falsos positivos.</td></tr>
+            <tr><td><b>Escalamiento a la autoridad simulado</b></td><td>La integración real con la línea 123 requiere convenio interinstitucional fuera del alcance académico; el sistema genera y registra el reporte sin transmitirlo a un organismo real.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d4-repo">
+        <div class="section-head"><span class="num">9</span><h2>Estructura del repositorio</h2></div>
+        <div class="filetree">nexasafe/
+├── .github/
+│  ├── workflows/          <span class="fc"># ci.yml, nightly-security.yml, release.yml</span>
+│  ├── ISSUE_TEMPLATE/      <span class="fc"># user-story.md, bug.md, security-finding.md</span>
+│  └── pull_request_template.md
+├── apps/
+│  └── <span class="fd">mobile/</span>               <span class="fc"># Expo + React Native + TypeScript</span>
+│      └── src/
+│          ├── core/         <span class="fc"># api, storage, permissions, theme, utils</span>
+│          └── features/
+│              ├── auth/         {data,domain,presentation}
+│              ├── profile/
+│              ├── routes/
+│              ├── tracking/
+│              ├── alerts/
+│              ├── network/
+│              ├── institution/  <span class="fc"># vista del puesto de control</span>
+│              └── incidents/
+├── <span class="fd">supabase/</span>
+│  ├── migrations/       <span class="fc"># esquema versionado</span>
+│  ├── functions/        <span class="fc"># Edge Functions (Deno): notify-push, notify-whatsapp, escalate</span>
+│  └── policies/         <span class="fc"># políticas RLS documentadas y probadas</span>
+├── <span class="fd">docs/</span>
+│  ├── architecture/
+│  ├── security/         <span class="fc"># threat-model.md, risk-register.md, exceptions.md</span>
+│  ├── privacy/          <span class="fc"># pia.md, politica-tratamiento.md</span>
+│  └── scrum/             <span class="fc"># sprint-XX/{planning,review,retro}.md</span>
+├── .pre-commit-config.yaml
+├── .gitleaks.toml
+├── semgrep.yml
+└── README.md</div>
+        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable.</div>
+      </section>
+
+      <!-- ============ DOC 5 — PRUEBAS DE CALIDAD ============ -->
+      <section class="doc-hero" id="doc5">
+        <span class="kicker">Documento 05 · v1.0 · Iteración 0</span>
+        <h1>Informe de Pruebas de Calidad y Control de Errores</h1>
+        <p class="lede">NexaSafe — Estrategia de pruebas y estado inicial (iteración 0). Fija los criterios de calidad exigidos a todo incremento y deja registro trazable del estado del proyecto en cada punto de control.</p>
+        <div class="meta-row">
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>Cierre del Sprint 4 — H5</b><span>Próxima actualización</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="d5-intro">
+        <div class="section-head"><span class="num">1</span><h2>Introducción y alcance de esta iteración</h2></div>
+        <div class="callout warn">
+          <b>Nota sobre el alcance de esta iteración</b>
+          <p>A la fecha de este informe (22 de septiembre de 2026) el proyecto se encuentra en el Sprint 0: el pipeline DevSecOps se está habilitando y ninguna historia de negocio de NexaSafe se ha construido todavía. El código existente corresponde a un prototipo previo (SanMateoApp) con un único flujo de autenticación local. Este documento entrega la <b>estrategia y el plan de pruebas</b> que gobernará la calidad de NexaSafe durante el semestre, no resultados de ejecución sobre funcionalidades que aún no existen. Se actualizará al cierre de cada sprint y de forma consolidada en el hito H5 (25 de noviembre).</p>
+        </div>
+        <p class="lead">El objetivo de este informe es doble: (1) fijar la estrategia de pruebas y los criterios de calidad que todo incremento de NexaSafe debe cumplir para considerarse terminado, y (2) dejar registro trazable del estado de calidad del proyecto en cada punto de control del semestre, incluyendo esta primera iteración.</p>
+      </section>
+
+      <section class="section" id="d5-estrategia">
+        <div class="section-head"><span class="num">2</span><h2>Estrategia de pruebas</h2></div>
+        <p class="lead">Pirámide de pruebas con la seguridad como capa transversal a todos los niveles:</p>
+        <div class="flow">
+          <div class="flow-step"><b>Unitarias</b>Jest + RNTL · deno test — 70% de la lógica de dominio</div>
+          <div class="flow-arrow">↑</div>
+          <div class="flow-step"><b>Integración</b>Supabase local (CLI) + Edge Functions — flujos críticos, cada PR</div>
+          <div class="flow-arrow">↑</div>
+          <div class="flow-step accent"><b>E2E</b>5 flujos críticos — Maestro, nocturno + pre-release</div>
+        </div>
+        <p class="flow-note" style="text-align:left; margin:-8px 0 10px;">Seguridad (transversal a los tres niveles): SAST · SCA · DAST · MobSF</p>
+
+        <div class="table-wrap"><table>
+          <thead><tr><th>Nivel</th><th>Cobertura objetivo</th><th>Herramienta</th><th>Ejecución</th></tr></thead>
+          <tbody>
+            <tr><td><b>Unitarias</b></td><td>70 % de lógica de dominio</td><td>Jest + RNTL, Deno test</td><td>Cada PR</td></tr>
+            <tr><td><b>Integración</b></td><td>Flujos críticos (alerta, trayecto, auth)</td><td>Supabase local vía CLI con base efímera; pruebas de Edge Functions y de políticas RLS</td><td>Cada PR</td></tr>
+            <tr><td><b>E2E</b></td><td>5 flujos críticos</td><td>Maestro</td><td>Nightly</td></tr>
+            <tr><td><b>Seguridad</b></td><td>SAST/SCA/DAST/MobSF</td><td>Semgrep, CodeQL, npm audit, OWASP ZAP, MobSF</td><td>Cada PR / nightly / release</td></tr>
+            <tr><td><b>Aceptación</b></td><td>Criterios Gherkin de cada historia</td><td>Manual en dispositivo físico</td><td>Antes de la review</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d5-e2e">
+        <div class="section-head"><span class="num">3</span><h2>Flujos E2E críticos</h2></div>
+        <p class="lead">Obligatorios, ejecutados de forma automatizada con Maestro cada noche y antes de cada release, a partir de que las épicas correspondientes estén construidas.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>#</th><th>Flujo</th></tr></thead>
+          <tbody>
+            <tr><td class="center">1</td><td>Registro de guardián → alta de menor → validación del colegio → primer login del protegido.</td></tr>
+            <tr><td class="center">2</td><td>Inicio de trayecto → seguimiento → llegada → cierre automático.</td></tr>
+            <tr><td class="center">3</td><td>Desvío del corredor → temporizador → sin respuesta → alerta automática. <span class="badge badge-medium">Trabajo futuro (E5)</span></td></tr>
+            <tr><td class="center">4</td><td>Botón de pánico → cancelación exitosa con PIN.</td></tr>
+            <tr><td class="center">5</td><td>Botón de pánico → alerta enviada → recepción del guardián → "voy en camino" → cierre clasificado.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section" id="d5-seguridad">
+        <div class="section-head"><span class="num">4</span><h2>Plan de pruebas de seguridad</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Práctica</th><th>Herramienta</th><th>Cuándo se ejecuta</th></tr></thead>
+          <tbody>
+            <tr><td>Análisis estático de código (SAST)</td><td>Semgrep + CodeQL</td><td>En cada PR</td></tr>
+            <tr><td>Análisis de composición de software (SCA)</td><td>npm audit, Dependabot</td><td>En cada PR + semanal</td></tr>
+            <tr><td>Escaneo de secretos</td><td>Gitleaks</td><td>Local (pre-commit) y en cada PR</td></tr>
+            <tr><td>Análisis dinámico de la API (DAST)</td><td>OWASP ZAP baseline</td><td>Nightly contra staging</td></tr>
+            <tr><td>Análisis del binario móvil</td><td>MobSF sobre el APK</td><td>Pre-release</td></tr>
+            <tr><td>Verificación de políticas RLS</td><td>Supabase CLI + suite de pruebas de política</td><td>Antes de cada despliegue</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="subsection">
+          <h3>4.1 Quality gate del pipeline</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Severidad</th><th>SLA de corrección</th><th>Efecto</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-critical">CRITICAL</span></td><td>24 h</td><td>Bloquea el merge y el despliegue</td></tr>
+              <tr><td><span class="badge badge-high">HIGH</span></td><td>Dentro del sprint actual</td><td>Bloquea el merge</td></tr>
+              <tr><td><span class="badge badge-medium">MEDIUM</span></td><td>Siguiente sprint</td><td>Advertencia; entra al backlog como issue security</td></tr>
+              <tr><td><span class="badge badge-low">LOW</span></td><td>Backlog priorizado</td><td>Registrado, sin bloqueo</td></tr>
+            </tbody>
+          </table></div>
+          <p class="lead" style="font-size:13px;">Las etapas de secretos, SAST, SCA y verificación de políticas RLS son <b>bloqueantes</b> ante severidad High o superior: un PR que falle cualquiera de ellas no puede fusionarse, sin importar la urgencia.</p>
+        </div>
+      </section>
+
+      <section class="section" id="d5-criterios">
+        <div class="section-head"><span class="num">5</span><h2>Criterios de aceptación de calidad</h2></div>
+        <div class="card-grid">
+          <div class="card">
+            <span class="card-tag">Funcional</span>
+            <ul class="checklist" style="margin:0;">
+              <li>Todos los criterios de aceptación en Gherkin verificados</li>
+              <li>Probada en dispositivo Android físico, no solo en emulador</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-tag">Calidad de código</span>
+            <ul class="checklist" style="margin:0;">
+              <li>Pull Request revisado y aprobado por al menos un par</li>
+              <li>Cobertura de pruebas unitarias ≥ 70 % en el módulo tocado</li>
+              <li>Lint y formateo sin errores (ESLint + Prettier)</li>
+              <li>Sin TODO ni código comentado en la rama principal</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout crit">
+          <b>Seguridad — obligatorio, no negociable</b>
+          <ul class="checklist" style="margin:8px 0 0;">
+            <li>SAST sin hallazgos High o Critical</li>
+            <li>SCA sin vulnerabilidades Critical explotables</li>
+            <li>Escaneo de secretos limpio</li>
+            <li>Ningún dato personal en logs (verificado manualmente en el PR)</li>
+            <li>Tablas y Edge Functions nuevas con RLS, autorización por rol y rate limiting</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="d5-metricas">
+        <div class="section-head"><span class="num">6</span><h2>Métricas de calidad objetivo</h2></div>
+
+        <div class="subsection">
+          <h3>6.1 Métricas de seguridad</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Métrica</th><th>Objetivo</th></tr></thead>
+            <tbody>
+              <tr><td>Vulnerabilidades Critical/High abiertas al cierre del sprint</td><td>0</td></tr>
+              <tr><td>Tiempo medio de remediación de hallazgos High</td><td>&lt; 5 días</td></tr>
+              <tr><td>Cobertura del pipeline de seguridad</td><td>100 % de los PR</td></tr>
+              <tr><td>Secretos filtrados detectados en main</td><td>0</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="subsection">
+          <h3>6.2 Métricas de producto</h3>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Métrica</th><th>Objetivo</th></tr></thead>
+            <tbody>
+              <tr><td>Latencia disparo → notificación recibida</td><td>&lt; 5 s con red, &lt; 30 s con reconexión</td></tr>
+              <tr><td>Precisión de posición reportada</td><td>&lt; 20 m en zona urbana abierta</td></tr>
+              <tr><td>Consumo de batería por hora de trayecto</td><td>&lt; 8 %</td></tr>
+              <tr><td>Tasa de falsas alarmas automáticas</td><td>&lt; 10 % de los trayectos</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="section" id="d5-campo">
+        <div class="section-head"><span class="num">7</span><h2>Plan de prueba de campo</h2></div>
+        <p class="lead">En el Sprint 6 (ampliación posterior al cierre del semestre, fuera de la ruta crítica actual) se ejecuta una prueba real de trayecto en un recorrido de aproximadamente 1 km, midiendo: precisión del GPS, consumo de batería por hora de trayecto, latencia entre disparo y notificación recibida, y comportamiento en zonas de baja cobertura. Los resultados retroalimentan directamente las métricas de producto del capítulo 6.</p>
+      </section>
+
+      <section class="section" id="d5-hallazgos">
+        <div class="section-head"><span class="num">8</span><h2>Gestión de hallazgos y control de errores</h2></div>
+
+        <div class="subsection">
+          <h3>8.1 Proceso de triage</h3>
+          <ul class="checklist dor">
+            <li>El pipeline reporta hallazgos automáticamente en cada PR (SAST, SCA, secretos, políticas RLS).</li>
+            <li>El Security Champion del sprint tría los hallazgos antes de la Security Review (30 min, previa a la Sprint Review).</li>
+            <li>Los hallazgos CRITICAL y HIGH bloquean el merge hasta corregirse; los de severidad MEDIUM o LOW entran al Product Backlog como issue security.</li>
+            <li>Toda excepción se documenta en /docs/security/exceptions.md con justificación, responsable y fecha de vencimiento. No hay excepciones permanentes.</li>
+          </ul>
+        </div>
+
+        <div class="subsection">
+          <h3>8.2 Control de errores funcionales</h3>
+          <p class="lead">Todo defecto funcional detectado en pruebas manuales, E2E o en la Sprint Review se registra como issue de tipo <code>bug</code> en GitHub, con pasos de reproducción, resultado esperado vs. obtenido y severidad. Los defectos que bloquean un criterio de aceptación de una historia en curso se corrigen antes de dar por cumplida la Definition of Done; los defectos sobre funcionalidad ya cerrada entran priorizados al Product Backlog.</p>
+        </div>
+
+        <div class="subsection">
+          <h3>Anexo · Plantilla de reporte de incidencia</h3>
+          <div class="table-wrap"><table class="compact">
+            <tbody>
+              <tr><td style="width:160px;"><b>Título</b></td><td>Resumen corto y específico del defecto.</td></tr>
+              <tr><td><b>Historia / épica</b></td><td>ID del backlog relacionado.</td></tr>
+              <tr><td><b>Severidad</b></td><td><span class="badge badge-critical">Critical</span> <span class="badge badge-high">High</span> <span class="badge badge-medium">Medium</span> <span class="badge badge-low">Low</span></td></tr>
+              <tr><td><b>Pasos de reproducción</b></td><td>Lista numerada.</td></tr>
+              <tr><td><b>Resultado esperado</b></td><td>Según el criterio de aceptación.</td></tr>
+              <tr><td><b>Resultado obtenido</b></td><td>Comportamiento observado.</td></tr>
+              <tr><td><b>Evidencia</b></td><td>Captura, log o video.</td></tr>
+              <tr><td><b>Entorno</b></td><td>Dispositivo, versión de la app, ambiente (dev/staging).</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="section" id="d5-estado">
+        <div class="section-head"><span class="num">9</span><h2>Estado actual y próximos pasos</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Elemento</th><th>Estado</th><th>Detalle</th></tr></thead>
+          <tbody>
+            <tr><td>Pipeline de CI con lint + test + build</td><td><span class="badge badge-medium">EN CURSO</span></td><td>Objetivo del Sprint 0 (historia E0-02); se verifica en el hito H1 (2 oct).</td></tr>
+            <tr><td>SAST / SCA / secretos automatizados</td><td><span class="badge badge-medium">EN CURSO</span></td><td>Historia E0-03, Sprint 0.</td></tr>
+            <tr><td>Funcionalidad NexaSafe construida</td><td><span class="badge badge-low">SIN INICIAR</span></td><td>Ninguna épica de negocio (E1–E11) se ha construido; el repositorio solo contiene el prototipo SanMateoApp con login local.</td></tr>
+            <tr><td>Cobertura de pruebas unitarias</td><td><span class="badge badge-low">NO APLICA AÚN</span></td><td>Se medirá desde el primer PR de una historia de negocio (Sprint 1).</td></tr>
+            <tr><td>Hallazgos Critical/High abiertos</td><td><span class="badge badge-should">0</span></td><td>No hay hallazgos porque aún no hay pipeline ejecutándose sobre código de producto.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout">
+          <b>Qué se puede probar hoy</b>
+          <p>El único flujo ejecutable actualmente es el login local del prototipo SanMateoApp (AuthScreen → useAuthViewModel → AuthenticateUser → LocalAuthRepository), documentado en <code>docs/descripcion-aplicacion.md</code>. Ese flujo se usará como caso de prueba piloto para validar la configuración de Jest y React Native Testing Library antes de que exista la primera historia de negocio de NexaSafe.</p>
+        </div>
+        <div class="doc-footer">Informe de Pruebas de Calidad y Control de Errores — NexaSafe · v1.0 (iteración 0) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1 (sección 13) y docs/descripcion-aplicacion.md.</div>
+      </section>
+
+    </div>
+
+    <div class="end-footer">NexaSafe · Fundación Universitaria San Mateo · Ingeniería de Software I · 2026-2 — documentación interactiva generada a partir de los cinco entregables oficiales del proyecto.</div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- mobile sidebar ---------- */
+  var sidebar = document.getElementById("sidebar");
+  var overlay = document.getElementById("overlay");
+  var navToggle = document.getElementById("navToggle");
+  function openNav(){ sidebar.classList.add("open"); overlay.classList.add("open"); }
+  function closeNav(){ sidebar.classList.remove("open"); overlay.classList.remove("open"); }
+  if (navToggle) navToggle.addEventListener("click", function(){
+    sidebar.classList.contains("open") ? closeNav() : openNav();
+  });
+  overlay.addEventListener("click", closeNav);
+  document.querySelectorAll(".nav-link").forEach(function(a){
+    a.addEventListener("click", function(){ if (window.innerWidth <= 880) closeNav(); });
+  });
+
+  /* ---------- reading progress ---------- */
+  var progressBar = document.getElementById("progressBar");
+  function updateProgress(){
+    try{
+      var h = document.documentElement;
+      var scrolled = h.scrollTop || document.body.scrollTop;
+      var height = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+      var pct = height > 0 ? (scrolled / height) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, pct)) + "%";
+    }catch(e){}
+  }
+  document.addEventListener("scroll", updateProgress, {passive:true});
+  window.addEventListener("resize", updateProgress);
+  updateProgress();
+
+  /* ---------- scrollspy ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-link"));
+  var linkByHash = {};
+  navLinks.forEach(function(l){ linkByHash[l.getAttribute("href")] = l; });
+  var navGroups = Array.prototype.slice.call(document.querySelectorAll(".nav-group"));
+
+  var sections = Array.prototype.slice.call(document.querySelectorAll(".section[id]"));
+  var docHeroes = Array.prototype.slice.call(document.querySelectorAll(".doc-hero[id]"));
+
+  function setActiveLink(id){
+    navLinks.forEach(function(l){ l.classList.remove("active"); });
+    var link = linkByHash["#" + id];
+    if (link) link.classList.add("active");
+  }
+  function setActiveDoc(docId){
+    navGroups.forEach(function(g){
+      var isActive = g.getAttribute("data-doc") === docId;
+      g.classList.toggle("doc-active", isActive);
+      if (isActive) g.open = true;
+    });
+  }
+
+  if ("IntersectionObserver" in window){
+    var sectionObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) setActiveLink(entry.target.id);
+      });
+    }, { rootMargin: "-15% 0px -70% 0px", threshold: 0 });
+    sections.forEach(function(s){ sectionObserver.observe(s); });
+
+    var docObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) setActiveDoc(entry.target.id);
+      });
+    }, { rootMargin: "-10% 0px -80% 0px", threshold: 0 });
+    docHeroes.forEach(function(d){ docObserver.observe(d); });
+  }
+
+  /* ---------- RF priority filter ---------- */
+  var rfFilters = document.getElementById("rfFilters");
+  var rfRows = Array.prototype.slice.call(document.querySelectorAll("#rfTable tbody tr"));
+  if (rfFilters){
+    rfFilters.addEventListener("click", function(e){
+      var btn = e.target.closest(".chip");
+      if (!btn) return;
+      rfFilters.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("active"); });
+      btn.classList.add("active");
+      var f = btn.getAttribute("data-f");
+      rfRows.forEach(function(row){
+        row.hidden = (f !== "all" && row.getAttribute("data-p") !== f);
+      });
+    });
+  }
+
+  /* ---------- search ---------- */
+  var searchInput = document.getElementById("searchInput");
+  var searchCount = document.getElementById("searchCount");
+  var searchPrev = document.getElementById("searchPrev");
+  var searchNext = document.getElementById("searchNext");
+  var content = document.getElementById("content");
+  var hits = [];
+  var activeHit = -1;
+
+  function clearHits(){
+    document.querySelectorAll("mark.hit").forEach(function(m){
+      var parent = m.parentNode;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    });
+    hits = [];
+    activeHit = -1;
+    searchCount.textContent = "";
+  }
+
+  function walkAndWrap(node, regex){
+    if (node.nodeType === 3){
+      var text = node.nodeValue;
+      if (!regex.test(text)) return;
+      regex.lastIndex = 0;
+      var frag = document.createDocumentFragment();
+      var lastIndex = 0, m;
+      while ((m = regex.exec(text))){
+        if (m.index > lastIndex) frag.appendChild(document.createTextNode(text.slice(lastIndex, m.index)));
+        var mark = document.createElement("mark");
+        mark.className = "hit";
+        mark.textContent = m[0];
+        frag.appendChild(mark);
+        hits.push(mark);
+        lastIndex = m.index + m[0].length;
+        if (m[0].length === 0) regex.lastIndex++;
+      }
+      if (lastIndex < text.length) frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+      node.parentNode.replaceChild(frag, node);
+    } else if (node.nodeType === 1 && node.tagName !== "SCRIPT" && node.tagName !== "STYLE" && !node.hidden){
+      Array.prototype.slice.call(node.childNodes).forEach(function(child){ walkAndWrap(child, regex); });
+    }
+  }
+
+  function escapeRegex(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+  function runSearch(){
+    clearHits();
+    var q = searchInput.value.trim();
+    if (q.length < 2) return;
+    var regex = new RegExp(escapeRegex(q), "gi");
+    walkAndWrap(content, regex);
+    if (hits.length){
+      searchCount.textContent = "1/" + hits.length;
+      activeHit = 0;
+      goToHit(0);
+    } else {
+      searchCount.textContent = "0/0";
+    }
+  }
+
+  function goToHit(i){
+    if (!hits.length) return;
+    if (hits[activeHit]) hits[activeHit].classList.remove("active");
+    activeHit = (i + hits.length) % hits.length;
+    var hit = hits[activeHit];
+    hit.classList.add("active");
+    hit.scrollIntoView({ block: "center", behavior: "smooth" });
+    searchCount.textContent = (activeHit + 1) + "/" + hits.length;
+  }
+
+  var searchTimer;
+  searchInput.addEventListener("input", function(){
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(runSearch, 220);
+  });
+  searchInput.addEventListener("keydown", function(e){
+    if (e.key === "Enter"){ e.preventDefault(); goToHit(e.shiftKey ? activeHit - 1 : activeHit + 1); }
+    if (e.key === "Escape"){ searchInput.value = ""; clearHits(); searchInput.blur(); }
+  });
+  searchNext.addEventListener("click", function(){ goToHit(activeHit + 1); });
+  searchPrev.addEventListener("click", function(){ goToHit(activeHit - 1); });
+
+  /* ---------- smooth anchor scroll offset already handled by scroll-margin-top ---------- */
+})();
+</script>
