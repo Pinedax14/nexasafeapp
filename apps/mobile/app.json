@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "SanMateoApp",
+    "name": "NexaSafe",
     "slug": "SanMateoApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.sanmateoapp",
+      "package": "com.nexasafe.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

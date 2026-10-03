@@ -28,7 +28,7 @@ export function AppContent() {
     <View style={styles.container}>
       <Text style={styles.title}>Hola, {loggedUser.name}</Text>
       <Text style={styles.message}>
-        En el siguiente taller mostraremos el catálogo.
+        Sesión iniciada.
       </Text>
     </View>
   );
