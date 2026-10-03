@@ -65,17 +65,17 @@ Estado: ✅ cubierto · ⚠️ parcial o pendiente de ajuste · ❌ no cubierto
 | Aporte | Cómo lo cubre NexaSafe | Estado |
 |---|---|---|
 | UI/UX responsiva | App única con vistas por rol: usuario, red de apoyo y colegio | ✅ |
-| APIs y datos en tiempo real / nube | Supabase (Postgres + Realtime), Expo Push, WhatsApp Cloud API | ✅ |
-| Gráficos interactivos | Estadísticas del colegio: alertas por franja horaria, tiempo de respuesta, tipo de cierre, mapa de calor. Librería: `react-native-gifted-charts` (Recharts no corre en React Native) | ❌ falta en el plan |
-| Rendimiento: caché y consultas | Caché local de contactos, ruta e incidentes con `expo-sqlite` | ⚠️ falta en el plan |
-| Seguridad y usuarios | Supabase Auth, control de acceso con RLS, `expo-secure-store` para token y PIN | ✅ |
+| APIs y datos en tiempo real / nube | Supabase (Postgres + Realtime + Edge Functions) y Expo Push en la fase 1; WhatsApp Cloud API en la fase 2 | ✅ |
+| Gráficos interactivos | Propuesta: estadísticas del colegio (alertas por franja horaria, tiempo de respuesta, tipo de cierre) con `react-native-gifted-charts` (Recharts no corre en React Native). Ninguna historia de los Sprints 0–4 la incluye; el mapa de calor (E8-03) es fase 2 | ❌ falta en el plan: requiere decisión del equipo |
+| Rendimiento: caché y consultas | Propuesta: caché local de contactos, ruta e incidentes. Ninguna historia de los Sprints 0–4 la incluye; `expo-sqlite` queda para la cola offline de la fase 2 | ❌ falta en el plan: requiere decisión del equipo |
+| Seguridad y usuarios | Supabase Auth, control de acceso con RLS, rol en `app_metadata`, PIN verificado en el servidor (Argon2id) y `expo-secure-store` para la sesión | ✅ |
 
 ### 3.2 Ingeniería de Software I
 
 | Entregable | Base disponible | Estado |
 |---|---|---|
-| Documento de requisitos | Decisiones de diseño tomadas + backlog de historias en `PLAN_NEXASAFE.md` | ⚠️ por redactar |
-| Plan de desarrollo | Secciones 4–6 y 9 de `PLAN_NEXASAFE.md` (Scrum + DevSecOps) | ⚠️ por extraer |
-| Cronograma y tareas | Sección 8 de `PLAN_NEXASAFE.md` (sprints e hitos) | ⚠️ falta asignar responsables |
-| Diseño arquitectónico | Sección 3 de `PLAN_NEXASAFE.md` | ⚠️ faltan flujo de datos y modelo de datos |
-| Informe de pruebas | Sección 13 de `PLAN_NEXASAFE.md` (estrategia) | ❌ no hay app que probar; se entrega como iteración 0 |
+| Documento de requisitos | `docs/entregables/ing-software-1/01-documento-requisitos-sistema.pdf` | ✅ entregado (v1.0, 22 sep) · corregido v1.1 (3 oct) |
+| Plan de desarrollo | `docs/entregables/ing-software-1/02-plan-desarrollo-software.pdf` | ✅ entregado (v1.0, 22 sep) · corregido v1.1 (3 oct) |
+| Cronograma y tareas | `docs/entregables/ing-software-1/03-cronograma-tareas-proyecto.pdf` | ✅ entregado (v1.0, 22 sep) · corregido v1.1 (3 oct) |
+| Diseño arquitectónico | `docs/entregables/ing-software-1/04-diseno-arquitectonico.pdf` | ✅ entregado (v1.0, 22 sep) · corregido v1.1 (3 oct) |
+| Informe de pruebas | `docs/entregables/ing-software-1/05-informe-pruebas-calidad.pdf` | ⚠️ iteración 0 entregada; se actualiza con resultados reales al cierre de cada sprint |

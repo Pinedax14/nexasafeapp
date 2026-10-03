@@ -1,9 +1,9 @@
 # NexaSafe — Plan de Proyecto
 ### Sistema de alerta y acompañamiento en ruta casa–colegio
 **Marco ágil:** Scrum · **Modelo de entrega:** DevSecOps
-**Equipo:** Juan Felipe Pineda Cardona · «integrante 2» · «integrante 3»
+**Equipo:** Juan Felipe Pineda Cardona · David Alejandro del Prado Camargo · Ingrith Yuliana García Galvis
 **Programa:** Ingeniería de Sistemas — Fundación Universitaria San Mateo
-**Periodo:** 2026-2 · **Versión del documento:** 1.1
+**Periodo:** 2026-2 · **Versión del documento:** 1.2
 
 ---
 
@@ -36,6 +36,8 @@
 > a diferencia de **llamar al 123 o escribir a un grupo de WhatsApp**,
 > nuestro producto **detecta desviaciones de ruta automáticamente, funciona sin conexión estable, no expone al usuario mientras transmite y deja una bitácora auditable del incidente**.
 
+> La visión describe el producto completo. El semestre 2026-2 construye la **fase 1 (MVP académico)**; la detección automática de desvío (E5) y la operación sin conexión (E10) pertenecen a la **fase 2**, posterior al semestre (ver sección 2 y sección 8).
+
 ### Alineación con el tema orientador — Restitución y Reparación
 
 | Dimensión | Aporte de NexaSafe |
@@ -48,20 +50,28 @@
 
 ## 2. Alcance
 
-### 2.1 Dentro del alcance (MVP académico)
+### 2.1 Dentro del alcance (fase 1 · MVP académico)
 
 - Registro de acudiente (guardián) y vinculación de perfiles protegidos validados por la institución.
 - Gestión de rutas seguras con corredor geográfico y horarios esperados.
 - Trayecto acompañado con ubicación en vivo y cierre automático por geocerca.
-- Detección automática de desvío y de trayecto vencido, con escalamiento.
-- Botón de pánico con ventana de cancelación por PIN y modo discreto.
-- Notificación push simultánea a guardianes, red de apoyo y puesto de control.
+- Botón de pánico (mantener presionado 3 s) con ventana de cancelación por PIN y modo discreto.
+- Notificación push con sonido prioritario a guardianes, red de apoyo y puesto de control.
 - Confirmación de respuesta ("voy en camino") y cierre clasificado del incidente.
-- Vista institucional dentro de la misma app móvil, con alertas activas e histórico agregado.
-- Operación degradada sin datos: cola local + reenvío automático al recuperar la conexión.
+- Vista institucional dentro de la misma app móvil, con alertas activas.
 - Pipeline DevSecOps completo desde el Sprint 0.
 
-### 2.2 Fuera del alcance
+### 2.2 Fuera del alcance de esta fase (fase 2)
+
+- Detección automática de desvío y de trayecto vencido, con escalamiento (E5).
+- Operación degradada sin datos: cola local + reenvío automático al recuperar la conexión (E10).
+- Disparo por sacudida (E6-02) y captura de audio ambiente (E6-06).
+- Canal WhatsApp Cloud API, reporte de escalamiento, mapa de calor e histórico de incidentes (E8-02, E8-03, E9-03).
+- Permisos diferenciados y revocación de contactos (E2-02, E2-03); vista de quién más respondió (E7-03).
+- Purga automática a 90 días y exportación/supresión desde la app (E11-02, E11-03).
+- Automatización del SBOM en cada release (E0-05).
+
+### 2.3 Fuera del alcance del producto
 
 - Integración técnica directa con la línea 123 o con sistemas de la Policía Nacional (requiere convenio interinstitucional). En el alcance académico el escalamiento a la autoridad se **simula**: el sistema genera y registra el reporte de escalamiento, pero no lo transmite a ningún organismo real.
 - Wearables o botón físico externo.
@@ -69,9 +79,9 @@
 - Versión iOS publicada en App Store (se desarrolla multiplataforma pero se distribuye Android vía EAS).
 - Facturación o monetización.
 
-### 2.3 Supuestos
+### 2.4 Supuestos
 
-- El colegio designa un responsable del puesto de control con equipo y conexión.
+- El colegio designa al menos un responsable del puesto de control con equipo y conexión.
 - Los menores portan un dispositivo Android 9+ con GPS.
 - Existe autorización escrita del representante legal para el tratamiento de datos del menor.
 
@@ -95,8 +105,8 @@
           └───┬───────────┬───────────┬─────┘
               │           │           │
     ┌─────────▼──┐ ┌──────▼───┐ ┌─────▼──────────┐
-    │ PostgreSQL │ │ Storage  │ │ Expo Push /    │
-    │ + PostGIS  │ │          │ │ WhatsApp Cloud │
+    │ PostgreSQL │ │ Storage  │ │ Expo Push      │
+    │ + PostGIS  │ │          │ │ (WhatsApp: F2) │
     └────────────┘ └──────────┘ └────────────────┘
 ```
 
@@ -109,8 +119,8 @@
 | Backend | Supabase — PostgreSQL gestionado + Auth + Realtime + Edge Functions (Deno/TypeScript) | Elimina el montaje, despliegue y mantenimiento de infraestructura propia; autenticación, autorización por RLS y tiempo real vienen resueltos. |
 | Base de datos | PostgreSQL 16 con extensión PostGIS (sobre Supabase) | Consultas geoespaciales para corredor seguro y geocercas. |
 | Tiempo real | Supabase Realtime (WebSocket sobre Postgres) | Difusión de posición a N guardianes sin polling ni servidor propio. |
-| Persistencia local | SQLite (`expo-sqlite`) + `expo-secure-store` | Cola offline y custodia del token/PIN. |
-| Notificaciones | Expo Push Notifications + WhatsApp Cloud API (Meta) | Push como canal principal; WhatsApp a los contactos de seguridad y al puesto de control mediante plantilla aprobada. |
+| Persistencia local | `expo-secure-store` (fase 1) + SQLite / `expo-sqlite` (fase 2) | `expo-secure-store` custodia la sesión (tokens); el PIN nunca se guarda en el dispositivo. SQLite sostiene la cola offline de E10 en la fase 2. |
+| Notificaciones | Expo Push Notifications (fase 1) + WhatsApp Cloud API de Meta (fase 2) | Push como canal principal; WhatsApp a los contactos de seguridad y al puesto de control mediante plantilla aprobada. |
 | Infraestructura | Supabase CLI (migraciones versionadas) · GitHub Actions · EAS Build | Reproducible y suficiente para el alcance académico, sin contenedores propios que administrar. |
 
 ---
@@ -186,7 +196,7 @@
 
 **Seguridad — obligatorio, no negociable**
 - [ ] SAST (Semgrep) sin hallazgos *High* o *Critical*
-- [ ] SCA (`npm audit`) sin vulnerabilidades *Critical* explotables
+- [ ] SCA (`npm audit --audit-level=high`) sin hallazgos *High* o *Critical*
 - [ ] Escaneo de secretos (Gitleaks) limpio
 - [ ] Ningún dato personal en logs (verificado manualmente en el PR)
 - [ ] Tablas y Edge Functions nuevas con RLS, autorización por rol y rate limiting
@@ -220,7 +230,7 @@
 
 ### 7.2 Historias de usuario priorizadas
 
-> Prioridad: **M** = Must · **S** = Should · **C** = Could (MoSCoW). Estimación en puntos de historia.
+> Prioridad: **M** = Must · **S** = Should · **C** = Could · **W** = Won't en esta fase: requisito válido del producto, planificado para la fase 2 (MoSCoW). Estimación en puntos de historia.
 
 #### E0 — Plataforma DevSecOps
 
@@ -257,7 +267,7 @@ Y queda registrada la autorización de tratamiento de datos del representante le
 |---|---|---|---|
 | E2-01 | Como guardián, quiero invitar contactos de apoyo por enlace, para ampliar quién puede auxiliar al menor. | 5 | M |
 | E2-02 | Como guardián, quiero definir qué ve cada contacto (solo alertas vs. trayectos), para no exponer la rutina del menor de más. | 5 | S |
-| E2-03 | Como guardián, quiero revocar un contacto en cualquier momento, para retirar el acceso de inmediato. | 3 | M |
+| E2-03 | Como guardián, quiero revocar un contacto en cualquier momento, para retirar el acceso de inmediato. | 3 | W |
 
 #### E3 — Rutas seguras
 
@@ -280,9 +290,9 @@ Y queda registrada la autorización de tratamiento de datos del representante le
 
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
-| E5-01 | Como sistema, quiero detectar cuando el protegido sale del corredor, para marcar el trayecto como DESVIADO. | 8 | M |
-| E5-02 | Como protegido, quiero recibir una consulta "¿estás bien?" con 60 s de temporizador ante un desvío, para descartar una falsa alarma. | 5 | M |
-| E5-03 | Como sistema, quiero escalar a ALERTA si no hay respuesta al temporizador, para no depender de que el usuario pueda reaccionar. | 5 | M |
+| E5-01 | Como sistema, quiero detectar cuando el protegido sale del corredor, para marcar el trayecto como DESVIADO. | 8 | W |
+| E5-02 | Como protegido, quiero recibir una consulta "¿estás bien?" con 60 s de temporizador ante un desvío, para descartar una falsa alarma. | 5 | W |
+| E5-03 | Como sistema, quiero escalar a ALERTA si no hay respuesta al temporizador, para no depender de que el usuario pueda reaccionar. | 5 | W |
 | E5-04 | Como sistema, quiero marcar el trayecto como vencido si excede la duración esperada, para cubrir el caso de retención sin desvío. | 5 | S |
 
 #### E6 — Alerta de pánico
@@ -322,7 +332,7 @@ Y no vuelve a solicitarse confirmación
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
 | E8-01 | Como puesto de control, quiero una vista en la app con las alertas activas sobre un mapa, para atenderlas en tiempo real. | 8 | M |
-| E8-02 | Como puesto de control, quiero generar un reporte de escalamiento con los datos del incidente, para entregarlo a la autoridad (el envío a la autoridad se simula en la fase académica). | 5 | M |
+| E8-02 | Como puesto de control, quiero generar un reporte de escalamiento con los datos del incidente, para entregarlo a la autoridad (el envío a la autoridad se simula en la fase académica). | 5 | W |
 | E8-03 | Como coordinador, quiero un mapa de calor de incidentes por zona y franja horaria, para sustentar intervenciones en el barrio. | 8 | S |
 
 #### E9 — Incidentes y bitácora
@@ -337,20 +347,20 @@ Y no vuelve a solicitarse confirmación
 
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
-| E10-01 | Como sistema, quiero encolar la alerta localmente si no hay red, para enviarla apenas se recupere la conexión. | 8 | M |
+| E10-01 | Como sistema, quiero encolar la alerta localmente si no hay red, para enviarla apenas se recupere la conexión. | 8 | W |
 | E10-02 | Como sistema, quiero reintentar el envío en segundo plano hasta confirmar la entrega, para no perder una alerta encolada. | 5 | S |
-| E10-03 | Como guardián, quiero ver la marca "última posición hace X min", para no confundir un dato viejo con uno actual. | 3 | M |
+| E10-03 | Como guardián, quiero ver la marca "última posición hace X min", para no confundir un dato viejo con uno actual. | 3 | W |
 
 #### E11 — Privacidad y cumplimiento
 
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
 | E11-01 | Como acudiente, quiero otorgar consentimiento explícito y verificable para el tratamiento de datos del menor, para cumplir la ley. | 5 | M |
-| E11-02 | Como sistema, quiero eliminar automáticamente los trayectos con más de 90 días, para minimizar datos almacenados. | 5 | M |
+| E11-02 | Como sistema, quiero eliminar automáticamente los trayectos con más de 90 días, para minimizar datos almacenados. | 5 | W |
 | E11-03 | Como acudiente, quiero exportar y solicitar la supresión de los datos de mi hijo, para ejercer el derecho de habeas data. | 5 | S |
 | E11-04 | Como sistema, quiero no compartir ubicación fuera de trayecto activo o alerta, para garantizar el principio de finalidad. | 3 | M |
 
-**Total estimado del backlog:** ≈ 210 puntos
+**Total estimado del backlog:** 220 puntos (suma de todas las historias de esta sección).
 
 ---
 
@@ -362,24 +372,29 @@ Y no vuelve a solicitarse confirmación
 |---|---|---|---|---|
 | **0** | 22 sep – 2 oct | *La plataforma técnica y de seguridad está lista para producir código auditable.* | E0-01, E0-02, E0-03, E0-04, modelado de amenazas inicial | 18 |
 | **1** | 6 – 17 oct | *Un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.* | E1-01…E1-05, E11-01 | 24 |
-| **2** | 20 – 31 oct | *Un guardián puede definir la ruta y seguir en vivo el trayecto del protegido.* | E3-01, E3-02, E3-03, E4-01, E4-04, E2-01 | 26 |
-| **3** | 3 – 14 nov | *El botón de pánico funciona de extremo a extremo con cancelación y modo discreto.* | E4-02, E4-03, E6-01, E6-03, E6-05 | 26 |
-| **4** | 17 – 28 nov | *El puesto de control atiende alertas desde la app y deja bitácora del incidente.* | E6-04, E7-01, E7-02, E8-01, E9-01, E9-02, E11-04 | 27 |
-| **Cierre** | 24 – 28 nov (solapado) | *Producto sustentado y documentado.* | Release candidate firmado, manual, video demo, informe final | — |
+| **2** | 20 – 31 oct | *Un guardián puede definir la ruta del protegido y el protegido puede iniciar un trayecto acompañado.* | E3-01, E3-02, E3-03, E4-01, E4-04, E2-01 | 26 |
+| **3** | 3 – 14 nov | *El guardián sigue el trayecto en vivo y el botón de pánico funciona de extremo a extremo con cancelación por PIN.* | E4-02, E4-03, E6-01, E6-03, E6-05 | 26 |
+| **4** | 17 – 24 nov | *El puesto de control atiende alertas desde la app y deja bitácora del incidente.* | E6-04, E7-01, E7-02, E8-01, E9-01, E9-02, E11-04 | 32 |
+| **Cierre** | 25 – 28 nov | *Producto sustentado y documentado.* | Release candidate firmado, SBOM manual, manual, video demo, informe final | — |
 
-### Fuera del roadmap del semestre
+> El Sprint 4 (32 pts en una semana efectiva) supera la velocidad objetivo. Si la velocidad real del Sprint 1 y la revisión de alcance en H3 lo confirman, se adelantan historias del Sprint 4 a los Sprints 2–3 o se renegocia el alcance con el PO.
 
-El backlog completo suma ≈ 210 puntos y la capacidad disponible hasta noviembre es de ≈ 121. Las siguientes historias quedan declaradas como **trabajo futuro**, no como alcance comprometido:
+### Fuera del roadmap del semestre (fase 2)
 
-| Épica / historia | Motivo |
-|---|---|
-| **E5 completa** — detección automática de desvío y trayecto vencido | Requiere corredor geoespacial y ubicación en segundo plano estables; se pospone a una segunda fase |
-| **E10 completa** — cola offline y reintentos | Depende de E4 y E6 consolidadas |
-| E2-02, E2-03 — permisos diferenciados y revocación de contactos | `Should` desplazadas por capacidad |
-| E6-02 — disparo por sacudida | `Should`; se implementa solo si sobra capacidad en el Sprint 4 |
-| E6-06 — captura de audio ambiente | `Could` |
-| E8-02, E8-03 — reporte de escalamiento y mapa de calor | `Should` |
-| E9-03, E11-02, E11-03 — histórico, purga automática y exportación | `Should` |
+El backlog completo suma 220 puntos y los Sprints 0–4 comprometen 126 (18+24+26+26+32). Los 94 puntos restantes quedan declarados como **trabajo de la fase 2**, no como alcance comprometido:
+
+| Épica / historia | Pts | Motivo |
+|---|---|---|
+| **E5 completa** — detección automática de desvío y trayecto vencido | 23 | Requiere corredor geoespacial y ubicación en segundo plano estables; E5-01 a E5-03 pasan de `Must` a `Won't` en esta fase |
+| **E10 completa** — cola offline y reintentos | 16 | Depende de E4 y E6 consolidadas; E10-01 y E10-03 pasan a `Won't` en esta fase |
+| E2-02, E2-03 — permisos diferenciados y revocación de contactos | 8 | Desplazadas por capacidad; E2-03 pasa a `Won't` en esta fase |
+| E6-02 — disparo por sacudida | 5 | `Should` |
+| E6-06 — captura de audio ambiente | 8 | `Could` |
+| E7-03 — ver quién más respondió | 3 | `Should` |
+| E8-02, E8-03 — reporte de escalamiento y mapa de calor | 13 | E8-02 pasa a `Won't` en esta fase; E8-03 `Should` |
+| E9-03, E11-02, E11-03 — histórico, purga automática y exportación | 15 | E11-02 pasa a `Won't` en esta fase; en la fase 1 ningún dato del piloto alcanza 90 días |
+| E0-05 — SBOM automático en cada release | 3 | `Should`; en el cierre el SBOM se genera manualmente con Syft |
+| Canal WhatsApp Cloud API (`notify-whatsapp`) | — | No tiene historia en los Sprints 0–4; la fase 1 notifica solo por Expo Push |
 
 ### Hitos
 
@@ -388,8 +403,8 @@ El backlog completo suma ≈ 210 puntos y la capacidad disponible hasta noviembr
 | **H0 — Documentación de ingeniería entregada** | 22 sep | Los cinco documentos exigidos radicados |
 | **H1 — Pipeline verde** | 2 oct | Todo PR ejecuta lint + test + SAST + SCA automáticamente |
 | **H2 — Primer incremento demostrable** | 17 oct | Alta de usuario funcionando en dispositivo real |
-| **H3 — Núcleo funcional** | 31 oct | Trayecto acompañado con ubicación en vivo operando |
-| **H4 — MVP funcional completo** | 14 nov | Flujo alerta → notificación → respuesta → cierre completo |
+| **H3 — Núcleo de trayecto** | 31 oct | Ruta definida sobre mapa y trayecto acompañado iniciado (`EN_CURSO`) con indicador activo; revisión de alcance (R6) |
+| **H4 — MVP funcional completo** | 24 nov | Ubicación en vivo y flujo alerta → notificación → respuesta → cierre completo; fin del desarrollo |
 | **H5 — Release candidate** | 25 nov | Build firmado, sin hallazgos High/Critical abiertos |
 | **H6 — Sustentación** | 28 nov | Demo en vivo + informe + repositorio entregado |
 
@@ -410,7 +425,7 @@ El backlog completo suma ≈ 210 puntos y la capacidad disponible hasta noviembr
 | | Estándar de codificación segura | OWASP MASVS (móvil) + ASVS (API) | Continuo |
 | **Build** | Análisis estático de código | Semgrep + CodeQL | En cada PR |
 | | Análisis de composición de software | `npm audit`, Dependabot | En cada PR + semanal |
-| | Generación de SBOM | Syft (CycloneDX) | En cada release |
+| | Generación de SBOM | Syft (CycloneDX) | Manual en el cierre; automático en cada release desde la fase 2 (E0-05) |
 | **Test** | Pruebas unitarias e integración | Jest + RNTL, deno test | En cada PR |
 | | Pruebas E2E móviles | Maestro | Nocturno + pre-release |
 | | Análisis dinámico de la API | OWASP ZAP baseline | Nightly contra staging |
@@ -450,8 +465,9 @@ Un integrante del Development Team asume el rol por dos sprints:
 | Cifrado en tránsito | TLS 1.3 obligatorio + certificate pinning en el cliente móvil |
 | Cifrado en reposo | Cifrado a nivel de columna para documento, foto y ubicación histórica |
 | Autenticación | JWT de vida corta (15 min) + refresh token rotativo revocable |
-| Autorización | RBAC: `protegido`, `guardian`, `apoyo`, `institucion` — verificada en cada endpoint |
-| Protección del PIN | Hash Argon2id, nunca en texto plano, almacenado en `expo-secure-store` |
+| Autorización | RBAC: `protegido`, `guardian`, `apoyo`, `institucion` — rol en `app_metadata` de Supabase Auth (solo escribible por el servidor), verificado por RLS y en cada Edge Function |
+| Protección del PIN | Hash Argon2id en `protegidos.pin_hash`, nunca en texto plano ni en el dispositivo; verificado solo por la Edge Function `auth-pin` con rate limiting. `expo-secure-store` custodia únicamente la sesión |
+| Credenciales | Contraseñas gestionadas solo por Supabase Auth; `guardianes` y `personal_institucion` referencian `auth.users` (sin `password_hash` propio) |
 | Anti-abuso | Rate limiting por IP y por usuario en endpoints de alerta y autenticación |
 | Anti-tampering | Detección de root/emulador en modo release |
 | Minimización | Solo se persiste ubicación con trayecto o alerta activos; fuera de eso no se recolecta |
@@ -463,14 +479,17 @@ Un integrante del Development Team asume el rol por dos sprints:
 
 ### 10.1 Flujo de ramas
 
+GitHub Flow: una sola rama de integración (`main`), sin `develop`.
+
 ```
-feature/E6-01-boton-panico ──PR──► develop ──release──► main ──tag──► producción
-                             │                  │
-                       CI + gates          deploy staging      deploy prod + EAS build
+feature/E6-01-boton-panico ──PR──► main ──tag vX.Y.Z──► release
+                             │           │                  │
+                       CI + gates   deploy staging     EAS Build firmado
 ```
 
 - `main` protegida: sin push directo, requiere PR aprobado y CI verde.
-- `develop`: integración continua, despliegue automático a staging.
+- Cada merge en `main` despliega a staging (migraciones + Edge Functions).
+- Las versiones se publican con un tag (`v0.X.0-sprintXX`, `v1.0.0-rc`) que dispara el build firmado de EAS. No existe un Supabase de producción en el alcance académico.
 - Ramas de trabajo: `feature/<ID-historia>-<slug>`, `fix/<slug>`, `sec/<slug>`.
 - Commits en formato Conventional Commits para generar `CHANGELOG` automático.
 
@@ -490,10 +509,10 @@ jobs:
   6_sca:               # npm audit --audit-level=high · Dependabot
   7_build:             # expo prebuild + expo export · supabase functions build
   8_rls_policy_check:  # pruebas de políticas RLS contra base efímera de Supabase
-  9_deploy_staging:    # solo en develop — supabase db push + functions deploy
+  9_deploy_staging:    # solo en main — supabase db push + functions deploy
   10_dast:             # OWASP ZAP baseline contra Edge Functions de staging (nightly)
   11_mobile_scan:      # MobSF sobre el APK (solo en release)
-  12_sbom:             # Syft → CycloneDX adjunto al release
+  12_sbom:             # Syft → CycloneDX adjunto al release (automatización E0-05: fase 2)
 ```
 
 **Quality gate:** las etapas 1, 5, 6 y 8 son bloqueantes ante severidad *High* o superior. Un PR que falle cualquiera de ellas no puede mergearse, sin importar la urgencia.
@@ -515,7 +534,7 @@ Metodología **STRIDE**, ejecutada por épica durante el refinement.
 
 ### Historias de abuso
 
-- *Como agresor, quiero forzar al menor a cancelar la alerta* → mitigación: la alerta ya salió; la ventana de 10 s con PIN es local y el modo discreto evita que el agresor sepa que se envió.
+- *Como agresor, quiero forzar al menor a cancelar la alerta* → mitigación: pasada la ventana de 10 s la alerta ya salió y no puede cancelarse desde el dispositivo (RF-22: no vuelve a solicitarse confirmación); el modo discreto evita que el agresor note que se transmitió.
 - *Como agresor, quiero apagar el celular para cortar el rastreo* → mitigación: la última posición conocida se persiste en servidor; la desconexión abrupta durante alerta genera una notificación adicional.
 - *Como atacante, quiero enumerar usuarios por el endpoint de invitación* → mitigación: respuestas genéricas, tokens opacos, rate limiting.
 
@@ -529,8 +548,8 @@ Metodología **STRIDE**, ejecutada por épica durante el refinement.
 | **Decreto 1377 de 2013** | Política de tratamiento publicada y accesible | Documento en la app y en el repositorio |
 | **Sentencia C-748 de 2011** | Los datos de menores son datos sensibles; su tratamiento debe responder al interés superior del niño | Autorización otorgada por el representante legal; finalidad única de protección; minimización |
 | **Principio de finalidad** | El dato solo se usa para lo autorizado | Ubicación recolectada exclusivamente durante trayecto o alerta activos (E11-04) |
-| **Principio de temporalidad** | No conservar más allá de lo necesario | Purga automática de trayectos a los 90 días; incidentes conservados por 1 año (E11-02) |
-| **Habeas data** | Derecho de acceso, corrección y supresión | Exportación y solicitud de supresión desde la app (E11-03) |
+| **Principio de temporalidad** | No conservar más allá de lo necesario | Purga automática de trayectos a los 90 días; incidentes conservados por 1 año (E11-02, fase 2). En la fase 1 ningún dato del piloto alcanza 90 días antes del cierre (28 nov) |
+| **Habeas data** | Derecho de acceso, corrección y supresión | Fase 1: solicitud al equipo según `politica-tratamiento.md`. Fase 2: exportación y solicitud de supresión desde la app (E11-03) |
 | **Registro Nacional de Bases de Datos (SIC)** | Inscripción si el tratamiento es real | Documentado como requisito previo a un despliegue en producción real |
 
 **Evaluación de impacto en privacidad (PIA):** se elabora en el Sprint 1 y se actualiza cada vez que una historia nueva toque datos de menores. Vive en `/docs/privacy/pia.md`.
@@ -553,13 +572,13 @@ Metodología **STRIDE**, ejecutada por épica durante el refinement.
 
 1. Registro de guardián → alta de menor → validación del colegio → primer login del protegido.
 2. Inicio de trayecto → seguimiento → llegada → cierre automático.
-3. Desvío del corredor → temporizador → sin respuesta → alerta automática.
+3. Desvío del corredor → temporizador → sin respuesta → alerta automática (fase 2, depende de E5).
 4. Botón de pánico → cancelación exitosa con PIN.
 5. Botón de pánico → alerta enviada → recepción del guardián → "voy en camino" → cierre clasificado.
 
 ### Pruebas de campo
 
-En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproximadamente 1 km, midiendo: precisión del GPS, consumo de batería por hora de trayecto, latencia entre disparo y notificación recibida, y comportamiento en zonas de baja cobertura.
+En la fase 2 (posterior al semestre) se ejecuta una prueba real de trayecto en un recorrido de aproximadamente 1 km, midiendo: precisión del GPS, consumo de batería por hora de trayecto, latencia entre disparo y notificación recibida, y comportamiento en zonas de baja cobertura.
 
 ---
 
@@ -599,7 +618,7 @@ En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproxim
 | Latencia disparo → notificación recibida | < 5 s con red, < 30 s con reconexión |
 | Precisión de posición reportada | < 20 m en zona urbana abierta |
 | Consumo de batería por hora de trayecto | < 8 % |
-| Tasa de falsas alarmas automáticas | < 10 % de los trayectos |
+| Tasa de falsas alarmas automáticas (fase 2) | < 10 % de los trayectos |
 
 ---
 
@@ -607,14 +626,14 @@ En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproxim
 
 | ID | Riesgo | Prob. | Impacto | Respuesta |
 |---|---|---|---|---|
-| R1 | La ubicación en segundo plano se detiene por optimización de batería del fabricante (Xiaomi, Huawei) | Alta | Alto | Investigación temprana en Sprint 2; guía de exclusión de optimización para el usuario; foreground service persistente |
+| R1 | La ubicación en segundo plano se detiene por optimización de batería del fabricante (Xiaomi, Huawei) | Alta | Alto | Investigación temprana en Sprint 2, antes de construir la ubicación en vivo (E4-02, Sprint 3); guía de exclusión de optimización para el usuario; foreground service persistente |
 | R2 | Falsas alarmas frecuentes erosionan la confianza y la gente deja de atender | Media | Alto | Corredor de tolerancia configurable, temporizador de confirmación, sin sanción por falsa alarma |
 | R3 | El colegio no designa responsable del puesto de control | Media | Alto | Diseñar el flujo para que funcione solo con la red de apoyo si no hay institución activa |
-| R4 | Fuga de datos de menores | Baja | Crítico | Cifrado, minimización, retención corta, RBAC, auditoría, pentest interno en Sprint 6 |
+| R4 | Fuga de datos de menores | Baja | Crítico | Cifrado, minimización, retención corta, RBAC, auditoría; pentest interno en la fase 2 (posterior al semestre) |
 | R5 | El número de prueba de WhatsApp Cloud API solo alcanza 5 destinatarios verificados | Alta | Medio | Declarado como restricción de diseño (máx. 5 contactos de seguridad por usuario); el push permanece como canal principal sin ese límite |
 | R6 | Alcance excesivo para el tiempo disponible del semestre | Alta | Alto | MoSCoW estricto; las historias `Could` se sacrifican primero; revisión de alcance en el hito H3 |
 | R7 | Rotación o baja disponibilidad de un integrante | Media | Medio | Propiedad colectiva del código, documentación en el repo, sin conocimiento aislado en una persona |
-| R8 | Falsos positivos del disparo por sacudida (correr, bus, guardar el celular) | Alta | Medio | Umbral calibrado + ventana de cancelación por PIN; la sacudida solo se activa en modo trayecto con la app en primer plano; degradar E6-02 a `Could` si no es viable |
+| R8 | Falsos positivos del disparo por sacudida (correr, bus, guardar el celular) — aplica a la fase 2 (E6-02) | Alta | Medio | Umbral calibrado + ventana de cancelación por PIN; la sacudida solo se activa en modo trayecto con la app en primer plano; degradar E6-02 a `Could` si no es viable |
 
 ---
 
@@ -633,7 +652,7 @@ En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproxim
 | Tablero Scrum con backlog, sprints y burndown | GitHub Projects | Continuo |
 | Actas de retrospectiva | Markdown en repo | Cada sprint |
 | APK firmado (release candidate) | Artefacto EAS | Sprint 4 |
-| SBOM y reporte consolidado de seguridad | CycloneDX + PDF | Sprint 4 |
+| SBOM y reporte consolidado de seguridad | CycloneDX + PDF | Cierre (25–28 nov) |
 | Manual de usuario e instalación | PDF | Cierre |
 | Video demostrativo (5–7 min) | MP4 | Cierre |
 | Informe final y sustentación | PDF + presentación | Cierre |
@@ -643,7 +662,7 @@ En el Sprint 6 se ejecuta una prueba real de trayecto en un recorrido de aproxim
 ## Anexo A — Estructura del repositorio
 
 ```
-nexasafe/
+nexasafeapp/
 ├── .github/
 │   ├── workflows/           # ci.yml, nightly-security.yml, release.yml
 │   ├── ISSUE_TEMPLATE/      # user-story.md, bug.md, security-finding.md
@@ -663,16 +682,18 @@ nexasafe/
 │               └── incidents/
 ├── supabase/
 │   ├── migrations/          # esquema versionado
-│   ├── functions/           # Edge Functions (Deno): notify-push, notify-whatsapp, escalate
+│   ├── functions/           # Edge Functions (Deno): auth-pin, notify-push · fase 2: notify-whatsapp, escalate
 │   └── policies/            # políticas RLS documentadas y probadas
 ├── docs/
+│   ├── entregables/         # ing-software-1/: los 5 documentos oficiales
 │   ├── architecture/
 │   ├── security/            # threat-model.md, risk-register.md, exceptions.md
 │   ├── privacy/             # pia.md, politica-tratamiento.md
-│   └── scrum/               # sprint-XX/{planning,review,retro}.md
+│   └── scrum/               # sprint-XX/{planning,review,retro,resumen}.md
 ├── .pre-commit-config.yaml
 ├── .gitleaks.toml
 ├── semgrep.yml
+├── CHANGELOG.md
 └── README.md
 ```
 
@@ -722,3 +743,4 @@ Entonces <resultado esperado>
 |---|---|---|
 | 1.0 | — | Versión inicial |
 | 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
+| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. |
