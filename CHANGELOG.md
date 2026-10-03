@@ -15,7 +15,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 
 ### Seguridad
 - `postcss` forzado a 8.5.28 con `overrides` (GHSA-6g55-p6wh-862q, GHSA-r28c-9q8g-f849).
-- Excepciones propuestas EX-001 a EX-003 (`image-size`, `node-forge`, `braces`: herramientas de build y pruebas, sin versión corregida compatible), con vencimiento el 17/10/2026.
+- Excepciones EX-001 a EX-003 (`image-size`, `node-forge`, `braces`: herramientas de build y pruebas, sin versión corregida compatible), aprobadas por el Security Champion (Juan Felipe Pineda Cardona) con vencimiento el 17/10/2026.
 
 ### Cambiado
 - La app se llama NexaSafe (paquete Android `com.nexasafe.app`).

@@ -2,7 +2,7 @@
 
 Versión inicial del Sprint 00 (03/10/2026), a partir del Plan (`PLAN_NEXASAFE.md` v1.2, secciones 9.4 y 11) y del Diseño v1.1 (capítulo 7). Cubre solo las épicas de la fase 1. Cada refinement amplía la épica que entra al siguiente sprint.
 
-> PENDIENTE: revisión del equipo, facilitada por el Security Champion del Sprint 00–01 (aún sin nombrar).
+> PENDIENTE: revisión del equipo, facilitada por el Security Champion de los Sprints 00–01 (Juan Felipe Pineda Cardona).
 
 Estado: **Planificado** (control definido, sin construir) · **Implementado** · **Verificado** (con prueba).
 

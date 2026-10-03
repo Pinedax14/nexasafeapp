@@ -514,7 +514,7 @@ tr[hidden]{display:none;}
             <tr data-p="MUST"><td class="id-cell">RF-06</td><td>El sistema debe permitir invitar contactos de apoyo mediante un enlace.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-07</td><td>El sistema debe permitir definir qué información ve cada contacto de apoyo (solo alertas vs. trayectos).</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
             <tr data-p="WONT"><td class="id-cell">RF-08</td><td>El sistema debe permitir revocar el acceso de un contacto de apoyo en cualquier momento.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-09</td><td>El sistema debe permitir definir la ruta casa–colegio sobre un mapa.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-09</td><td>El sistema debe permitir definir la ruta casa–colegio sobre un mapa y conservarla en caché local para no consultarla al servidor en cada apertura.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-10</td><td>El sistema debe permitir configurar un corredor de tolerancia en metros alrededor de la ruta.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-11</td><td>El sistema debe permitir definir la duración esperada del trayecto.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-12</td><td>El sistema debe permitir al protegido iniciar un trayecto acompañado con un solo toque.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
@@ -534,7 +534,7 @@ tr[hidden]{display:none;}
             <tr data-p="MUST"><td class="id-cell">RF-26</td><td>El sistema debe notificar por push con sonido prioritario a los guardianes ante una alerta activa.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-27</td><td>El sistema debe permitir a un guardián marcar "voy en camino" sobre una alerta.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-28</td><td>El sistema debe mostrar quién más respondió a la alerta y a qué hora.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-29</td><td>El sistema debe mostrar al puesto de control las alertas activas sobre un mapa dentro de la misma app.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-29</td><td>El sistema debe mostrar al puesto de control las alertas activas sobre un mapa dentro de la misma app, con un gráfico interactivo de alertas por día y por tipo de cierre.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="WONT"><td class="id-cell">RF-30</td><td>El sistema debe permitir generar un reporte de escalamiento con los datos del incidente (envío a la autoridad simulado).</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-31</td><td>El sistema debe generar un mapa de calor de incidentes por zona y franja horaria.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-32</td><td>El sistema debe registrar cada evento de un incidente con marca de tiempo inmutable (bitácora auditable).</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-must">MUST</span></td></tr>
@@ -557,7 +557,7 @@ tr[hidden]{display:none;}
 
         <div class="callout">
           <b>Criterio de aceptación de referencia — RF-22 (E6-03)</b>
-          <p class="mono" style="font-size:12.5px; line-height:1.9;">Dado que se disparó una alerta<br>Cuando ingreso mi PIN correcto dentro de los 10 segundos<br>Entonces la alerta se cancela y nadie recibe notificación<br>Y queda un registro local del disparo cancelado</p>
+          <p class="mono" style="font-size:12.5px; line-height:1.9;">Dado que se disparó una alerta<br>Cuando ingreso mi PIN correcto dentro de los 10 segundos<br>Entonces la alerta se cancela y nadie recibe notificación<br>Y queda un registro local del disparo cancelado<br><br>Dado que se disparó una alerta y el dispositivo no tiene conexión<br>Cuando ingreso mi PIN dentro de los 10 segundos<br>Entonces la alerta no se cancela, porque el PIN solo se verifica en el servidor<br>Y la app indica que no pudo verificar el PIN por falta de conexión</p>
         </div>
       </section>
 
@@ -721,7 +721,7 @@ tr[hidden]{display:none;}
           </ul>
         </div>
 
-        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, y PIN verificado en el servidor (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
+        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, PIN verificado en el servidor (con escenario sin conexión en RF-22), y caché de la ruta y gráfico interactivo en RF-09 y RF-29 (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
       </section>
 
       <!-- ============ DOC 2 — PLAN DE DESARROLLO ============ -->
@@ -1127,7 +1127,7 @@ tr[hidden]{display:none;}
           <div class="table-wrap"><table class="compact">
             <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
             <tbody>
-              <tr><td class="id-cell">E3-01</td><td>Definir la ruta casa–colegio sobre un mapa</td><td>Rol Móvil</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E3-01</td><td>Definir la ruta casa–colegio sobre un mapa, con caché local de la ruta</td><td>Rol Móvil</td><td class="center">8</td></tr>
               <tr><td class="id-cell">E3-02</td><td>Configurar corredor de tolerancia en metros</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E3-03</td><td>Definir duración esperada del trayecto</td><td>Rol Móvil</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E4-01</td><td>Iniciar trayecto acompañado con un toque</td><td>Rol Móvil</td><td class="center">5</td></tr>
@@ -1161,7 +1161,7 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">E6-04</td><td>Modo discreto de pantalla durante la alerta</td><td>Rol Móvil</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E7-01</td><td>Notificación push con sonido prioritario</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E7-02</td><td>Marcar "voy en camino"</td><td>Rol Móvil</td><td class="center">3</td></tr>
-              <tr><td class="id-cell">E8-01</td><td>Vista institucional con alertas activas en mapa</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E8-01</td><td>Vista institucional con alertas activas en mapa y gráfico interactivo</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">8</td></tr>
               <tr><td class="id-cell">E9-01</td><td>Bitácora auditable con marca de tiempo inmutable</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E9-02</td><td>Cierre clasificado de la alerta</td><td>Rol Móvil</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E11-04</td><td>No compartir ubicación fuera de trayecto/alerta activos</td><td>Rol Backend/Datos</td><td class="center">3</td></tr>
@@ -1235,7 +1235,7 @@ tr[hidden]{display:none;}
             <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2 para no comprometer la ubicación en vivo (E4-02, Sprint 3) ni el hito H4.</td></tr>
           </tbody>
         </table></div>
-        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, y backlog recontado (220 pts).</div>
+        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, backlog recontado (220 pts), y caché (E3-01) y gráfico interactivo (E8-01) dentro de su estimación.</div>
       </section>
 
       <!-- ============ DOC 4 — DISEÑO ARQUITECTÓNICO ============ -->
@@ -1291,9 +1291,10 @@ tr[hidden]{display:none;}
             <tr><td><b>Móvil</b></td><td>Expo SDK + React Native + TypeScript</td><td>Requisito de la asignatura; expo-location, expo-taskmanager, expo-secure-store cubren ubicación en segundo plano y almacenamiento cifrado.</td></tr>
             <tr><td><b>Arquitectura móvil</b></td><td>Feature-based: src/features/&lt;f&gt;/{data,domain,presentation} + src/core</td><td>Continuidad con la estructura ya definida en el proyecto.</td></tr>
             <tr><td><b>Backend</b></td><td>Supabase — PostgreSQL gestionado + Auth + Realtime + Edge Functions (Deno/TypeScript)</td><td>Elimina el montaje, despliegue y mantenimiento de infraestructura propia; autenticación, autorización por RLS y tiempo real vienen resueltos.</td></tr>
-            <tr><td><b>Base de datos</b></td><td>PostgreSQL 16 con extensión PostGIS (sobre Supabase)</td><td>Consultas geoespaciales para corredor seguro y geocercas.</td></tr>
+            <tr><td><b>Base de datos</b></td><td>PostgreSQL 17 con extensión PostGIS (versión con la que Supabase crea los proyectos)</td><td>Consultas geoespaciales para corredor seguro y geocercas.</td></tr>
             <tr><td><b>Tiempo real</b></td><td>Supabase Realtime (WebSocket sobre Postgres)</td><td>Difusión de posición a N guardianes sin polling ni servidor propio.</td></tr>
-            <tr><td><b>Persistencia local</b></td><td>expo-secure-store (fase 1) + SQLite / expo-sqlite (fase 2)</td><td>expo-secure-store custodia la sesión (tokens). El PIN nunca se guarda en el dispositivo. SQLite sostiene la cola offline de E10 en la fase 2.</td></tr>
+            <tr><td><b>Persistencia local</b></td><td>expo-secure-store + caché local de la ruta (fase 1) · SQLite / expo-sqlite (fase 2)</td><td>expo-secure-store custodia la sesión (tokens). El PIN nunca se guarda en el dispositivo. La ruta guardada se conserva en caché local (E3-01); como revela la rutina del menor, el mecanismo y su cifrado se definen en el refinement del Sprint 2. SQLite sostiene la cola offline de E10 en la fase 2.</td></tr>
+            <tr><td><b>Gráficos</b></td><td>react-native-gifted-charts</td><td>Gráfico interactivo de alertas por día y por tipo de cierre en la vista institucional (E8-01). Recharts y D3 no corren en React Native.</td></tr>
             <tr><td><b>Notificaciones</b></td><td>Expo Push Notifications (fase 1) + WhatsApp Cloud API de Meta (fase 2)</td><td>Push como canal principal; WhatsApp a contactos de seguridad y puesto de control vía plantilla aprobada.</td></tr>
             <tr><td><b>Infraestructura</b></td><td>Supabase CLI (migraciones versionadas) · GitHub Actions · EAS Build</td><td>Reproducible y suficiente para el alcance académico, sin contenedores propios.</td></tr>
           </tbody>
@@ -1354,7 +1355,7 @@ tr[hidden]{display:none;}
             <div class="flow-arrow">→</div>
             <div class="flow-step accent"><b>Guardián confirma</b>"voy en camino"</div>
           </div>
-          <p class="flow-note" style="text-align:left;">↳ PIN correcto en la ventana de 10 s (verificado por la Edge Function <code>auth-pin</code>) → la alerta se cancela; nadie es notificado. PIN incorrecto o temporizador vencido → la alerta se envía.</p>
+          <p class="flow-note" style="text-align:left;">↳ PIN correcto en la ventana de 10 s (verificado por la Edge Function <code>auth-pin</code>) → la alerta se cancela; nadie es notificado. PIN incorrecto o temporizador vencido → la alerta se envía. Sin conexión el PIN no se puede verificar y la alerta no se cancela.</p>
         </div>
 
         <div class="subsection">
@@ -1496,7 +1497,7 @@ tr[hidden]{display:none;}
 ├── semgrep.yml
 ├── CHANGELOG.md
 └── README.md</div>
-        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable. Cambios frente a v1.0: credenciales solo en Supabase Auth, tablas personal_institucion y consentimientos, PIN verificado en el servidor, rol en app_metadata, GitHub Flow y componentes de fase 2 identificados.</div>
+        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable. Cambios frente a v1.0: credenciales solo en Supabase Auth, tablas personal_institucion y consentimientos, PIN verificado en el servidor, rol en app_metadata, GitHub Flow, PostgreSQL 17, caché local de la ruta, gráficos con react-native-gifted-charts y componentes de fase 2 identificados.</div>
       </section>
 
       <!-- ============ DOC 5 — PRUEBAS DE CALIDAD ============ -->

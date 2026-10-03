@@ -32,6 +32,9 @@ Al cruzar los 5 documentos v1.0 aparecían contradicciones. Quedaron corregidas 
 | 17 | **(G)** No había cómo vincular una cuenta del rol `institucion` con su colegio | Nueva tabla `personal_institucion` (varias personas por colegio); el rol vive en `app_metadata` de Supabase Auth |
 | 18 | La historia de abuso "forzar a cancelar la alerta" decía "la alerta ya salió", lo que contradice RF-22 (dentro de los 10 s la alerta aún no sale) | Mitigación reescrita: pasados los 10 s la alerta ya no se puede cancelar desde el dispositivo |
 | 19 | RNF-12, RNF-14, RNF-17, RNF-24 y RNF-25 exigían capacidades de la fase 2 | Cada uno indica qué se cumple en la fase 1 y qué llega en la fase 2 |
+| 20 | Los documentos decían PostgreSQL 16, pero Supabase crea los proyectos con PostgreSQL 17 | PostgreSQL 17 en todos los documentos (decisión del 3 oct 2026) |
+| 21 | Con el PIN verificado solo en el servidor (fila 15), RF-22 no definía qué pasa sin conexión | Sin conexión la alerta no se cancela y la app indica que no pudo verificar el PIN; escenario Gherkin agregado a E6-03 |
+| 22 | Los aportes "gráficos interactivos" y "caché" de Programación para Dispositivos Móviles no tenían historia en los Sprints 0–4 | Se cubren dentro de historias existentes: caché local de la ruta en E3-01 y gráfico interactivo en E8-01, sin reestimar (riesgo R6) |
 
 **Regla desde ahora:** si aparece una contradicción nueva, no se resuelve en silencio. Se explica, se propone una opción y se registra aquí como fila nueva cuando el equipo la apruebe.
 
@@ -243,7 +246,7 @@ Repite este ciclo en **todos** los sprints:
 
 | Historia | Qué construir | Responsable | Pts |
 |---|---|---|---|
-| E3-01 | Dibujar la ruta sobre un mapa y guardarla como geometría PostGIS | Móvil | 8 |
+| E3-01 | Dibujar la ruta sobre un mapa, guardarla como geometría PostGIS y conservarla en caché local (aporte "caché" de Móviles; definir mecanismo y cifrado en el refinement) | Móvil | 8 |
 | E3-02 | Slider de corredor en metros | Móvil + Backend | 3 |
 | E3-03 | Duración esperada del trayecto | Móvil | 3 |
 | E4-01 | Botón "Iniciar trayecto" (un toque) → estado `EN_CURSO` | Móvil | 5 |
@@ -266,7 +269,7 @@ Repite este ciclo en **todos** los sprints:
 | E4-02 | Posición en vivo por Supabase Realtime hacia el guardián | Backend | 8 |
 | E4-03 | Geocerca de llegada → cierre automático (`CERRADO`) | Backend | 5 |
 | E6-01 | Botón de pánico: mantener presionado 3 s | Móvil | 5 |
-| E6-03 | Ventana de 10 s para cancelar con PIN, verificado por `auth-pin` (criterio Gherkin de RF-22) | Móvil | 3 |
+| E6-03 | Ventana de 10 s para cancelar con PIN, verificado por `auth-pin` (criterio Gherkin de RF-22). Sin conexión la alerta no se cancela | Móvil | 3 |
 | E6-05 | Envío de ubicación cada 5–10 s durante la alerta | Backend | 5 |
 
 **Pruebas E2E:** flujo 2 (trayecto → llegada → cierre) y flujo 4 (pánico → cancelación con PIN).
@@ -286,7 +289,7 @@ Repite este ciclo en **todos** los sprints:
 | E6-04 | Modo discreto (pantalla sin indicios de alerta) | Móvil | 5 |
 | E7-01 | Edge Function `notify-push` con sonido prioritario | Backend | 5 |
 | E7-02 | Botón "voy en camino" | Móvil | 3 |
-| E8-01 | Vista institucional con mapa de alertas activas | Móvil + Backend | 8 |
+| E8-01 | Vista institucional con mapa de alertas activas y gráfico interactivo con `react-native-gifted-charts` (aporte "gráficos" de Móviles) | Móvil + Backend | 8 |
 | E9-01 | Bitácora con timestamp de servidor inmutable | Backend | 5 |
 | E9-02 | Cierre clasificado de la alerta | Móvil | 3 |
 | E11-04 | No enviar ubicación fuera de un trayecto o alerta activos | Backend | 3 |

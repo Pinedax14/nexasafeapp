@@ -35,8 +35,9 @@ Requisitos (01) > Diseño (04) > Plan (02) > Cronograma (03) > Informe (05) > Gu
 
 ### 2. Stack y arquitectura (no negociable)
 - Móvil: **Expo SDK 54 + React Native + TypeScript** en `apps/mobile/`. Solo Android vía EAS Build. Android 9 (API 28) o superior. Antes de escribir código de Expo, consulta la documentación de la versión exacta: https://docs.expo.dev/versions/v54.0.0/
-- Backend: **Supabase** (PostgreSQL 16 + PostGIS, Auth, Realtime, Edge Functions en Deno). Sin servidores propios, sin Docker, sin FastAPI.
-- Persistencia local: `expo-secure-store` para la sesión (fase 1); `expo-sqlite` solo para la cola offline de la fase 2.
+- Backend: **Supabase** (PostgreSQL 17 + PostGIS, Auth, Realtime, Edge Functions en Deno). Sin servidores propios, sin Docker, sin FastAPI.
+- Persistencia local: `expo-secure-store` para la sesión y caché local de la ruta (E3-01) en la fase 1; `expo-sqlite` para la cola offline de la fase 2.
+- Gráficos: `react-native-gifted-charts` (gráfico interactivo de E8-01).
 - Notificaciones: Expo Push en la fase 1.
 - Estructura del repo **idéntica** a la del Diseño (04), capítulo 9.
 - Arquitectura móvil feature-based: `src/features/<feature>/{data,domain,presentation}` + `src/core`.

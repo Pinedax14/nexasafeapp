@@ -4,13 +4,13 @@
 **Fechas reales:** el trabajo del sprint empezó el 03/10/2026 (ver "Desviación")
 **Sprint Goal:** la plataforma técnica y de seguridad está lista para producir código auditable.
 **Hito asociado:** H1 (02/10) — todo PR ejecuta lint + test + SAST + SCA automáticamente.
-**Capacidad:** 18 pts · **Security Champion (Sprints 00–01):** PENDIENTE: nombrar
+**Capacidad:** 18 pts · **Security Champion (Sprints 00–01):** Juan Felipe Pineda Cardona
 
 | Historia | Descripción | Responsable | Pts |
 |---|---|---|---|
 | E0-01 | Monorepo con ramas protegidas y plantillas de PR | Rol DevSecOps/QA — PENDIENTE: integrante | 3 |
 | E0-02 | Pipeline de CI: lint, pruebas y build en cada PR | Rol DevSecOps/QA — PENDIENTE: integrante | 5 |
-| E0-03 | SAST, SCA y escaneo de secretos automáticos | Rol DevSecOps/QA (Security Champion) — PENDIENTE: integrante | 5 |
+| E0-03 | SAST, SCA y escaneo de secretos automáticos | Rol DevSecOps/QA (Security Champion) — Juan Felipe Pineda Cardona | 5 |
 | E0-04 | Ambientes dev y staging desplegados por pipeline | Rol Backend/Datos — PENDIENTE: integrante | 5 |
 | — | Modelado de amenazas inicial (STRIDE por épica) | Equipo completo | — |
 
@@ -32,4 +32,5 @@ Antes de iniciar el sprint, el 03/10/2026 se corrigieron las inconsistencias de 
 - [ ] Cargar las historias como issues con etiquetas `epic:*`, `type:*`, `security` y `sprint:XX`.
 - [ ] Crear los proyectos de Supabase `nexasafe-dev` y `nexasafe-staging`.
 - [ ] Guardar en GitHub Secrets: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_STAGING_PROJECT_REF` y `SUPABASE_STAGING_DB_PASSWORD`.
-- [ ] Nombrar al Security Champion de los Sprints 00–01 y asignar responsables.
+- [x] Nombrar al Security Champion de los Sprints 00–01: Juan Felipe Pineda Cardona (03/10/2026).
+- [ ] Asignar responsables de las demás historias y de los riesgos R1–R8.

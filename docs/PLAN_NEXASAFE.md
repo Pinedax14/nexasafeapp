@@ -117,9 +117,10 @@
 | Móvil | Expo SDK + React Native + TypeScript | Requisito de la asignatura; `expo-location`, `expo-task-manager`, `expo-secure-store` cubren background location y almacenamiento cifrado. |
 | Arquitectura móvil | Feature-based: `src/features/<f>/{data,domain,presentation}` + `src/core` | Continuidad con la estructura ya definida en el proyecto. |
 | Backend | Supabase — PostgreSQL gestionado + Auth + Realtime + Edge Functions (Deno/TypeScript) | Elimina el montaje, despliegue y mantenimiento de infraestructura propia; autenticación, autorización por RLS y tiempo real vienen resueltos. |
-| Base de datos | PostgreSQL 16 con extensión PostGIS (sobre Supabase) | Consultas geoespaciales para corredor seguro y geocercas. |
+| Base de datos | PostgreSQL 17 con extensión PostGIS (versión con la que Supabase crea los proyectos) | Consultas geoespaciales para corredor seguro y geocercas. |
 | Tiempo real | Supabase Realtime (WebSocket sobre Postgres) | Difusión de posición a N guardianes sin polling ni servidor propio. |
-| Persistencia local | `expo-secure-store` (fase 1) + SQLite / `expo-sqlite` (fase 2) | `expo-secure-store` custodia la sesión (tokens); el PIN nunca se guarda en el dispositivo. SQLite sostiene la cola offline de E10 en la fase 2. |
+| Persistencia local | `expo-secure-store` + caché local de la ruta (fase 1) · SQLite / `expo-sqlite` (fase 2) | `expo-secure-store` custodia la sesión (tokens); el PIN nunca se guarda en el dispositivo. La ruta guardada se conserva en caché local (E3-01); como revela la rutina del menor, el mecanismo y su cifrado se definen en el refinement del Sprint 2. SQLite sostiene la cola offline de E10 en la fase 2. |
+| Gráficos | `react-native-gifted-charts` | Gráfico interactivo de alertas por día y por tipo de cierre en la vista institucional (E8-01). Recharts y D3 no corren en React Native. |
 | Notificaciones | Expo Push Notifications (fase 1) + WhatsApp Cloud API de Meta (fase 2) | Push como canal principal; WhatsApp a los contactos de seguridad y al puesto de control mediante plantilla aprobada. |
 | Infraestructura | Supabase CLI (migraciones versionadas) · GitHub Actions · EAS Build | Reproducible y suficiente para el alcance académico, sin contenedores propios que administrar. |
 
@@ -273,7 +274,7 @@ Y queda registrada la autorización de tratamiento de datos del representante le
 
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
-| E3-01 | Como guardián, quiero definir la ruta casa–colegio sobre un mapa, para que el sistema sepa por dónde debe ir el menor. | 8 | M |
+| E3-01 | Como guardián, quiero definir la ruta casa–colegio sobre un mapa, para que el sistema sepa por dónde debe ir el menor. Incluye caché local de la ruta guardada. | 8 | M |
 | E3-02 | Como guardián, quiero configurar un corredor de tolerancia en metros, para evitar falsas alarmas por desvíos menores. | 3 | M |
 | E3-03 | Como guardián, quiero definir la duración esperada del trayecto, para que el sistema detecte demoras anómalas. | 3 | M |
 
@@ -317,7 +318,14 @@ Dado que se disparó una alerta
 Cuando ingreso un PIN incorrecto o dejo vencer el temporizador
 Entonces la alerta se envía de inmediato
 Y no vuelve a solicitarse confirmación
+
+Dado que se disparó una alerta y el dispositivo no tiene conexión
+Cuando ingreso mi PIN dentro de los 10 segundos
+Entonces la alerta no se cancela, porque el PIN solo se verifica en el servidor
+Y la app indica que no pudo verificar el PIN por falta de conexión
 ```
+
+> E3-01 y E8-01 cubren los aportes "rendimiento: caché" y "gráficos interactivos" de Programación para Dispositivos Móviles sin cambiar su estimación (decisión del 3 oct 2026). Si en el refinement resultan más grandes, se reestiman y se dividen.
 
 #### E7 — Respuesta
 
@@ -331,7 +339,7 @@ Y no vuelve a solicitarse confirmación
 
 | ID | Historia | Pts | Pri |
 |---|---|---|---|
-| E8-01 | Como puesto de control, quiero una vista en la app con las alertas activas sobre un mapa, para atenderlas en tiempo real. | 8 | M |
+| E8-01 | Como puesto de control, quiero una vista en la app con las alertas activas sobre un mapa, para atenderlas en tiempo real. Incluye un gráfico interactivo de alertas por día y por tipo de cierre. | 8 | M |
 | E8-02 | Como puesto de control, quiero generar un reporte de escalamiento con los datos del incidente, para entregarlo a la autoridad (el envío a la autoridad se simula en la fase académica). | 5 | W |
 | E8-03 | Como coordinador, quiero un mapa de calor de incidentes por zona y franja horaria, para sustentar intervenciones en el barrio. | 8 | S |
 
@@ -743,4 +751,4 @@ Entonces <resultado esperado>
 |---|---|---|
 | 1.0 | — | Versión inicial |
 | 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
-| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. |
+| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01. |

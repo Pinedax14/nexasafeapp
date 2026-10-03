@@ -66,8 +66,8 @@ Estado: ✅ cubierto · ⚠️ parcial o pendiente de ajuste · ❌ no cubierto
 |---|---|---|
 | UI/UX responsiva | App única con vistas por rol: usuario, red de apoyo y colegio | ✅ |
 | APIs y datos en tiempo real / nube | Supabase (Postgres + Realtime + Edge Functions) y Expo Push en la fase 1; WhatsApp Cloud API en la fase 2 | ✅ |
-| Gráficos interactivos | Propuesta: estadísticas del colegio (alertas por franja horaria, tiempo de respuesta, tipo de cierre) con `react-native-gifted-charts` (Recharts no corre en React Native). Ninguna historia de los Sprints 0–4 la incluye; el mapa de calor (E8-03) es fase 2 | ❌ falta en el plan: requiere decisión del equipo |
-| Rendimiento: caché y consultas | Propuesta: caché local de contactos, ruta e incidentes. Ninguna historia de los Sprints 0–4 la incluye; `expo-sqlite` queda para la cola offline de la fase 2 | ❌ falta en el plan: requiere decisión del equipo |
+| Gráficos interactivos | Gráfico interactivo de alertas por día y por tipo de cierre en la vista institucional, con `react-native-gifted-charts` (Recharts no corre en React Native). Incluido en E8-01 (Sprint 4); el mapa de calor (E8-03) sigue en fase 2 | ⚠️ planificado en E8-01 sin reestimar |
+| Rendimiento: caché y consultas | Caché local de la ruta guardada, para no consultarla al servidor en cada apertura. Incluido en E3-01 (Sprint 2); mecanismo y cifrado se definen en el refinement | ⚠️ planificado en E3-01 sin reestimar |
 | Seguridad y usuarios | Supabase Auth, control de acceso con RLS, rol en `app_metadata`, PIN verificado en el servidor (Argon2id) y `expo-secure-store` para la sesión | ✅ |
 
 ### 3.2 Ingeniería de Software I
