@@ -4,9 +4,7 @@ type UseSplashViewModelProps = {
   onFinish: () => void;
 };
 
-export function useSplashViewModel({
-  onFinish,
-}: UseSplashViewModelProps) {
+export function useSplashViewModel({ onFinish }: UseSplashViewModelProps) {
   useEffect(() => {
     const timerId = setTimeout(() => {
       onFinish();

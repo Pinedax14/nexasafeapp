@@ -18,15 +18,21 @@ export function useAuthViewModel({ onLoginSuccess }: UseAuthViewModelProps) {
     return new AuthenticateUser(repository);
   }, []);
 
-  const updateEmail = useCallback((value: string) => {
-    setEmail(value);
-    if (errorMessage) setErrorMessage('');
-  }, [errorMessage]);
+  const updateEmail = useCallback(
+    (value: string) => {
+      setEmail(value);
+      if (errorMessage) setErrorMessage('');
+    },
+    [errorMessage],
+  );
 
-  const updatePassword = useCallback((value: string) => {
-    setPassword(value);
-    if (errorMessage) setErrorMessage('');
-  }, [errorMessage]);
+  const updatePassword = useCallback(
+    (value: string) => {
+      setPassword(value);
+      if (errorMessage) setErrorMessage('');
+    },
+    [errorMessage],
+  );
 
   const login = useCallback(async () => {
     if (!email.trim() || !password) {

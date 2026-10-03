@@ -20,6 +20,6 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFDF9'
-  }
+    backgroundColor: '#FFFDF9',
+  },
 });

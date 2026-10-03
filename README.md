@@ -66,6 +66,19 @@ npx expo start
 
 Escanea el QR con **Expo Go** (celular en la misma red Wi-Fi) o presiona `w` para abrirla en el navegador. Si el celular no conecta, usa `npx expo start --tunnel`.
 
+## Calidad: lint, pruebas y build
+
+Desde `apps/mobile`. Son los mismos pasos que ejecuta el CI en cada PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
+
+| Comando | Qué hace |
+|---|---|
+| `npm run lint` | ESLint (`eslint-config-expo` + Prettier) |
+| `npm run format:check` | Verifica el formato con Prettier (`npx prettier --write .` lo corrige) |
+| `npm run typecheck` | TypeScript sin emitir archivos |
+| `npm test` | Pruebas unitarias con Jest + React Native Testing Library |
+| `npm run test:coverage` | Pruebas con cobertura; falla si `domain` + `data` bajan del 70 % |
+| `npm run build` | `expo export` para Android |
+
 ## Compilar el APK (EAS)
 
 1. Crear una cuenta en https://expo.dev/signup.

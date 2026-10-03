@@ -27,9 +27,7 @@ export function AppContent() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Hola, {loggedUser.name}</Text>
-      <Text style={styles.message}>
-        Sesión iniciada.
-      </Text>
+      <Text style={styles.message}>Sesión iniciada.</Text>
     </View>
   );
 }

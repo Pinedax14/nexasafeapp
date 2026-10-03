@@ -6,6 +6,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 
 ### Agregado
 - E0-01 Monorepo: la app pasa a `apps/mobile/`; plantillas de PR (con la Definition of Done) e issues (historia, bug, hallazgo de seguridad).
+- E0-02 Pipeline de CI (`.github/workflows/ci.yml`): `npm ci` → ESLint → Prettier → TypeScript → Jest con umbral de cobertura del 70 % → `expo export` Android.
+- Primeras pruebas unitarias sobre el login del prototipo (`AuthenticateUser`, `LocalAuthRepository`), caso piloto del Informe de Pruebas.
 - Registro de seguridad inicial: `threat-model.md`, `risk-register.md` y `exceptions.md`.
 - Planning del Sprint 00.
 

@@ -41,7 +41,11 @@ export function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
         onPress={vm.login}
         disabled={vm.isLoading}
       >
-        {vm.isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Ingresar</Text>}
+        {vm.isLoading ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.buttonText}>Ingresar</Text>
+        )}
       </Pressable>
 
       <Text style={styles.help}>Prueba: ana@ejemplo.com / admin</Text>
@@ -54,9 +58,22 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#FFFFFF' },
   title: { fontSize: 30, fontWeight: '700', color: '#1F2937' },
   subtitle: { marginTop: 8, marginBottom: 24, fontSize: 16, color: '#6B7280' },
-  input: { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 10, padding: 14, marginBottom: 12, fontSize: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
+    fontSize: 16,
+  },
   error: { color: '#DC2626', marginBottom: 12 },
-  button: { backgroundColor: '#6D28D9', borderRadius: 10, minHeight: 52, justifyContent: 'center', alignItems: 'center' },
+  button: {
+    backgroundColor: '#6D28D9',
+    borderRadius: 10,
+    minHeight: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   buttonDisabled: { opacity: 0.7 },
   buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
   help: { marginTop: 20, color: '#6B7280', fontSize: 13 },
