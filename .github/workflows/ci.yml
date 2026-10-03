@@ -13,6 +13,59 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  secrets:
+    name: Secretos · Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  sast:
+    name: SAST · Semgrep (bloquea High)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep
+        run: >-
+          semgrep scan
+          --config p/javascript
+          --config p/typescript
+          --config p/react
+          --config p/secrets
+          --config semgrep.yml
+          --severity ERROR
+          --error
+
+  sca:
+    name: SCA · npm audit (bloquea High)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: npm audit --audit-level=high con excepciones vigentes
+        run: npm run audit:gate
+
   mobile:
     name: Móvil · lint, tipos, pruebas y build
     runs-on: ubuntu-latest

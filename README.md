@@ -78,6 +78,19 @@ Desde `apps/mobile`. Son los mismos pasos que ejecuta el CI en cada PR ([`.githu
 | `npm test` | Pruebas unitarias con Jest + React Native Testing Library |
 | `npm run test:coverage` | Pruebas con cobertura; falla si `domain` + `data` bajan del 70 % |
 | `npm run build` | `expo export` para Android |
+| `npm run audit:gate` | `npm audit`: falla ante High/Critical sin excepción vigente en [`docs/security/exceptions.md`](docs/security/exceptions.md) |
+
+### Controles de seguridad del pipeline
+
+Cada PR ejecuta, además, estos controles bloqueantes:
+
+| Control | Herramienta | Configuración |
+|---|---|---|
+| Secretos | Gitleaks | [`.gitleaks.toml`](.gitleaks.toml) |
+| SAST | Semgrep (bloquea `ERROR` = High) + CodeQL | [`semgrep.yml`](semgrep.yml), [`codeql.yml`](.github/workflows/codeql.yml) |
+| SCA | `npm audit --audit-level=high` + Dependabot | [`audit-allowlist.json`](docs/security/audit-allowlist.json), [`dependabot.yml`](.github/dependabot.yml) |
+
+Para revisar secretos antes de cada commit en tu equipo: `pip install pre-commit` y luego `pre-commit install` (usa [`.pre-commit-config.yaml`](.pre-commit-config.yaml)).
 
 ## Compilar el APK (EAS)
 

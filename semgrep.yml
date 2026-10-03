@@ -1,0 +1,55 @@
+# Reglas propias de NexaSafe. El CI las ejecuta junto con los rulesets
+# p/javascript, p/typescript, p/react y p/secrets del registro de Semgrep.
+# Severidad ERROR = High: bloquea el merge.
+rules:
+  - id: nexasafe-no-console-en-app
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      No uses console.* en el código de la app: puede filtrar datos personales de
+      menores a los logs del dispositivo (DoD: sin datos personales en logs).
+    paths:
+      include:
+        - apps/mobile/src/
+      exclude:
+        - "*.test.ts"
+        - "*.test.tsx"
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.info(...)
+      - pattern: console.debug(...)
+      - pattern: console.warn(...)
+      - pattern: console.error(...)
+
+  - id: nexasafe-no-service-role-en-app
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      La llave service_role de Supabase salta RLS y nunca debe estar en la app móvil.
+      Úsala solo en Edge Functions, leída de un secreto.
+    paths:
+      include:
+        - apps/mobile/
+    pattern-regex: (?i)service_role
+
+  - id: nexasafe-no-asyncstorage-para-sesion
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      AsyncStorage no cifra. La sesión y cualquier dato sensible van en expo-secure-store (RF-05).
+    paths:
+      include:
+        - apps/mobile/src/
+    pattern-either:
+      - pattern: import $X from '@react-native-async-storage/async-storage'
+      - pattern: import { $X } from '@react-native-async-storage/async-storage'
+
+  - id: nexasafe-no-pin-en-dispositivo
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      El PIN nunca se guarda en el dispositivo; solo lo verifica la Edge Function auth-pin.
+    paths:
+      include:
+        - apps/mobile/src/
+    pattern-regex: (?i)SecureStore\.setItem(Async)?\(\s*['"][^'"]*pin
