@@ -1,0 +1,9 @@
+# Instalación (una vez por equipo):
+#   pip install pre-commit
+#   pre-commit install
+# Antes de cada commit busca secretos con Gitleaks.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks

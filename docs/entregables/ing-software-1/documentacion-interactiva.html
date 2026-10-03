@@ -154,6 +154,7 @@ mark.hit.active{background:var(--accent); color:var(--accent-ink);}
 .badge-must{background:var(--mo-must-soft); color:var(--mo-must);}
 .badge-should{background:var(--mo-should-soft); color:var(--mo-should);}
 .badge-could{background:var(--mo-could-soft); color:var(--mo-could);}
+.badge-wont{background:var(--sev-low-soft); color:var(--sev-low); text-decoration:line-through; text-decoration-thickness:1px;}
 .badge-critical{background:var(--sev-critical-soft); color:var(--sev-critical);}
 .badge-high{background:var(--sev-high-soft); color:var(--sev-high);}
 .badge-medium{background:var(--sev-medium-soft); color:var(--sev-medium);}
@@ -364,17 +365,17 @@ tr[hidden]{display:none;}
 
       <!-- ============ DOC 1 — REQUISITOS ============ -->
       <section class="doc-hero" id="doc1">
-        <span class="kicker">Documento 01 · v1.0</span>
+        <span class="kicker">Documento 01 · v1.1</span>
         <h1>Documento de Requisitos del Sistema</h1>
         <p class="lede">NexaSafe — Sistema de alerta y acompañamiento en ruta casa–colegio. Especifica los requisitos funcionales y no funcionales que rigen la construcción, prueba y aceptación del incremento de software.</p>
         <div class="meta-row">
-          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
-          <div class="meta-pill"><b>Juan Felipe Pineda Cardona + 2</b><span>Equipo</span></div>
-          <div class="meta-pill"><b>David Alejandro del Prado Camargo </b><span>Equipo</span></div>
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega (v1.0)</span></div>
+          <div class="meta-pill"><b>3 oct 2026</b><span>Revisión v1.1</span></div>
+          <div class="meta-pill"><b>Juan Felipe Pineda Cardona</b><span>Equipo</span></div>
+          <div class="meta-pill"><b>David Alejandro del Prado Camargo</b><span>Equipo</span></div>
           <div class="meta-pill"><b>Ingrith Yuliana García Galvis</b><span>Equipo</span></div>
-          
           <div class="meta-pill"><b>Ingeniería de Sistemas</b><span>Programa</span></div>
-          <div class="meta-pill"><b>PLAN_NEXASAFE.md v1.1</b><span>Documento base</span></div>
+          <div class="meta-pill"><b>PLAN_NEXASAFE.md v1.2</b><span>Documento base</span></div>
         </div>
       </section>
 
@@ -389,6 +390,10 @@ tr[hidden]{display:none;}
         <div class="subsection">
           <h3>1.2 Alcance del producto</h3>
           <p class="lead">NexaSafe permite a un acudiente (guardián) vincular a un menor o protegido, definir su ruta segura casa–colegio, acompañar en vivo el trayecto y activar una alerta silenciosa —manual o automática— que notifica simultáneamente a la red de apoyo y al puesto de control de la institución educativa. A diferencia de llamar a la línea 123 o escribir a un grupo de WhatsApp, el sistema detecta desviaciones de ruta de forma automática, opera en condiciones de conectividad degradada mediante una cola local, no expone al usuario mientras transmite (modo discreto) y deja una bitácora auditable de cada incidente.</p>
+          <div class="callout">
+            <b>Fases del producto</b>
+            <p>El párrafo anterior describe la visión completa del producto. El semestre 2026-2 construye la <b>fase 1 (MVP académico)</b>; la detección automática de desvío (E5), la operación sin conexión (E10) y las demás historias marcadas <span class="badge badge-wont">WON'T</span> en la sección 3.1 corresponden a la <b>fase 2</b>, posterior al semestre. El detalle está en la sección 6.</p>
+          </div>
         </div>
 
         <div class="subsection">
@@ -452,12 +457,12 @@ tr[hidden]{display:none;}
             <div class="card"><p>Registro de guardianes y vinculación de perfiles protegidos validados por la institución.</p></div>
             <div class="card"><p>Gestión de rutas seguras con corredor geográfico y ventana horaria esperada.</p></div>
             <div class="card"><p>Trayecto acompañado con ubicación en vivo y cierre automático por geocerca.</p></div>
-            <div class="card"><p>Detección automática de desvío de ruta y de trayecto vencido, con escalamiento progresivo.</p></div>
+            <div class="card"><span class="card-tag">Fase 2</span><p>Detección automática de desvío de ruta y de trayecto vencido, con escalamiento progresivo.</p></div>
             <div class="card"><p>Botón de pánico con ventana de cancelación por PIN y modo discreto de pantalla.</p></div>
             <div class="card"><p>Notificación push simultánea a guardianes, red de apoyo y puesto de control.</p></div>
             <div class="card"><p>Confirmación de respuesta ("voy en camino") y cierre clasificado del incidente.</p></div>
-            <div class="card"><p>Vista institucional integrada en la misma app, con alertas activas e histórico agregado.</p></div>
-            <div class="card"><p>Operación degradada sin datos: cola local y reenvío automático al recuperar la conexión.</p></div>
+            <div class="card"><p>Vista institucional integrada en la misma app, con alertas activas (el histórico agregado corresponde a la fase 2).</p></div>
+            <div class="card"><span class="card-tag">Fase 2</span><p>Operación degradada sin datos: cola local y reenvío automático al recuperar la conexión.</p></div>
           </div>
         </div>
 
@@ -469,7 +474,7 @@ tr[hidden]{display:none;}
               <tr><td><b>Protegido</b></td><td>Bajo–medio (niño/a o adolescente)</td><td>Interacción mínima, PIN corto en lugar de contraseña, feedback visual claro del estado de acompañamiento, disparo de alerta simple e infalible.</td></tr>
               <tr><td><b>Guardián</b></td><td>Medio</td><td>Registro y gestión de perfiles, definición de rutas sobre mapa, visibilidad en vivo, notificaciones confiables incluso con el teléfono en silencio.</td></tr>
               <tr><td><b>Contacto de apoyo</b></td><td>Medio–bajo</td><td>Recepción de alertas sin necesidad de configurar nada, opción de confirmar respuesta.</td></tr>
-              <tr><td><b>Puesto de control</b> (institución)</td><td>Medio</td><td>Panorama de alertas activas sobre mapa, generación de reporte de escalamiento, consulta de histórico para intervención en puntos críticos.</td></tr>
+              <tr><td><b>Puesto de control</b> (institución)</td><td>Medio</td><td>Panorama de alertas activas sobre mapa (fase 1); generación de reporte de escalamiento y consulta de histórico para intervención en puntos críticos (fase 2).</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -488,13 +493,14 @@ tr[hidden]{display:none;}
 
       <section class="section" id="d1-rf">
         <div class="section-head"><span class="num">3.1</span><h2>Requisitos funcionales</h2></div>
-        <p class="lead">Derivados directamente de las historias de usuario del Product Backlog, agrupados por épica. Prioridad MoSCoW: <span class="badge badge-must">MUST</span> obligatorio para el MVP académico, <span class="badge badge-should">SHOULD</span> deseable si hay capacidad, <span class="badge badge-could">COULD</span> se sacrifica primero.</p>
+        <p class="lead">Derivados directamente de las historias de usuario del Product Backlog, agrupados por épica. Prioridad MoSCoW: <span class="badge badge-must">MUST</span> obligatorio para el MVP académico, <span class="badge badge-should">SHOULD</span> deseable si hay capacidad, <span class="badge badge-could">COULD</span> se sacrifica primero, <span class="badge badge-wont">WON'T</span> no se construye en esta fase (requisito válido del producto, planificado para la fase 2).</p>
 
         <div class="filter-row" id="rfFilters">
           <button class="chip active" data-f="all">Todas (41)</button>
           <button class="chip" data-f="MUST">MUST</button>
           <button class="chip" data-f="SHOULD">SHOULD</button>
           <button class="chip" data-f="COULD">COULD</button>
+          <button class="chip" data-f="WONT">WON'T (fase 2)</button>
         </div>
 
         <div class="table-wrap"><table id="rfTable">
@@ -507,17 +513,17 @@ tr[hidden]{display:none;}
             <tr data-p="MUST"><td class="id-cell">RF-05</td><td>El sistema debe conservar la sesión cifrada en el dispositivo para evitar reautenticación en cada trayecto.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-06</td><td>El sistema debe permitir invitar contactos de apoyo mediante un enlace.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-07</td><td>El sistema debe permitir definir qué información ve cada contacto de apoyo (solo alertas vs. trayectos).</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-08</td><td>El sistema debe permitir revocar el acceso de un contacto de apoyo en cualquier momento.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-must">MUST</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-09</td><td>El sistema debe permitir definir la ruta casa–colegio sobre un mapa.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-08</td><td>El sistema debe permitir revocar el acceso de un contacto de apoyo en cualquier momento.</td><td><span class="badge badge-epic">E2</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-09</td><td>El sistema debe permitir definir la ruta casa–colegio sobre un mapa y conservarla en caché local para no consultarla al servidor en cada apertura.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-10</td><td>El sistema debe permitir configurar un corredor de tolerancia en metros alrededor de la ruta.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-11</td><td>El sistema debe permitir definir la duración esperada del trayecto.</td><td><span class="badge badge-epic">E3</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-12</td><td>El sistema debe permitir al protegido iniciar un trayecto acompañado con un solo toque.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-13</td><td>El sistema debe transmitir la ubicación del protegido en vivo al guardián durante el trayecto.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-14</td><td>El sistema debe cerrar automáticamente el trayecto al detectar la llegada al destino (geocerca).</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-15</td><td>El sistema debe mostrar al protegido un indicador permanente de que está siendo acompañado.</td><td><span class="badge badge-epic">E4</span></td><td><span class="badge badge-must">MUST</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-16</td><td>El sistema debe detectar cuando el protegido sale del corredor seguro y marcar el trayecto como DESVIADO.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-must">MUST</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-17</td><td>El sistema debe preguntar "¿estás bien?" con temporizador de 60 s ante un desvío detectado.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-must">MUST</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-18</td><td>El sistema debe escalar automáticamente a ALERTA si no hay respuesta al temporizador de desvío.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-16</td><td>El sistema debe detectar cuando el protegido sale del corredor seguro y marcar el trayecto como DESVIADO.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-17</td><td>El sistema debe preguntar "¿estás bien?" con temporizador de 60 s ante un desvío detectado.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-18</td><td>El sistema debe escalar automáticamente a ALERTA si no hay respuesta al temporizador de desvío.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-19</td><td>El sistema debe marcar el trayecto como vencido si excede la duración esperada configurada.</td><td><span class="badge badge-epic">E5</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-20</td><td>El sistema debe permitir disparar una alerta manteniendo presionado el botón de pánico durante 3 s.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-21</td><td>El sistema debe permitir disparar la alerta sacudiendo el dispositivo durante un trayecto activo.</td><td><span class="badge badge-epic">E6</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
@@ -528,25 +534,30 @@ tr[hidden]{display:none;}
             <tr data-p="MUST"><td class="id-cell">RF-26</td><td>El sistema debe notificar por push con sonido prioritario a los guardianes ante una alerta activa.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-27</td><td>El sistema debe permitir a un guardián marcar "voy en camino" sobre una alerta.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-28</td><td>El sistema debe mostrar quién más respondió a la alerta y a qué hora.</td><td><span class="badge badge-epic">E7</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-29</td><td>El sistema debe mostrar al puesto de control las alertas activas sobre un mapa dentro de la misma app.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-30</td><td>El sistema debe permitir generar un reporte de escalamiento con los datos del incidente (envío a la autoridad simulado).</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-29</td><td>El sistema debe mostrar al puesto de control las alertas activas sobre un mapa dentro de la misma app, con un gráfico interactivo de alertas por día y por tipo de cierre.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-30</td><td>El sistema debe permitir generar un reporte de escalamiento con los datos del incidente (envío a la autoridad simulado).</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-31</td><td>El sistema debe generar un mapa de calor de incidentes por zona y franja horaria.</td><td><span class="badge badge-epic">E8</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-32</td><td>El sistema debe registrar cada evento de un incidente con marca de tiempo inmutable (bitácora auditable).</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-33</td><td>El sistema debe permitir cerrar y clasificar una alerta para dejar constancia del desenlace.</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-34</td><td>El sistema debe permitir consultar el histórico de incidentes de un protegido.</td><td><span class="badge badge-epic">E9</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-35</td><td>El sistema debe encolar la alerta localmente si no hay red y enviarla al recuperar la conexión.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-35</td><td>El sistema debe encolar la alerta localmente si no hay red y enviarla al recuperar la conexión.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-36</td><td>El sistema debe reintentar el envío en segundo plano hasta confirmar la entrega.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-37</td><td>El sistema debe mostrar la marca "última posición hace X min" cuando el dato no es en vivo.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-37</td><td>El sistema debe mostrar la marca "última posición hace X min" cuando el dato no es en vivo.</td><td><span class="badge badge-epic">E10</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-38</td><td>El sistema debe registrar el consentimiento explícito y verificable del acudiente para tratar datos del menor.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
-            <tr data-p="MUST"><td class="id-cell">RF-39</td><td>El sistema debe eliminar automáticamente los trayectos con más de 90 días de antigüedad.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="WONT"><td class="id-cell">RF-39</td><td>El sistema debe eliminar automáticamente los trayectos con más de 90 días de antigüedad.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-40</td><td>El sistema debe permitir exportar y solicitar la supresión de los datos del menor (habeas data).</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-41</td><td>El sistema no debe compartir la ubicación del protegido fuera de un trayecto o alerta activos.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
           </tbody>
         </table></div>
 
         <div class="callout">
+          <b>Requisitos SHOULD y COULD fuera del semestre</b>
+          <p>Además de los WON'T, quedan para la fase 2 por capacidad los SHOULD/COULD RF-07, RF-19, RF-21, RF-25, RF-28, RF-31, RF-34, RF-36 y RF-40 (ver Cronograma, capítulo 6). Los únicos requisitos comprometidos para el semestre son los MUST de esta tabla.</p>
+        </div>
+
+        <div class="callout">
           <b>Criterio de aceptación de referencia — RF-22 (E6-03)</b>
-          <p class="mono" style="font-size:12.5px; line-height:1.9;">Dado que se disparó una alerta<br>Cuando ingreso mi PIN correcto dentro de los 10 segundos<br>Entonces la alerta se cancela y nadie recibe notificación<br>Y queda un registro local del disparo cancelado</p>
+          <p class="mono" style="font-size:12.5px; line-height:1.9;">Dado que se disparó una alerta<br>Cuando ingreso mi PIN correcto dentro de los 10 segundos<br>Entonces la alerta se cancela y nadie recibe notificación<br>Y queda un registro local del disparo cancelado<br><br>Dado que se disparó una alerta y el dispositivo no tiene conexión<br>Cuando ingreso mi PIN dentro de los 10 segundos<br>Entonces la alerta no se cancela, porque el PIN solo se verifica en el servidor<br>Y la app indica que no pudo verificar el PIN por falta de conexión</p>
         </div>
       </section>
 
@@ -562,7 +573,7 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">RNF-02</td><td>Los datos sensibles deben cifrarse en reposo.</td><td>Cifrado a nivel de columna para documento, foto y ubicación histórica.</td></tr>
               <tr><td class="id-cell">RNF-03</td><td>La autenticación debe usar tokens de vida corta.</td><td>JWT de 15 min + refresh token rotativo revocable.</td></tr>
               <tr><td class="id-cell">RNF-04</td><td>La autorización debe verificarse por rol en cada endpoint.</td><td>RBAC: protegido, guardian, apoyo, institucion; pruebas de autorización en CI.</td></tr>
-              <tr><td class="id-cell">RNF-05</td><td>El PIN del protegido nunca debe almacenarse en texto plano.</td><td>Hash Argon2id, custodia en expo-secure-store.</td></tr>
+              <tr><td class="id-cell">RNF-05</td><td>El PIN del protegido nunca debe almacenarse en texto plano.</td><td>Hash Argon2id en <code>protegidos.pin_hash</code> (servidor), verificado solo por una Edge Function con rate limiting. El PIN nunca se guarda en el dispositivo.</td></tr>
               <tr><td class="id-cell">RNF-06</td><td>El sistema debe mitigar abuso de endpoints críticos.</td><td>Rate limiting por IP y por usuario en alerta y autenticación.</td></tr>
               <tr><td class="id-cell">RNF-07</td><td>El binario de producción debe dificultar la manipulación.</td><td>Detección de root/emulador y de mock location en modo release.</td></tr>
               <tr><td class="id-cell">RNF-08</td><td>Todo pull request debe pasar controles automáticos de seguridad antes de fusionarse.</td><td>SAST (Semgrep/CodeQL) y SCA (npm audit) sin hallazgos High/Critical; escaneo de secretos limpio (Gitleaks).</td></tr>
@@ -578,7 +589,7 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">RNF-09</td><td>La notificación de una alerta debe llegar en tiempo cercano al real.</td><td>&lt; 5 s con red disponible; &lt; 30 s tras reconexión.</td></tr>
               <tr><td class="id-cell">RNF-10</td><td>La posición reportada debe ser suficientemente precisa en entorno urbano.</td><td>Error &lt; 20 m en zona urbana abierta.</td></tr>
               <tr><td class="id-cell">RNF-11</td><td>El consumo energético del acompañamiento debe ser sostenible para un trayecto escolar.</td><td>&lt; 8 % de batería por hora de trayecto.</td></tr>
-              <tr><td class="id-cell">RNF-12</td><td>Las falsas alarmas automáticas deben mantenerse bajo control.</td><td>&lt; 10 % de los trayectos con falsa alarma.</td></tr>
+              <tr><td class="id-cell">RNF-12</td><td>Las falsas alarmas automáticas deben mantenerse bajo control.</td><td>&lt; 10 % de los trayectos con falsa alarma. Aplica desde la fase 2 (las alertas automáticas dependen de E5).</td></tr>
               <tr><td class="id-cell">RNF-13</td><td>El pipeline de integración debe entregar cambios a staging con baja latencia.</td><td>Lead time commit→staging &lt; 30 min; despliegue ≥ 1 vez por día hábil.</td></tr>
             </tbody>
           </table></div>
@@ -587,10 +598,10 @@ tr[hidden]{display:none;}
         <div class="subsection">
           <h3>3.2.3 Usabilidad y accesibilidad</h3>
           <ul class="checklist">
-            <li><b class="mono" style="color:var(--text)">RNF-14 · </b>El disparo de alerta debe ser ejecutable sin lectura de texto (mantener presionado o sacudir), pensado para uso bajo estrés.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-14 · </b>El disparo de alerta debe ser ejecutable sin lectura de texto (mantener presionado; la sacudida se suma en la fase 2), pensado para uso bajo estrés.</li>
             <li><b class="mono" style="color:var(--text)">RNF-15 · </b>El PIN de acceso del protegido debe ser corto (numérico) y memorizable sin asistencia.</li>
             <li><b class="mono" style="color:var(--text)">RNF-16 · </b>El indicador de acompañamiento activo debe ser visible en todo momento sin interferir con el modo discreto durante una alerta.</li>
-            <li><b class="mono" style="color:var(--text)">RNF-17 · </b>La app debe operar de forma comprensible sin conexión estable, informando siempre el estado de sincronización de datos.</li>
+            <li><b class="mono" style="color:var(--text)">RNF-17 · </b>La app debe operar de forma comprensible sin conexión estable, informando siempre el estado de sincronización de datos. En la fase 1 la app informa la ausencia de conexión; la cola local y el reenvío automático (E10) llegan en la fase 2.</li>
           </ul>
         </div>
 
@@ -611,8 +622,8 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">RNF-21</td><td>La política de tratamiento de datos debe estar publicada y accesible dentro de la app y el repositorio.</td><td>Decreto 1377 de 2013</td></tr>
               <tr><td class="id-cell">RNF-22</td><td>El tratamiento de datos de menores debe responder al interés superior del niño y a una finalidad única de protección.</td><td>Sentencia C-748 de 2011</td></tr>
               <tr><td class="id-cell">RNF-23</td><td>La ubicación solo se recolecta durante trayecto o alerta activos (principio de finalidad).</td><td>Ley 1581 de 2012</td></tr>
-              <tr><td class="id-cell">RNF-24</td><td>Los trayectos no deben conservarse más allá de 90 días (principio de temporalidad).</td><td>Ley 1581 de 2012</td></tr>
-              <tr><td class="id-cell">RNF-25</td><td>El acudiente debe poder ejercer acceso, corrección y supresión de los datos del menor.</td><td>Habeas data</td></tr>
+              <tr><td class="id-cell">RNF-24</td><td>Los trayectos no deben conservarse más allá de 90 días (principio de temporalidad). En la fase 1 ningún dato del piloto alcanza 90 días de antigüedad antes del cierre del semestre (28 nov); la purga automática (E11-02) llega en la fase 2.</td><td>Ley 1581 de 2012</td></tr>
+              <tr><td class="id-cell">RNF-25</td><td>El acudiente debe poder ejercer acceso, corrección y supresión de los datos del menor. En la fase 1 se atiende por solicitud al equipo según la política de tratamiento; la exportación desde la app (E11-03) llega en la fase 2.</td><td>Habeas data</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -657,7 +668,7 @@ tr[hidden]{display:none;}
         </table></div>
         <div class="callout warn">
           <b>Nota de cobertura</b>
-          <p>El caso de uso CU-03 (detección automática de desvío) queda declarado como trabajo futuro en el roadmap del semestre 2026-2 por restricción de capacidad del equipo. Sus requisitos funcionales permanecen especificados en este documento para una segunda fase del proyecto.</p>
+          <p>El caso de uso CU-03 (detección automática de desvío) queda declarado como trabajo de la fase 2, posterior al semestre 2026-2, por restricción de capacidad del equipo. Sus requisitos funcionales permanecen especificados en este documento. En CU-04 y CU-05, los requisitos marcados WON'T, SHOULD o COULD fuera del semestre (RF-21, RF-25, RF-28, RF-30, RF-31 y RF-34) tampoco se construyen en la fase 1; el caso de uso se cumple con sus requisitos MUST.</p>
         </div>
       </section>
 
@@ -665,23 +676,33 @@ tr[hidden]{display:none;}
         <div class="section-head"><span class="num">6</span><h2>Alcance, supuestos y restricciones</h2></div>
 
         <div class="subsection">
-          <h3>6.1 Dentro del alcance (MVP académico)</h3>
+          <h3>6.1 Dentro del alcance (fase 1 · MVP académico)</h3>
           <ul class="checklist">
             <li>Registro de guardián y vinculación de perfiles protegidos validados por la institución.</li>
             <li>Gestión de rutas seguras con corredor geográfico y horarios esperados.</li>
             <li>Trayecto acompañado con ubicación en vivo y cierre automático por geocerca.</li>
-            <li>Detección automática de desvío y de trayecto vencido, con escalamiento.</li>
-            <li>Botón de pánico con ventana de cancelación por PIN y modo discreto.</li>
-            <li>Notificación push simultánea a guardianes, red de apoyo y puesto de control.</li>
+            <li>Botón de pánico (mantener presionado 3 s) con ventana de cancelación por PIN y modo discreto.</li>
+            <li>Notificación push con sonido prioritario a guardianes, red de apoyo y puesto de control.</li>
             <li>Confirmación de respuesta y cierre clasificado del incidente.</li>
-            <li>Vista institucional dentro de la misma app móvil.</li>
-            <li>Operación degradada sin datos: cola local y reenvío automático.</li>
+            <li>Vista institucional con alertas activas dentro de la misma app móvil.</li>
             <li>Pipeline DevSecOps completo desde el Sprint 0.</li>
           </ul>
         </div>
 
         <div class="subsection">
-          <h3>6.2 Fuera del alcance</h3>
+          <h3>6.2 Fuera del alcance de esta fase (fase 2)</h3>
+          <div class="card-grid">
+            <div class="card"><p>Detección automática de desvío y de trayecto vencido, con escalamiento (E5).</p></div>
+            <div class="card"><p>Operación degradada sin datos: cola local y reenvío automático (E10).</p></div>
+            <div class="card"><p>Disparo por sacudida (E6-02) y captura de audio ambiente (E6-06).</p></div>
+            <div class="card"><p>Canal WhatsApp Cloud API, reporte de escalamiento, mapa de calor e histórico de incidentes (E8-02, E8-03, E9-03).</p></div>
+            <div class="card"><p>Permisos diferenciados y revocación de contactos (E2-02, E2-03); quién más respondió (E7-03).</p></div>
+            <div class="card"><p>Purga automática a 90 días y exportación/supresión desde la app (E11-02, E11-03).</p></div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>6.3 Fuera del alcance del producto</h3>
           <div class="card-grid">
             <div class="card"><p>Integración técnica directa con la línea 123 o sistemas de la Policía Nacional (requiere convenio interinstitucional); el escalamiento se simula.</p></div>
             <div class="card"><p>Wearables o botón físico externo.</p></div>
@@ -692,24 +713,25 @@ tr[hidden]{display:none;}
         </div>
 
         <div class="subsection">
-          <h3>6.3 Supuestos</h3>
+          <h3>6.4 Supuestos</h3>
           <ul class="checklist">
-            <li>El colegio designa un responsable del puesto de control con equipo y conexión.</li>
+            <li>El colegio designa al menos un responsable del puesto de control con equipo y conexión.</li>
             <li>Los menores portan un dispositivo Android 9+ con GPS.</li>
             <li>Existe autorización escrita del representante legal para el tratamiento de datos del menor.</li>
           </ul>
         </div>
 
-        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1.</div>
+        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, PIN verificado en el servidor (con escenario sin conexión en RF-22), y caché de la ruta y gráfico interactivo en RF-09 y RF-29 (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
       </section>
 
       <!-- ============ DOC 2 — PLAN DE DESARROLLO ============ -->
       <section class="doc-hero" id="doc2">
-        <span class="kicker">Documento 02 · v1.0</span>
+        <span class="kicker">Documento 02 · v1.1</span>
         <h1>Plan de Desarrollo de Software</h1>
         <p class="lede">NexaSafe — Marco Scrum con modelo de entrega DevSecOps. Define el ciclo de vida, la organización del equipo, las ceremonias y la forma en que la seguridad se integra como parte innegociable del proceso.</p>
         <div class="meta-row">
-          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega (v1.0)</span></div>
+          <div class="meta-pill"><b>3 oct 2026</b><span>Revisión v1.1</span></div>
           <div class="meta-pill"><b>Scrum</b><span>Marco ágil</span></div>
           <div class="meta-pill"><b>2 semanas</b><span>Duración de sprint</span></div>
           <div class="meta-pill"><b>DevSecOps</b><span>Modelo de entrega</span></div>
@@ -859,7 +881,7 @@ tr[hidden]{display:none;}
               <span class="card-tag" style="color:var(--sev-critical)">Seguridad — obligatorio</span>
               <ul class="checklist" style="margin:0;">
                 <li>SAST (Semgrep) sin hallazgos High o Critical</li>
-                <li>SCA (npm audit) sin vulnerabilidades Critical explotables</li>
+                <li>SCA (<code>npm audit --audit-level=high</code>) sin hallazgos High o Critical</li>
                 <li>Escaneo de secretos (Gitleaks) limpio</li>
                 <li>Ningún dato personal en logs (verificado manualmente en el PR)</li>
                 <li>Tablas y Edge Functions nuevas con RLS, autorización por rol y rate limiting</li>
@@ -888,11 +910,11 @@ tr[hidden]{display:none;}
             <thead><tr><th>Fase</th><th>Práctica</th><th>Herramienta</th><th>Cuándo</th></tr></thead>
             <tbody>
               <tr><td><b>Plan</b></td><td>Modelado de amenazas STRIDE por épica</td><td>OWASP Threat Dragon</td><td>Refinement</td></tr>
-              <tr><td><b>Code</b></td><td>Pre-commit hooks, revisión de pares obligatoria</td><td>pre-commit, Gitleaks</td><td>Local / antes del merge</td></tr>
-              <tr><td><b>Build</b></td><td>SAST, SCA, SBOM</td><td>Semgrep, CodeQL, npm audit, Syft</td><td>En cada PR / cada release</td></tr>
+              <tr><td><b>Code</b></td><td>GitHub Flow (<code>feature/*</code> → PR → <code>main</code>, sin rama <code>develop</code>), pre-commit hooks, revisión de pares obligatoria</td><td>pre-commit, Gitleaks, protección de <code>main</code></td><td>Local / antes del merge</td></tr>
+              <tr><td><b>Build</b></td><td>SAST, SCA, SBOM</td><td>Semgrep, CodeQL, npm audit, Syft</td><td>En cada PR (SAST, SCA) / cierre (SBOM manual; automático desde la fase 2, E0-05)</td></tr>
               <tr><td><b>Test</b></td><td>Unitarias, integración, E2E, DAST, MobSF</td><td>Jest, RNTL, Maestro, OWASP ZAP, MobSF</td><td>Cada PR / nocturno / prerelease</td></tr>
               <tr><td><b>Release</b></td><td>Firma del artefacto, gestión de secretos</td><td>EAS Build + keystore, GitHub/EAS Secrets</td><td>Al taggear versión</td></tr>
-              <tr><td><b>Deploy</b></td><td>Verificación de políticas RLS antes de aplicar</td><td>Supabase CLI + suite de pruebas de política</td><td>Antes del despliegue</td></tr>
+              <tr><td><b>Deploy</b></td><td>Verificación de políticas RLS antes de aplicar; despliegue a staging al fusionar en <code>main</code></td><td>Supabase CLI + suite de pruebas de política</td><td>Antes del despliegue</td></tr>
               <tr><td><b>Operate / Monitor</b></td><td>Logs sin PII, auditoría append-only, errores</td><td>JSON logging, tabla audit_log, Sentry</td><td>Runtime continuo</td></tr>
             </tbody>
           </table></div>
@@ -926,14 +948,14 @@ tr[hidden]{display:none;}
         <div class="table-wrap"><table>
           <thead><tr><th>ID</th><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Respuesta</th></tr></thead>
           <tbody>
-            <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante (Xiaomi, Huawei).</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2; guía de exclusión de optimización; foreground service persistente.</td></tr>
+            <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante (Xiaomi, Huawei).</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2, antes de construir la ubicación en vivo (E4-02, Sprint 3); guía de exclusión de optimización; foreground service persistente.</td></tr>
             <tr><td class="id-cell">R2</td><td>Falsas alarmas frecuentes erosionan la confianza y la gente deja de atender.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-high">Alto</span></td><td>Corredor de tolerancia configurable, temporizador de confirmación, sin sanción por falsa alarma.</td></tr>
             <tr><td class="id-cell">R3</td><td>El colegio no designa responsable del puesto de control.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-high">Alto</span></td><td>Diseñar el flujo para que funcione solo con la red de apoyo si no hay institución activa.</td></tr>
-            <tr><td class="id-cell">R4</td><td>Fuga de datos de menores.</td><td><span class="badge badge-low">Baja</span></td><td><span class="badge badge-critical">Crítico</span></td><td>Cifrado, minimización, retención corta, RBAC, auditoría, pentest interno en Sprint 6.</td></tr>
+            <tr><td class="id-cell">R4</td><td>Fuga de datos de menores.</td><td><span class="badge badge-low">Baja</span></td><td><span class="badge badge-critical">Crítico</span></td><td>Cifrado, minimización, retención corta, RBAC, auditoría; pentest interno en la fase 2 (posterior al semestre).</td></tr>
             <tr><td class="id-cell">R5</td><td>El número de prueba de WhatsApp Cloud API solo alcanza 5 destinatarios verificados.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-medium">Medio</span></td><td>Restricción de diseño (máx. 5 contactos de seguridad); el push permanece como canal principal sin ese límite.</td></tr>
             <tr><td class="id-cell">R6</td><td>Alcance excesivo para el tiempo disponible del semestre.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>MoSCoW estricto; las historias COULD se sacrifican primero; revisión de alcance en el hito H3.</td></tr>
             <tr><td class="id-cell">R7</td><td>Rotación o baja disponibilidad de un integrante.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-medium">Medio</span></td><td>Propiedad colectiva del código, documentación en el repo, sin conocimiento aislado en una persona.</td></tr>
-            <tr><td class="id-cell">R8</td><td>Falsos positivos del disparo por sacudida (correr, bus, guardar el celular).</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-medium">Medio</span></td><td>Umbral calibrado + ventana de cancelación por PIN; se activa solo en modo trayecto; degradar a COULD si no es viable.</td></tr>
+            <tr><td class="id-cell">R8</td><td>Falsos positivos del disparo por sacudida (correr, bus, guardar el celular).</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-medium">Medio</span></td><td>Aplica a la fase 2 (E6-02). Umbral calibrado + ventana de cancelación por PIN; se activa solo en modo trayecto; degradar a COULD si no es viable.</td></tr>
           </tbody>
         </table></div>
       </section>
@@ -993,16 +1015,17 @@ tr[hidden]{display:none;}
             <tr><td><b>Acta de retrospectiva</b></td><td>Registro de acciones de mejora con responsable</td><td>Cada 2 semanas</td></tr>
           </tbody>
         </table></div>
-        <div class="doc-footer">Plan de Desarrollo de Software — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1, secciones 4 a 6, 9 y 14 a 15.</div>
+        <div class="doc-footer">Plan de Desarrollo de Software — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, secciones 4 a 6, 9 y 14 a 15. Cambios frente a v1.0: SCA bloquea desde High, flujo de ramas GitHub Flow y "Sprint 6" reemplazado por fase 2.</div>
       </section>
 
       <!-- ============ DOC 3 — CRONOGRAMA ============ -->
       <section class="doc-hero" id="doc3">
-        <span class="kicker">Documento 03 · v1.0</span>
+        <span class="kicker">Documento 03 · v1.1</span>
         <h1>Cronograma y Tareas del Proyecto</h1>
         <p class="lede">NexaSafe — Roadmap de sprints, hitos y responsables. Desglose operativo del roadmap definido en el Plan de Desarrollo, con asignación de recursos por rol funcional.</p>
         <div class="meta-row">
-          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega (v1.0)</span></div>
+          <div class="meta-pill"><b>3 oct 2026</b><span>Revisión v1.1</span></div>
           <div class="meta-pill"><b>22 sep – 28 nov 2026</b><span>Periodo cubierto</span></div>
         </div>
       </section>
@@ -1014,8 +1037,8 @@ tr[hidden]{display:none;}
         <div class="stat-grid">
           <div class="stat-tile"><b>6</b><span>Sprints (incl. Sprint 0 y cierre)</span></div>
           <div class="stat-tile"><b>68</b><span>Días calendario</span></div>
-          <div class="stat-tile"><b>≈121</b><span>Pts. de capacidad estimada</span></div>
-          <div class="stat-tile"><b>≈210</b><span>Pts. del backlog completo</span></div>
+          <div class="stat-tile"><b>126</b><span>Pts. comprometidos (Sprints 0–4)</span></div>
+          <div class="stat-tile"><b>220</b><span>Pts. del backlog completo</span></div>
         </div>
 
         <div class="gantt">
@@ -1030,15 +1053,15 @@ tr[hidden]{display:none;}
               <div class="gantt-row"><div class="gantt-label">Sprint 1</div><div class="gantt-track"><div class="gantt-bar" style="left:20.6%; width:16.2%;" title="6 – 17 oct"></div></div></div>
               <div class="gantt-row"><div class="gantt-label">Sprint 2</div><div class="gantt-track"><div class="gantt-bar" style="left:41.2%; width:16.2%;" title="20 – 31 oct"></div></div></div>
               <div class="gantt-row"><div class="gantt-label">Sprint 3</div><div class="gantt-track"><div class="gantt-bar" style="left:61.8%; width:16.2%;" title="3 – 14 nov"></div></div></div>
-              <div class="gantt-row"><div class="gantt-label">Sprint 4</div><div class="gantt-track"><div class="gantt-bar" style="left:82.4%; width:16.2%;" title="17 – 28 nov"></div></div></div>
-              <div class="gantt-row"><div class="gantt-label">Cierre</div><div class="gantt-track"><div class="gantt-bar close" style="left:92.6%; width:5.9%;" title="24 – 28 nov, solapado"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Sprint 4</div><div class="gantt-track"><div class="gantt-bar" style="left:82.4%; width:10.3%;" title="17 – 24 nov"></div></div></div>
+              <div class="gantt-row"><div class="gantt-label">Cierre</div><div class="gantt-track"><div class="gantt-bar close" style="left:94.1%; width:4.4%;" title="25 – 28 nov"></div></div></div>
             </div>
             <div class="gantt-hitos" id="ganttHitos">
               <div class="gantt-hito" style="left:0%"><span class="dot"></span><span class="lab">H0</span></div>
               <div class="gantt-hito" style="left:14.7%"><span class="dot"></span><span class="lab">H1</span></div>
               <div class="gantt-hito" style="left:36.8%"><span class="dot"></span><span class="lab">H2</span></div>
               <div class="gantt-hito" style="left:57.4%"><span class="dot"></span><span class="lab">H3</span></div>
-              <div class="gantt-hito" style="left:77.9%"><span class="dot"></span><span class="lab">H4</span></div>
+              <div class="gantt-hito" style="left:92.6%; margin-top:14px;"><span class="dot"></span><span class="lab">H4</span></div>
               <div class="gantt-hito" style="left:94.1%"><span class="dot"></span><span class="lab">H5</span></div>
               <div class="gantt-hito" style="left:98.5%"><span class="dot"></span><span class="lab">H6</span></div>
             </div>
@@ -1055,8 +1078,8 @@ tr[hidden]{display:none;}
             <tr><td class="id-cell">H0</td><td>22 sep</td><td>Documentación de ingeniería entregada — los cinco documentos exigidos radicados.</td></tr>
             <tr><td class="id-cell">H1</td><td>2 oct</td><td>Pipeline verde — todo PR ejecuta lint + test + SAST + SCA automáticamente.</td></tr>
             <tr><td class="id-cell">H2</td><td>17 oct</td><td>Primer incremento demostrable — alta de usuario funcionando en dispositivo real.</td></tr>
-            <tr><td class="id-cell">H3</td><td>31 oct</td><td>Núcleo funcional — trayecto acompañado con ubicación en vivo operando.</td></tr>
-            <tr><td class="id-cell">H4</td><td>14 nov</td><td>MVP funcional completo — flujo alerta → notificación → respuesta → cierre completo.</td></tr>
+            <tr><td class="id-cell">H3</td><td>31 oct</td><td>Núcleo de trayecto — ruta definida sobre mapa y trayecto acompañado iniciado (<code>EN_CURSO</code>) con indicador de acompañamiento activo. Revisión de alcance (R6).</td></tr>
+            <tr><td class="id-cell">H4</td><td>24 nov</td><td>MVP funcional completo — ubicación en vivo y flujo alerta → notificación → respuesta → cierre completo. Fin del desarrollo.</td></tr>
             <tr><td class="id-cell">H5</td><td>25 nov</td><td>Release candidate — build firmado, sin hallazgos High/Critical abiertos.</td></tr>
             <tr><td class="id-cell">H6</td><td>28 nov</td><td>Sustentación — demo en vivo, informe y repositorio entregados.</td></tr>
           </tbody>
@@ -1100,11 +1123,11 @@ tr[hidden]{display:none;}
 
         <div class="subsection">
           <h3>4.3 Sprint 2 — 20 a 31 oct <span class="badge badge-neutral">26 pts</span></h3>
-          <p class="lead" style="font-style:italic;">Sprint Goal: un guardián puede definir la ruta y seguir en vivo el trayecto del protegido.</p>
+          <p class="lead" style="font-style:italic;">Sprint Goal: un guardián puede definir la ruta del protegido y el protegido puede iniciar un trayecto acompañado.</p>
           <div class="table-wrap"><table class="compact">
             <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
             <tbody>
-              <tr><td class="id-cell">E3-01</td><td>Definir la ruta casa–colegio sobre un mapa</td><td>Rol Móvil</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E3-01</td><td>Definir la ruta casa–colegio sobre un mapa, con caché local de la ruta</td><td>Rol Móvil</td><td class="center">8</td></tr>
               <tr><td class="id-cell">E3-02</td><td>Configurar corredor de tolerancia en metros</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E3-03</td><td>Definir duración esperada del trayecto</td><td>Rol Móvil</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E4-01</td><td>Iniciar trayecto acompañado con un toque</td><td>Rol Móvil</td><td class="center">5</td></tr>
@@ -1116,7 +1139,7 @@ tr[hidden]{display:none;}
 
         <div class="subsection">
           <h3>4.4 Sprint 3 — 3 a 14 nov <span class="badge badge-neutral">26 pts</span></h3>
-          <p class="lead" style="font-style:italic;">Sprint Goal: el botón de pánico funciona de extremo a extremo con cancelación y modo discreto.</p>
+          <p class="lead" style="font-style:italic;">Sprint Goal: el guardián sigue el trayecto en vivo y el botón de pánico funciona de extremo a extremo con cancelación por PIN.</p>
           <div class="table-wrap"><table class="compact">
             <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
             <tbody>
@@ -1130,7 +1153,7 @@ tr[hidden]{display:none;}
         </div>
 
         <div class="subsection">
-          <h3>4.5 Sprint 4 — 17 a 28 nov <span class="badge badge-neutral">27 pts</span></h3>
+          <h3>4.5 Sprint 4 — 17 a 24 nov <span class="badge badge-neutral">32 pts</span></h3>
           <p class="lead" style="font-style:italic;">Sprint Goal: el puesto de control atiende alertas desde la app y deja bitácora del incidente.</p>
           <div class="table-wrap"><table class="compact">
             <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
@@ -1138,21 +1161,25 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">E6-04</td><td>Modo discreto de pantalla durante la alerta</td><td>Rol Móvil</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E7-01</td><td>Notificación push con sonido prioritario</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E7-02</td><td>Marcar "voy en camino"</td><td>Rol Móvil</td><td class="center">3</td></tr>
-              <tr><td class="id-cell">E8-01</td><td>Vista institucional con alertas activas en mapa</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">8</td></tr>
+              <tr><td class="id-cell">E8-01</td><td>Vista institucional con alertas activas en mapa y gráfico interactivo</td><td>Rol Móvil + Rol Backend/Datos</td><td class="center">8</td></tr>
               <tr><td class="id-cell">E9-01</td><td>Bitácora auditable con marca de tiempo inmutable</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E9-02</td><td>Cierre clasificado de la alerta</td><td>Rol Móvil</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E11-04</td><td>No compartir ubicación fuera de trayecto/alerta activos</td><td>Rol Backend/Datos</td><td class="center">3</td></tr>
             </tbody>
           </table></div>
+          <div class="callout warn">
+            <b>Sprint de mayor carga</b>
+            <p>Con 32 puntos y una semana de duración real (el desarrollo cierra el 24 nov), el Sprint 4 supera la velocidad objetivo. Si la velocidad medida al cierre del Sprint 1 y la revisión de alcance en H3 lo confirman, se adelantan historias del Sprint 4 a los Sprints 2–3 o se renegocia el alcance con el PO.</p>
+          </div>
         </div>
 
         <div class="subsection">
-          <h3>4.6 Cierre — 24 a 28 nov (solapado) <span class="badge badge-neutral">Sin puntos de historia</span></h3>
+          <h3>4.6 Cierre — 25 a 28 nov <span class="badge badge-neutral">Sin puntos de historia</span></h3>
           <div class="table-wrap"><table class="compact">
             <thead><tr><th>Entregable de cierre</th><th>Responsable</th></tr></thead>
             <tbody>
               <tr><td>Release candidate firmado (EAS Build)</td><td>Rol DevSecOps/QA</td></tr>
-              <tr><td>SBOM y reporte consolidado de seguridad</td><td>Rol DevSecOps/QA (Security Champion)</td></tr>
+              <tr><td>SBOM (generado manualmente con Syft; la automatización E0-05 es fase 2) y reporte consolidado de seguridad</td><td>Rol DevSecOps/QA (Security Champion)</td></tr>
               <tr><td>Manual de usuario e instalación</td><td>Equipo completo</td></tr>
               <tr><td>Video demostrativo (5–7 min)</td><td>Equipo completo</td></tr>
               <tr><td>Informe final y sustentación</td><td>Equipo completo</td></tr>
@@ -1194,7 +1221,7 @@ tr[hidden]{display:none;}
         </table></div>
         <div class="callout crit">
           <b>Brecha de capacidad frente al backlog completo</b>
-          <p>El backlog completo suma ≈ 210 puntos. La capacidad disponible hasta finales de noviembre, sumando los 5 sprints planificados (18+24+26+26+27), es de ≈ 121 puntos. La diferencia (≈ 89 puntos) se resuelve declarando explícitamente como trabajo futuro: E5 completa, E10 completa, E2-02, E2-03, E6-02, E6-06, E8-02, E8-03, E9-03, E11-02 y E11-03.</p>
+          <p>El backlog completo suma 220 puntos. Los 5 sprints planificados comprometen 126 puntos (18+24+26+26+32). La diferencia (94 puntos) se declara explícitamente como trabajo de la fase 2: E5 completa (23), E10 completa (16), E2-02 (5), E2-03 (3), E6-02 (5), E6-06 (8), E7-03 (3), E8-02 (5), E8-03 (8), E9-03 (5), E11-02 (5), E11-03 (5) y E0-05 (3).</p>
         </div>
       </section>
 
@@ -1205,19 +1232,20 @@ tr[hidden]{display:none;}
           <tbody>
             <tr><td class="id-cell">R6</td><td>Alcance excesivo para el tiempo disponible del semestre.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>MoSCoW estricto; historias COULD se sacrifican primero; revisión de alcance en el hito H3.</td></tr>
             <tr><td class="id-cell">R7</td><td>Rotación o baja disponibilidad de un integrante.</td><td><span class="badge badge-medium">Media</span></td><td><span class="badge badge-medium">Medio</span></td><td>Propiedad colectiva del código, documentación en el repo, sin conocimiento aislado en una persona.</td></tr>
-            <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2 para no comprometer el hito H3.</td></tr>
+            <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2 para no comprometer la ubicación en vivo (E4-02, Sprint 3) ni el hito H4.</td></tr>
           </tbody>
         </table></div>
-        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1, sección 8, con asignación de responsables por rol funcional.</div>
+        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, backlog recontado (220 pts), y caché (E3-01) y gráfico interactivo (E8-01) dentro de su estimación.</div>
       </section>
 
       <!-- ============ DOC 4 — DISEÑO ARQUITECTÓNICO ============ -->
       <section class="doc-hero" id="doc4">
-        <span class="kicker">Documento 04 · v1.0</span>
+        <span class="kicker">Documento 04 · v1.1</span>
         <h1>Documento de Diseño Arquitectónico</h1>
         <p class="lede">NexaSafe — Componentes, flujo de datos y modelo de datos. Describe la arquitectura de software, sus decisiones y el porqué detrás de cada una.</p>
         <div class="meta-row">
-          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega (v1.0)</span></div>
+          <div class="meta-pill"><b>3 oct 2026</b><span>Revisión v1.1</span></div>
           <div class="meta-pill"><b>Expo + React Native</b><span>Móvil</span></div>
           <div class="meta-pill"><b>Supabase</b><span>Backend</span></div>
         </div>
@@ -1250,9 +1278,9 @@ tr[hidden]{display:none;}
         <div class="flow">
           <div class="flow-step"><b>PostgreSQL + PostGIS</b>Datos relacionales y geoespaciales</div>
           <div class="flow-step"><b>Storage</b>Fotos y documentos</div>
-          <div class="flow-step"><b>Expo Push / WhatsApp Cloud API</b>Notificaciones al usuario</div>
+          <div class="flow-step"><b>Expo Push</b>Notificaciones al usuario (WhatsApp Cloud API en fase 2)</div>
         </div>
-        <p class="lead">La app móvil es un único binario con tres experiencias condicionadas por el rol autenticado (protegido, guardián o puesto de control), no tres aplicaciones separadas. Supabase concentra autenticación, autorización (RLS), tiempo real y lógica de servidor (Edge Functions) sin que el equipo administre infraestructura propia. PostgreSQL con PostGIS resuelve las consultas geoespaciales del corredor seguro y las geocercas; Storage custodia fotos y documentos; Expo Push y WhatsApp Cloud API son los canales de notificación hacia el dispositivo del usuario final.</p>
+        <p class="lead">La app móvil es un único binario con tres experiencias condicionadas por el rol autenticado (protegido, guardián o puesto de control), no tres aplicaciones separadas. Supabase concentra autenticación, autorización (RLS), tiempo real y lógica de servidor (Edge Functions) sin que el equipo administre infraestructura propia. PostgreSQL con PostGIS resuelve las consultas geoespaciales del corredor seguro y las geocercas; Storage custodia fotos y documentos; Expo Push es el canal de notificación de la fase 1, y WhatsApp Cloud API se suma como canal secundario en la fase 2.</p>
       </section>
 
       <section class="section" id="d4-stack">
@@ -1263,10 +1291,11 @@ tr[hidden]{display:none;}
             <tr><td><b>Móvil</b></td><td>Expo SDK + React Native + TypeScript</td><td>Requisito de la asignatura; expo-location, expo-taskmanager, expo-secure-store cubren ubicación en segundo plano y almacenamiento cifrado.</td></tr>
             <tr><td><b>Arquitectura móvil</b></td><td>Feature-based: src/features/&lt;f&gt;/{data,domain,presentation} + src/core</td><td>Continuidad con la estructura ya definida en el proyecto.</td></tr>
             <tr><td><b>Backend</b></td><td>Supabase — PostgreSQL gestionado + Auth + Realtime + Edge Functions (Deno/TypeScript)</td><td>Elimina el montaje, despliegue y mantenimiento de infraestructura propia; autenticación, autorización por RLS y tiempo real vienen resueltos.</td></tr>
-            <tr><td><b>Base de datos</b></td><td>PostgreSQL 16 con extensión PostGIS (sobre Supabase)</td><td>Consultas geoespaciales para corredor seguro y geocercas.</td></tr>
+            <tr><td><b>Base de datos</b></td><td>PostgreSQL 17 con extensión PostGIS (versión con la que Supabase crea los proyectos)</td><td>Consultas geoespaciales para corredor seguro y geocercas.</td></tr>
             <tr><td><b>Tiempo real</b></td><td>Supabase Realtime (WebSocket sobre Postgres)</td><td>Difusión de posición a N guardianes sin polling ni servidor propio.</td></tr>
-            <tr><td><b>Persistencia local</b></td><td>SQLite (expo-sqlite) + expo-secure-store</td><td>Cola offline y custodia del token/PIN.</td></tr>
-            <tr><td><b>Notificaciones</b></td><td>Expo Push Notifications + WhatsApp Cloud API (Meta)</td><td>Push como canal principal; WhatsApp a contactos de seguridad y puesto de control vía plantilla aprobada.</td></tr>
+            <tr><td><b>Persistencia local</b></td><td>expo-secure-store + caché local de la ruta (fase 1) · SQLite / expo-sqlite (fase 2)</td><td>expo-secure-store custodia la sesión (tokens). El PIN nunca se guarda en el dispositivo. La ruta guardada se conserva en caché local (E3-01); como revela la rutina del menor, el mecanismo y su cifrado se definen en el refinement del Sprint 2. SQLite sostiene la cola offline de E10 en la fase 2.</td></tr>
+            <tr><td><b>Gráficos</b></td><td>react-native-gifted-charts</td><td>Gráfico interactivo de alertas por día y por tipo de cierre en la vista institucional (E8-01). Recharts y D3 no corren en React Native.</td></tr>
+            <tr><td><b>Notificaciones</b></td><td>Expo Push Notifications (fase 1) + WhatsApp Cloud API de Meta (fase 2)</td><td>Push como canal principal; WhatsApp a contactos de seguridad y puesto de control vía plantilla aprobada.</td></tr>
             <tr><td><b>Infraestructura</b></td><td>Supabase CLI (migraciones versionadas) · GitHub Actions · EAS Build</td><td>Reproducible y suficiente para el alcance académico, sin contenedores propios.</td></tr>
           </tbody>
         </table></div>
@@ -1296,7 +1325,7 @@ tr[hidden]{display:none;}
 
       <section class="section" id="d4-flujo">
         <div class="section-head"><span class="num">5</span><h2>Flujo de datos</h2></div>
-        <p class="lead">Tres flujos de datos críticos: trayecto acompañado, alerta de pánico y operación sin conexión. Corresponden a los casos de uso CU-02, CU-04/CU-05 y a la épica E10.</p>
+        <p class="lead">Tres flujos de datos críticos: trayecto acompañado, alerta de pánico y operación sin conexión. Corresponden a los casos de uso CU-02, CU-04/CU-05 y a la épica E10 (fase 2).</p>
 
         <div class="subsection">
           <h3>5.1 Trayecto acompañado con seguimiento en vivo</h3>
@@ -1316,7 +1345,7 @@ tr[hidden]{display:none;}
         <div class="subsection">
           <h3>5.2 Alerta de pánico</h3>
           <div class="flow">
-            <div class="flow-step crit"><b>Disparo</b>3 s o sacudida en trayecto</div>
+            <div class="flow-step crit"><b>Disparo</b>mantener 3 s (sacudida en fase 2)</div>
             <div class="flow-arrow">→</div>
             <div class="flow-step"><b>Ventana de PIN</b>10 segundos</div>
             <div class="flow-arrow">→</div>
@@ -1326,11 +1355,11 @@ tr[hidden]{display:none;}
             <div class="flow-arrow">→</div>
             <div class="flow-step accent"><b>Guardián confirma</b>"voy en camino"</div>
           </div>
-          <p class="flow-note" style="text-align:left;">↳ PIN correcto en la ventana de 10 s → la alerta se cancela; nadie es notificado.</p>
+          <p class="flow-note" style="text-align:left;">↳ PIN correcto en la ventana de 10 s (verificado por la Edge Function <code>auth-pin</code>) → la alerta se cancela; nadie es notificado. PIN incorrecto o temporizador vencido → la alerta se envía. Sin conexión el PIN no se puede verificar y la alerta no se cancela.</p>
         </div>
 
         <div class="subsection">
-          <h3>5.3 Operación degradada sin conexión</h3>
+          <h3>5.3 Operación degradada sin conexión <span class="badge badge-neutral">Fase 2 · E10</span></h3>
           <div class="flow">
             <div class="flow-step"><b>Sin red</b>el evento se guarda en cola SQLite local (expo-sqlite)</div>
             <div class="flow-arrow">→</div>
@@ -1348,9 +1377,11 @@ tr[hidden]{display:none;}
         <p class="lead">Modelo entidad-relación simplificado del dominio. No incluye tablas puramente técnicas; se centra en las entidades de negocio necesarias para sustentar los requisitos funcionales.</p>
 
         <div class="entity-grid">
-          <div class="entity-card"><span class="ename">colegios</span><ul><li><b>id</b> PK</li><li>nombre, nit</li><li>responsable_control</li></ul></div>
-          <div class="entity-card"><span class="ename">guardianes</span><ul><li><b>id</b> PK</li><li>email, password_hash</li><li>creado_en</li></ul></div>
+          <div class="entity-card"><span class="ename">colegios</span><ul><li><b>id</b> PK</li><li>nombre, nit</li><li>creado_en</li></ul></div>
+          <div class="entity-card"><span class="ename">personal_institucion</span><ul><li><b>id</b> PK → auth.users</li><li>colegio_id → FK</li><li>nombre, cargo, activo</li></ul></div>
+          <div class="entity-card"><span class="ename">guardianes</span><ul><li><b>id</b> PK → auth.users</li><li>email, nombre</li><li>creado_en</li></ul></div>
           <div class="entity-card"><span class="ename">protegidos</span><ul><li><b>id</b> PK</li><li>guardian_id, colegio_id → FK</li><li>pin_hash, estado</li></ul></div>
+          <div class="entity-card"><span class="ename">consentimientos</span><ul><li><b>id</b> PK</li><li>guardian_id, protegido_id → FK</li><li>version_politica, aceptado_en</li></ul></div>
           <div class="entity-card"><span class="ename">contactos_apoyo</span><ul><li><b>id</b> PK</li><li>guardian_id → FK</li><li>alcance_visibilidad</li></ul></div>
           <div class="entity-card"><span class="ename">rutas</span><ul><li><b>id</b> PK</li><li>protegido_id → FK</li><li>geometria, corredor_m</li></ul></div>
           <div class="entity-card"><span class="ename">trayectos</span><ul><li><b>id</b> PK</li><li>protegido_id, ruta_id → FK</li><li>inicio_en, fin_en, estado</li></ul></div>
@@ -1361,6 +1392,8 @@ tr[hidden]{display:none;}
 
         <div class="relation-list">
           <div class="relation-row"><span class="rel-e">colegios</span><span class="rel-card">1:N</span><span>protegidos</span><span class="rel-desc">registra la matrícula</span></div>
+          <div class="relation-row"><span class="rel-e">colegios</span><span class="rel-card">1:N</span><span>personal_institucion</span><span class="rel-desc">responsables del puesto de control</span></div>
+          <div class="relation-row"><span class="rel-e">protegidos</span><span class="rel-card">1:N</span><span>consentimientos</span><span class="rel-desc">autorización del representante legal, otorgada por el guardián</span></div>
           <div class="relation-row"><span class="rel-e">guardianes</span><span class="rel-card">1:N</span><span>protegidos</span><span class="rel-desc">vincula al menor</span></div>
           <div class="relation-row"><span class="rel-e">guardianes</span><span class="rel-card">1:N</span><span>contactos_apoyo</span><span class="rel-desc">invita a la red de apoyo</span></div>
           <div class="relation-row"><span class="rel-e">protegidos</span><span class="rel-card">1:N</span><span>rutas</span><span class="rel-desc">rutas casa–colegio</span></div>
@@ -1376,13 +1409,18 @@ tr[hidden]{display:none;}
           <div class="table-wrap"><table>
             <thead><tr><th>Entidad</th><th>Notas de diseño</th></tr></thead>
             <tbody>
-              <tr><td class="mono-cell">protegidos.estado</td><td>Máquina de estados: PENDIENTE_VALIDACION → ACTIVO → INACTIVO. Solo el colegio puede mover a ACTIVO (RF-03).</td></tr>
-              <tr><td class="mono-cell">trayectos.estado</td><td>Máquina de estados: EN_CURSO → DESVIADO → ALERTA o EN_CURSO → CERRADO / VENCIDO.</td></tr>
-              <tr><td class="mono-cell">alertas.tipo</td><td>Enumera el origen: MANUAL_BOTON, MANUAL_SACUDIDA, AUTOMATICA_DESVIO.</td></tr>
+              <tr><td class="mono-cell">Roles</td><td>El rol del usuario (<code>protegido</code>, <code>guardian</code>, <code>apoyo</code>, <code>institucion</code>) se guarda en <code>app_metadata.rol</code> de Supabase Auth, que solo el servidor puede escribir; las políticas RLS lo leen del JWT.</td></tr>
+              <tr><td class="mono-cell">guardianes</td><td><code>id</code> es el mismo identificador de <code>auth.users</code>. Las credenciales las gestiona Supabase Auth: no existe <code>password_hash</code> propio.</td></tr>
+              <tr><td class="mono-cell">personal_institucion</td><td>Cuentas del puesto de control; <code>id</code> es el de <code>auth.users</code>. Un colegio puede tener varias; <code>activo = false</code> retira el acceso sin borrar el historial. RLS: solo el personal activo de un colegio ve y valida los protegidos de ese colegio.</td></tr>
+              <tr><td class="mono-cell">protegidos.pin_hash</td><td>Hash Argon2id del PIN. Solo lo lee y verifica la Edge Function <code>auth-pin</code> (rate limiting), que entrega la sesión del protegido; el mecanismo exacto de sesión se detalla en el refinement de E1-04.</td></tr>
+              <tr><td class="mono-cell">protegidos.estado</td><td>Máquina de estados: PENDIENTE_VALIDACION → ACTIVO → INACTIVO. Solo el personal activo del colegio puede mover a ACTIVO (RF-03).</td></tr>
+              <tr><td class="mono-cell">consentimientos</td><td>Append-only (RF-38): registra versión de la política, actor y <code>aceptado_en</code> con timestamp de servidor. Una revocación se registra como fila nueva; ninguna fila se actualiza ni se borra.</td></tr>
+              <tr><td class="mono-cell">trayectos.estado</td><td>Máquina de estados: EN_CURSO → CERRADO en la fase 1. DESVIADO, ALERTA (por desvío) y VENCIDO quedan definidos para la fase 2 (E5).</td></tr>
+              <tr><td class="mono-cell">alertas.tipo</td><td>Enumera el origen: MANUAL_BOTON (fase 1), MANUAL_SACUDIDA y AUTOMATICA_DESVIO (fase 2).</td></tr>
               <tr><td class="mono-cell">alertas.estado</td><td>Enumera el desenlace: ENVIADA, CANCELADA, ATENDIDA, CERRADA.</td></tr>
               <tr><td class="mono-cell">eventos_incidente</td><td>Tabla append-only; ninguna fila se actualiza ni se borra (RF-32). Sustenta la bitácora auditable.</td></tr>
               <tr><td class="mono-cell">audit_log</td><td>Cross-cutting: registra todo acceso de lectura o escritura a datos de un protegido, con actor, acción y timestamp de servidor.</td></tr>
-              <tr><td class="mono-cell">Retención</td><td>trayectos con más de 90 días se purgan automáticamente (RF-39); eventos_incidente se conserva 1 año.</td></tr>
+              <tr><td class="mono-cell">Retención</td><td>Trayectos con más de 90 días se purgan automáticamente (RF-39, fase 2); eventos_incidente se conserva 1 año.</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -1396,8 +1434,8 @@ tr[hidden]{display:none;}
             <tr><td><b>Cifrado en tránsito</b></td><td>TLS 1.3 obligatorio + certificate pinning en el cliente móvil.</td></tr>
             <tr><td><b>Cifrado en reposo</b></td><td>Cifrado a nivel de columna para documento, foto y ubicación histórica.</td></tr>
             <tr><td><b>Autenticación</b></td><td>JWT de vida corta (15 min) + refresh token rotativo revocable.</td></tr>
-            <tr><td><b>Autorización</b></td><td>RBAC: protegido, guardian, apoyo, institucion — verificada en cada endpoint.</td></tr>
-            <tr><td><b>Protección del PIN</b></td><td>Hash Argon2id, nunca en texto plano, almacenado en expo-secure-store.</td></tr>
+            <tr><td><b>Autorización</b></td><td>RBAC: protegido, guardian, apoyo, institucion — rol en <code>app_metadata</code> (solo escribible por el servidor), verificado por RLS y en cada Edge Function.</td></tr>
+            <tr><td><b>Protección del PIN</b></td><td>Hash Argon2id en <code>protegidos.pin_hash</code>, nunca en texto plano ni en el dispositivo; verificado solo por la Edge Function <code>auth-pin</code> con rate limiting. En el dispositivo, expo-secure-store custodia únicamente la sesión.</td></tr>
             <tr><td><b>Anti-abuso</b></td><td>Rate limiting por IP y por usuario en endpoints de alerta y autenticación.</td></tr>
             <tr><td><b>Anti-tampering</b></td><td>Detección de root/emulador en modo release.</td></tr>
             <tr><td><b>Minimización</b></td><td>Solo se persiste ubicación con trayecto o alerta activos; fuera de eso no se recolecta.</td></tr>
@@ -1415,14 +1453,18 @@ tr[hidden]{display:none;}
             <tr><td><b>Vista institucional en la misma app, sin dashboard web</b></td><td>Reduce la superficie de código a mantener y de ataque a asegurar; el puesto de control necesita mapa y lista de alertas, no un panel administrativo completo.</td></tr>
             <tr><td><b>WhatsApp Cloud API como canal secundario</b></td><td>El número de prueba solo soporta 5 destinatarios verificados (riesgo R5); el push permanece como canal principal sin ese límite.</td></tr>
             <tr><td><b>Disparo de pánico por sacudida, no botón físico</b></td><td>Evita depender de hardware adicional que el usuario deba comprar y llevar; se limita a modo trayecto con la app en primer plano para reducir falsos positivos.</td></tr>
-            <tr><td><b>Escalamiento a la autoridad simulado</b></td><td>La integración real con la línea 123 requiere convenio interinstitucional fuera del alcance académico; el sistema genera y registra el reporte sin transmitirlo a un organismo real.</td></tr>
+            <tr><td><b>Escalamiento a la autoridad simulado</b></td><td>La integración real con la línea 123 requiere convenio interinstitucional fuera del alcance académico; el sistema genera y registra el reporte sin transmitirlo a un organismo real (E8-02, fase 2).</td></tr>
+            <tr><td><b>Credenciales solo en Supabase Auth</b></td><td>Duplicar contraseñas en una tabla propia (<code>password_hash</code>) crearía una segunda superficie de ataque; <code>guardianes</code> y <code>personal_institucion</code> referencian <code>auth.users</code>.</td></tr>
+            <tr><td><b>PIN verificado en el servidor</b></td><td>Supabase Auth no ofrece login por PIN. Verificarlo en una Edge Function permite rate limiting y evita que el hash viaje o se guarde en el teléfono.</td></tr>
+            <tr><td><b>Tabla <code>personal_institucion</code></b></td><td>Permite varios responsables por colegio y desactivarlos sin borrar historial, lo que mitiga R3 (colegio sin responsable).</td></tr>
+            <tr><td><b>GitHub Flow (solo <code>main</code>)</b></td><td>Solo existen los ambientes dev y staging; <code>main</code> despliega a staging y las versiones se publican por tag (<code>vX.Y.Z</code>) con EAS Build. Una rama <code>develop</code> no tendría ambiente propio y duplicaría PR.</td></tr>
           </tbody>
         </table></div>
       </section>
 
       <section class="section" id="d4-repo">
         <div class="section-head"><span class="num">9</span><h2>Estructura del repositorio</h2></div>
-        <div class="filetree">nexasafe/
+        <div class="filetree">nexasafeapp/
 ├── .github/
 │  ├── workflows/          <span class="fc"># ci.yml, nightly-security.yml, release.yml</span>
 │  ├── ISSUE_TEMPLATE/      <span class="fc"># user-story.md, bug.md, security-finding.md</span>
@@ -1442,27 +1484,30 @@ tr[hidden]{display:none;}
 │              └── incidents/
 ├── <span class="fd">supabase/</span>
 │  ├── migrations/       <span class="fc"># esquema versionado</span>
-│  ├── functions/        <span class="fc"># Edge Functions (Deno): notify-push, notify-whatsapp, escalate</span>
+│  ├── functions/        <span class="fc"># Edge Functions (Deno): auth-pin, notify-push · fase 2: notify-whatsapp, escalate</span>
 │  └── policies/         <span class="fc"># políticas RLS documentadas y probadas</span>
 ├── <span class="fd">docs/</span>
+│  ├── entregables/       <span class="fc"># ing-software-1/: los 5 documentos oficiales (PDF + versión interactiva)</span>
 │  ├── architecture/
 │  ├── security/         <span class="fc"># threat-model.md, risk-register.md, exceptions.md</span>
 │  ├── privacy/          <span class="fc"># pia.md, politica-tratamiento.md</span>
-│  └── scrum/             <span class="fc"># sprint-XX/{planning,review,retro}.md</span>
+│  └── scrum/             <span class="fc"># sprint-XX/{planning,review,retro,resumen}.md</span>
 ├── .pre-commit-config.yaml
 ├── .gitleaks.toml
 ├── semgrep.yml
+├── CHANGELOG.md
 └── README.md</div>
-        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.0 · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable.</div>
+        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable. Cambios frente a v1.0: credenciales solo en Supabase Auth, tablas personal_institucion y consentimientos, PIN verificado en el servidor, rol en app_metadata, GitHub Flow, PostgreSQL 17, caché local de la ruta, gráficos con react-native-gifted-charts y componentes de fase 2 identificados.</div>
       </section>
 
       <!-- ============ DOC 5 — PRUEBAS DE CALIDAD ============ -->
       <section class="doc-hero" id="doc5">
-        <span class="kicker">Documento 05 · v1.0 · Iteración 0</span>
+        <span class="kicker">Documento 05 · v1.1 · Iteración 0</span>
         <h1>Informe de Pruebas de Calidad y Control de Errores</h1>
         <p class="lede">NexaSafe — Estrategia de pruebas y estado inicial (iteración 0). Fija los criterios de calidad exigidos a todo incremento y deja registro trazable del estado del proyecto en cada punto de control.</p>
         <div class="meta-row">
-          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega</span></div>
+          <div class="meta-pill"><b>22 sep 2026</b><span>Fecha de entrega (v1.0)</span></div>
+          <div class="meta-pill"><b>3 oct 2026</b><span>Revisión v1.1</span></div>
           <div class="meta-pill"><b>Cierre del Sprint 4 — H5</b><span>Próxima actualización</span></div>
         </div>
       </section>
@@ -1508,7 +1553,7 @@ tr[hidden]{display:none;}
           <tbody>
             <tr><td class="center">1</td><td>Registro de guardián → alta de menor → validación del colegio → primer login del protegido.</td></tr>
             <tr><td class="center">2</td><td>Inicio de trayecto → seguimiento → llegada → cierre automático.</td></tr>
-            <tr><td class="center">3</td><td>Desvío del corredor → temporizador → sin respuesta → alerta automática. <span class="badge badge-medium">Trabajo futuro (E5)</span></td></tr>
+            <tr><td class="center">3</td><td>Desvío del corredor → temporizador → sin respuesta → alerta automática. <span class="badge badge-medium">Fase 2 (E5)</span></td></tr>
             <tr><td class="center">4</td><td>Botón de pánico → cancelación exitosa con PIN.</td></tr>
             <tr><td class="center">5</td><td>Botón de pánico → alerta enviada → recepción del guardián → "voy en camino" → cierre clasificado.</td></tr>
           </tbody>
@@ -1521,7 +1566,7 @@ tr[hidden]{display:none;}
           <thead><tr><th>Práctica</th><th>Herramienta</th><th>Cuándo se ejecuta</th></tr></thead>
           <tbody>
             <tr><td>Análisis estático de código (SAST)</td><td>Semgrep + CodeQL</td><td>En cada PR</td></tr>
-            <tr><td>Análisis de composición de software (SCA)</td><td>npm audit, Dependabot</td><td>En cada PR + semanal</td></tr>
+            <tr><td>Análisis de composición de software (SCA)</td><td><code>npm audit --audit-level=high</code>, Dependabot</td><td>En cada PR + semanal</td></tr>
             <tr><td>Escaneo de secretos</td><td>Gitleaks</td><td>Local (pre-commit) y en cada PR</td></tr>
             <tr><td>Análisis dinámico de la API (DAST)</td><td>OWASP ZAP baseline</td><td>Nightly contra staging</td></tr>
             <tr><td>Análisis del binario móvil</td><td>MobSF sobre el APK</td><td>Pre-release</td></tr>
@@ -1568,7 +1613,7 @@ tr[hidden]{display:none;}
           <b>Seguridad — obligatorio, no negociable</b>
           <ul class="checklist" style="margin:8px 0 0;">
             <li>SAST sin hallazgos High o Critical</li>
-            <li>SCA sin vulnerabilidades Critical explotables</li>
+            <li>SCA sin hallazgos High o Critical</li>
             <li>Escaneo de secretos limpio</li>
             <li>Ningún dato personal en logs (verificado manualmente en el PR)</li>
             <li>Tablas y Edge Functions nuevas con RLS, autorización por rol y rate limiting</li>
@@ -1600,7 +1645,7 @@ tr[hidden]{display:none;}
               <tr><td>Latencia disparo → notificación recibida</td><td>&lt; 5 s con red, &lt; 30 s con reconexión</td></tr>
               <tr><td>Precisión de posición reportada</td><td>&lt; 20 m en zona urbana abierta</td></tr>
               <tr><td>Consumo de batería por hora de trayecto</td><td>&lt; 8 %</td></tr>
-              <tr><td>Tasa de falsas alarmas automáticas</td><td>&lt; 10 % de los trayectos</td></tr>
+              <tr><td>Tasa de falsas alarmas automáticas (fase 2)</td><td>&lt; 10 % de los trayectos</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -1608,7 +1653,7 @@ tr[hidden]{display:none;}
 
       <section class="section" id="d5-campo">
         <div class="section-head"><span class="num">7</span><h2>Plan de prueba de campo</h2></div>
-        <p class="lead">En el Sprint 6 (ampliación posterior al cierre del semestre, fuera de la ruta crítica actual) se ejecuta una prueba real de trayecto en un recorrido de aproximadamente 1 km, midiendo: precisión del GPS, consumo de batería por hora de trayecto, latencia entre disparo y notificación recibida, y comportamiento en zonas de baja cobertura. Los resultados retroalimentan directamente las métricas de producto del capítulo 6.</p>
+        <p class="lead">En la fase 2 (posterior al cierre del semestre, fuera de la ruta crítica actual) se ejecuta una prueba real de trayecto en un recorrido de aproximadamente 1 km, midiendo: precisión del GPS, consumo de batería por hora de trayecto, latencia entre disparo y notificación recibida, y comportamiento en zonas de baja cobertura. Los resultados retroalimentan directamente las métricas de producto del capítulo 6.</p>
       </section>
 
       <section class="section" id="d5-hallazgos">
@@ -1662,12 +1707,12 @@ tr[hidden]{display:none;}
           <b>Qué se puede probar hoy</b>
           <p>El único flujo ejecutable actualmente es el login local del prototipo SanMateoApp (AuthScreen → useAuthViewModel → AuthenticateUser → LocalAuthRepository), documentado en <code>docs/descripcion-aplicacion.md</code>. Ese flujo se usará como caso de prueba piloto para validar la configuración de Jest y React Native Testing Library antes de que exista la primera historia de negocio de NexaSafe.</p>
         </div>
-        <div class="doc-footer">Informe de Pruebas de Calidad y Control de Errores — NexaSafe · v1.0 (iteración 0) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.1 (sección 13) y docs/descripcion-aplicacion.md.</div>
+        <div class="doc-footer">Informe de Pruebas de Calidad y Control de Errores — NexaSafe · v1.1 (iteración 0, revisión 3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2 (sección 13) y docs/descripcion-aplicacion.md. Cambios frente a v1.0: SCA bloquea desde High y "Sprint 6" reemplazado por fase 2. El estado del capítulo 9 corresponde al 22 sep; los resultados reales se registran por sprint.</div>
       </section>
 
     </div>
 
-    <div class="end-footer">NexaSafe · Fundación Universitaria San Mateo · Ingeniería de Software I · 2026-2 — documentación interactiva generada a partir de los cinco entregables oficiales del proyecto.</div>
+    <div class="end-footer">NexaSafe · Fundación Universitaria San Mateo · Ingeniería de Software I · 2026-2 — documentación interactiva de los cinco entregables oficiales del proyecto · v1.1 (3 oct 2026).</div>
   </main>
 </div>
 

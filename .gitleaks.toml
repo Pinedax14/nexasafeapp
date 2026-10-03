@@ -1,0 +1,22 @@
+title = "NexaSafe — configuración de Gitleaks"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "supabase-service-role-jwt"
+description = "JWT de Supabase con rol service_role"
+regex = '''eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]*cm9sZSI6InNlcnZpY2Vfcm9sZS[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+'''
+keywords = ["eyJ"]
+
+[[rules]]
+id = "supabase-access-token"
+description = "Token personal de Supabase CLI"
+regex = '''sbp_[a-f0-9]{40}'''
+keywords = ["sbp_"]
+
+[allowlist]
+description = "Archivos generados sin secretos"
+paths = [
+  '''apps/mobile/package-lock\.json''',
+]

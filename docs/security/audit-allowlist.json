@@ -1,0 +1,26 @@
+[
+  {
+    "id": "EX-001",
+    "package": "image-size",
+    "advisory": "https://github.com/advisories/GHSA-w3rx-r6r6-pgpr",
+    "expires": "2026-10-17"
+  },
+  {
+    "id": "EX-001",
+    "package": "image-size",
+    "advisory": "https://github.com/advisories/GHSA-5p2g-fcmc-qvqq",
+    "expires": "2026-10-17"
+  },
+  {
+    "id": "EX-002",
+    "package": "node-forge",
+    "advisory": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+    "expires": "2026-10-17"
+  },
+  {
+    "id": "EX-003",
+    "package": "braces",
+    "advisory": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+    "expires": "2026-10-17"
+  }
+]

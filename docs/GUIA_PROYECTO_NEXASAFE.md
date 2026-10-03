@@ -3,35 +3,52 @@
 **Ingeniería de Software I · FUSM · 2026-2**
 Periodo: 22 sep – 28 nov 2026 · Marco: Scrum + DevSecOps · Sprints de 2 semanas
 
-Esta guía resume **qué hacer, en qué orden y qué archivos deben existir** en cada fase. Se basa en los 5 documentos entregados (Requisitos, Plan de Desarrollo, Cronograma, Diseño Arquitectónico e Informe de Pruebas).
+Esta guía resume **qué hacer, en qué orden y qué archivos deben existir** en cada fase. Se basa en los 5 documentos entregados (Requisitos, Plan de Desarrollo, Cronograma, Diseño Arquitectónico e Informe de Pruebas), en su versión **v1.1**.
 
 ---
 
-## 0. Antes de empezar: corregir inconsistencias en los documentos
+## 0. Inconsistencias resueltas en la v1.1 (3 oct 2026)
 
-Al cruzar los 5 PDF aparecen contradicciones. Si el docente las detecta en la sustentación, restan credibilidad. Corrígelas en la v1.1 de los documentos.
+Al cruzar los 5 documentos v1.0 aparecían contradicciones. Quedaron corregidas en la v1.1 de los entregables (`docs/entregables/ing-software-1/`) y en `PLAN_NEXASAFE.md` v1.2. Las decisiones de diseño (B, D, E, F y G) las aprobó el equipo el 3 oct 2026.
 
-| # | Problema | Dónde | Cómo corregirlo |
-|---|---|---|---|
-| 1 | Sprint 4 dice **27 pts**, pero sus historias suman **32** (5+5+3+8+5+3+3) | Cronograma 4.5 y cap. 6 | Mover E11-04 (3) y E9-02 (3) a otro sprint, o actualizar a 32 pts y la capacidad total a ≈126 |
-| 2 | El hito **H3 (31 oct)** exige "ubicación en vivo operando", pero **E4-02** está en el Sprint 3 (3–14 nov) | Cronograma 3 y 4.4 | Mover E4-02 al Sprint 2 o cambiar el criterio de H3 |
-| 3 | El Sprint Goal del Sprint 3 dice "con modo discreto", pero **E6-04** está en el Sprint 4 | Cronograma 4.4 / 4.5 | Quitar "modo discreto" del goal del Sprint 3 |
-| 4 | Varios requisitos **MUST** quedaron como trabajo futuro: E2-03, E5 completa, E8-02, E10-01, E10-03 y E11-02 | Requisitos 3.1 vs. Cronograma cap. 6 | Reclasificarlos como SHOULD/WON'T (esta fase) o incluirlos en el roadmap |
-| 5 | La sección 6.1 de Requisitos pone "detección automática de desvío" **dentro** del alcance, pero la matriz la declara trabajo futuro | Requisitos 6.1 vs. 5 | Pasar ese punto a "Fuera del alcance de esta fase" |
-| 6 | Se menciona un **Sprint 6** (pentest interno, prueba de campo), pero solo existen los Sprints 0–4 y Cierre | Plan R4, Informe cap. 7 | Aclarar que es una fase posterior al semestre |
-| 7 | El Sprint 4 termina el 28 nov, el mismo día de la sustentación | Cronograma | Cerrar el desarrollo el 24 nov y dejar 25–28 nov solo para el cierre |
+| # | Problema en v1.0 | Resolución en v1.1 |
+|---|---|---|
+| 1 | Sprint 4 decía **27 pts**, pero sus historias suman **32** | Sprint 4 = 32 pts; capacidad comprometida = 126 pts (18+24+26+26+32) |
+| 2 | **H3 (31 oct)** exigía "ubicación en vivo", pero **E4-02** está en el Sprint 3 | Nuevo criterio de H3: ruta definida y trayecto iniciado (`EN_CURSO`) con indicador activo. La ubicación en vivo pasa a H4 |
+| 3 | El goal del Sprint 3 decía "con modo discreto", pero **E6-04** está en el Sprint 4 | Goal del Sprint 3: "el guardián sigue el trayecto en vivo y el botón de pánico funciona de extremo a extremo con cancelación por PIN" |
+| 4 | Historias **MUST** declaradas trabajo futuro (E2-03, E5-01..03, E8-02, E10-01, E10-03, E11-02) | Reclasificadas como **WON'T (esta fase)**: requisitos válidos del producto, planificados para la fase 2 |
+| 5 | Requisitos 6.1 ponía "detección automática de desvío" y "operación sin datos" **dentro** del alcance | Ambas pasan a "Fuera del alcance de esta fase (fase 2)" |
+| 6 | Se mencionaba un **Sprint 6** inexistente | Reemplazado por "fase 2 (posterior al semestre)" en Plan R4, Plan 13 e Informe cap. 7 |
+| 7 | El Sprint 4 terminaba el 28 nov, día de la sustentación | Sprint 4 = 17–24 nov; Cierre = 25–28 nov |
+| 8 | H4 (14 nov) caía antes de que existieran sus historias (Sprint 4) | H4 = 24 nov |
+| 9 | El goal del Sprint 2 prometía "seguir en vivo", que es E4-02 (Sprint 3) | Goal del Sprint 2: "un guardián puede definir la ruta del protegido y el protegido puede iniciar un trayecto acompañado" |
+| 10 | El backlog decía "≈ 210 pts", pero las historias suman **220**; E7-03 y E0-05 no estaban ni en un sprint ni en el trabajo futuro | Backlog = 220 pts; E7-03 y E0-05 pasan a la fase 2 (el SBOM del cierre se genera manualmente con Syft) |
+| 11 | WhatsApp Cloud API figuraba en el stack, pero ninguna historia lo construye | WhatsApp (`notify-whatsapp`) y `escalate` pasan a la fase 2; la fase 1 notifica solo por Expo Push |
+| 12 | **(B)** El Plan desplegaba a staging desde `develop`; la Guía, desde `main` | GitHub Flow: solo `main`. Cada merge despliega a staging; las versiones salen por tag |
+| 13 | **(C)** SCA: el Plan bloqueaba desde High y la DoD solo desde Critical | `npm audit --audit-level=high` en todos los documentos |
+| 14 | **(D)** `guardianes.password_hash` duplicaba lo que ya guarda Supabase Auth | `guardianes.id` = `auth.users.id`, sin `password_hash` |
+| 15 | **(E)** El PIN figuraba "almacenado en expo-secure-store" y a la vez en `protegidos.pin_hash`; Supabase Auth no ofrece login por PIN | Hash Argon2id solo en `protegidos.pin_hash`, verificado por la Edge Function `auth-pin` con rate limiting. En el teléfono solo se guarda la sesión |
+| 16 | **(F)** La tabla `consentimientos` no estaba en el modelo de datos del Diseño | Agregada al Diseño cap. 6 (append-only) |
+| 17 | **(G)** No había cómo vincular una cuenta del rol `institucion` con su colegio | Nueva tabla `personal_institucion` (varias personas por colegio); el rol vive en `app_metadata` de Supabase Auth |
+| 18 | La historia de abuso "forzar a cancelar la alerta" decía "la alerta ya salió", lo que contradice RF-22 (dentro de los 10 s la alerta aún no sale) | Mitigación reescrita: pasados los 10 s la alerta ya no se puede cancelar desde el dispositivo |
+| 19 | RNF-12, RNF-14, RNF-17, RNF-24 y RNF-25 exigían capacidades de la fase 2 | Cada uno indica qué se cumple en la fase 1 y qué llega en la fase 2 |
+| 20 | Los documentos decían PostgreSQL 16, pero Supabase crea los proyectos con PostgreSQL 17 | PostgreSQL 17 en todos los documentos (decisión del 3 oct 2026) |
+| 21 | Con el PIN verificado solo en el servidor (fila 15), RF-22 no definía qué pasa sin conexión | Sin conexión la alerta no se cancela y la app indica que no pudo verificar el PIN; escenario Gherkin agregado a E6-03 |
+| 22 | Los aportes "gráficos interactivos" y "caché" de Programación para Dispositivos Móviles no tenían historia en los Sprints 0–4 | Se cubren dentro de historias existentes: caché local de la ruta en E3-01 y gráfico interactivo en E8-01, sin reestimar (riesgo R6) |
+
+**Regla desde ahora:** si aparece una contradicción nueva, no se resuelve en silencio. Se explica, se propone una opción y se registra aquí como fila nueva cuando el equipo la apruebe.
 
 ---
 
 ## 1. Estructura de archivos que debe existir en el repositorio
 
 ```
-nexasafe/
+nexasafeapp/
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml                   # lint + test + build + SAST + SCA + secretos
 │   │   ├── nightly-security.yml     # OWASP ZAP + E2E Maestro
-│   │   └── release.yml              # EAS Build firmado + SBOM
+│   │   └── release.yml              # EAS Build firmado (SBOM automático: fase 2)
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── user-story.md
 │   │   ├── bug.md
@@ -44,10 +61,10 @@ nexasafe/
 │                                    # network, institution, incidents
 ├── supabase/
 │   ├── migrations/
-│   ├── functions/                   # notify-push, notify-whatsapp, escalate
+│   ├── functions/                   # auth-pin, notify-push · fase 2: notify-whatsapp, escalate
 │   └── policies/
 ├── docs/
-│   ├── entregables/                 # los 5 PDF oficiales (01 a 05)
+│   ├── entregables/ing-software-1/  # los 5 PDF oficiales (01 a 05) + versión interactiva
 │   ├── architecture/
 │   ├── security/
 │   │   ├── threat-model.md
@@ -60,7 +77,8 @@ nexasafe/
 │   │   └── sprint-XX/
 │   │       ├── planning.md
 │   │       ├── review.md
-│   │       └── retro.md
+│   │       ├── retro.md
+│   │       └── resumen.md
 │   └── manual/                      # manual de usuario e instalación (cierre)
 ├── .pre-commit-config.yaml
 ├── .gitleaks.toml
@@ -83,7 +101,8 @@ nexasafe/
 | `docs/scrum/sprint-XX/planning.md` | Sprint Goal, historias comprometidas y capacidad | Inicio de cada sprint |
 | `docs/scrum/sprint-XX/review.md` | Qué se demostró, feedback del PO y aceptado/rechazado | Fin de cada sprint |
 | `docs/scrum/sprint-XX/retro.md` | Qué salió bien, qué mejorar y 1–2 acciones con responsable | Fin de cada sprint |
-| `docs/entregables/05-informe-pruebas-calidad.md` | Informe de pruebas actualizado con resultados reales | Cierre de cada sprint y consolidado en H5 |
+| `docs/scrum/sprint-XX/resumen.md` | Una página: goal, velocidad, historias, hallazgos y acciones | Cierre de cada sprint |
+| `docs/entregables/ing-software-1/05-informe-pruebas-calidad.md` | Informe de pruebas actualizado con resultados reales | Cierre de cada sprint y consolidado en H5 |
 
 ---
 
@@ -125,7 +144,7 @@ Repite este ciclo en **todos** los sprints:
 - [ ] ESLint + Prettier sin errores
 - [ ] Sin TODO ni código comentado
 - [ ] Semgrep sin High/Critical
-- [ ] npm audit sin Critical explotables
+- [ ] npm audit (--audit-level=high) sin High/Critical
 - [ ] Gitleaks limpio
 - [ ] Sin datos personales en logs
 - [ ] Tablas/Edge Functions nuevas con RLS + rol + rate limiting
@@ -145,8 +164,8 @@ Repite este ciclo en **todos** los sprints:
 - [x] 03 Cronograma y Tareas
 - [x] 04 Diseño Arquitectónico
 - [x] 05 Informe de Pruebas (iteración 0)
-- [ ] Corregir las inconsistencias de la sección 0 → v1.1
-- [ ] Subir los PDF a `docs/entregables/`
+- [x] Corregir las inconsistencias de la sección 0 → v1.1 (3 oct 2026)
+- [x] Subir los PDF a `docs/entregables/ing-software-1/`
 
 ---
 
@@ -156,9 +175,9 @@ Repite este ciclo en **todos** los sprints:
 **Hito H1 (2 oct):** todo PR ejecuta lint + test + SAST + SCA automáticamente.
 
 **E0-01 · Monorepo, ramas protegidas y plantillas (3 pts)**
-1. Crear el repo `nexasafe` en GitHub.
+1. Usar el repo existente `nexasafeapp` en GitHub.
 2. Mover el prototipo SanMateoApp a `apps/mobile/` conservando la estructura feature-based.
-3. En Settings → Branches, proteger `main`: exigir PR, 1 aprobación y checks en verde.
+3. En Settings → Branches, proteger `main`: exigir PR, 1 aprobación y checks en verde. No se crea rama `develop` (GitHub Flow).
 4. Crear `pull_request_template.md` con el checklist de DoD y las 3 plantillas de issue.
 5. Configurar GitHub Projects con las vistas *Backlog* y *Sprint actual* (To Do / In Progress / In Review / Done).
 6. Cargar todas las historias como issues con etiquetas `epic:*`, `type:*` y `security`.
@@ -170,7 +189,7 @@ Repite este ciclo en **todos** los sprints:
 
 **E0-03 · SAST, SCA y secretos (5 pts)**
 1. Agregar `semgrep.yml` y el paso de Semgrep en el CI; activar CodeQL.
-2. Agregar `npm audit --audit-level=critical` al CI y activar Dependabot.
+2. Agregar `npm audit --audit-level=high` al CI y activar Dependabot.
 3. Crear `.gitleaks.toml` y `.pre-commit-config.yaml` con Gitleaks; agregar Gitleaks al CI.
 4. Configurar que un hallazgo High o Critical **bloquee el merge**.
 
@@ -198,15 +217,17 @@ Repite este ciclo en **todos** los sprints:
 
 **Antes de programar**
 - [ ] Crear `pia.md` y `politica-tratamiento.md`, porque este sprint ya toca datos de menores.
-- [ ] Crear la migración con las tablas `colegios`, `guardianes`, `protegidos`, `audit_log` y `consentimientos`, **con RLS** en todas.
+- [ ] Crear la migración con las tablas `colegios`, `personal_institucion`, `guardianes`, `protegidos`, `audit_log` y `consentimientos`, **con RLS** en todas.
+  - `guardianes.id` y `personal_institucion.id` referencian `auth.users.id` (sin `password_hash`).
+  - El rol va en `app_metadata.rol` de Supabase Auth.
 
 | Historia | Qué construir | Responsable | Pts |
 |---|---|---|---|
 | E1-01 | Pantalla de registro con Supabase Auth (correo + contraseña) | Móvil | 3 |
 | E1-02 | Formulario de alta del menor → estado `PENDIENTE_VALIDACION` | Móvil + Backend | 5 |
 | E1-03 | Vista del colegio para validar la matrícula → estado `ACTIVO` (solo el rol `institucion`) | Backend | 5 |
-| E1-04 | Login del protegido con PIN (hash Argon2id) | Móvil | 3 |
-| E1-05 | Sesión en `expo-secure-store` | Móvil | 3 |
+| E1-04 | Login del protegido con PIN, verificado por la Edge Function `auth-pin` (hash Argon2id en `protegidos.pin_hash`, rate limiting) | Móvil | 3 |
+| E1-05 | Sesión (tokens) en `expo-secure-store`; el PIN nunca se guarda en el dispositivo | Móvil | 3 |
 | E11-01 | Pantalla de consentimiento + registro con fecha, versión y actor | Backend + Móvil | 5 |
 
 **Prueba E2E del flujo 1 (Maestro):** registro → alta → validación → login con PIN.
@@ -216,8 +237,8 @@ Repite este ciclo en **todos** los sprints:
 
 ### SPRINT 2 — 20 a 31 oct · 26 pts
 
-**Sprint Goal:** un guardián puede definir la ruta y seguir en vivo el trayecto del protegido.
-**Hito H3 (31 oct):** trayecto acompañado con ubicación en vivo operando (ver la inconsistencia #2).
+**Sprint Goal:** un guardián puede definir la ruta del protegido y el protegido puede iniciar un trayecto acompañado.
+**Hito H3 (31 oct):** ruta definida sobre mapa y trayecto acompañado iniciado (`EN_CURSO`) con indicador activo.
 
 **Antes de programar**
 - [ ] Activar la extensión **PostGIS** y migrar las tablas `rutas`, `trayectos` y `contactos_apoyo`.
@@ -225,7 +246,7 @@ Repite este ciclo en **todos** los sprints:
 
 | Historia | Qué construir | Responsable | Pts |
 |---|---|---|---|
-| E3-01 | Dibujar la ruta sobre un mapa y guardarla como geometría PostGIS | Móvil | 8 |
+| E3-01 | Dibujar la ruta sobre un mapa, guardarla como geometría PostGIS y conservarla en caché local (aporte "caché" de Móviles; definir mecanismo y cifrado en el refinement) | Móvil | 8 |
 | E3-02 | Slider de corredor en metros | Móvil + Backend | 3 |
 | E3-03 | Duración esperada del trayecto | Móvil | 3 |
 | E4-01 | Botón "Iniciar trayecto" (un toque) → estado `EN_CURSO` | Móvil | 5 |
@@ -238,7 +259,7 @@ Repite este ciclo en **todos** los sprints:
 
 ### SPRINT 3 — 3 a 14 nov · 26 pts
 
-**Sprint Goal:** el botón de pánico funciona de extremo a extremo con cancelación.
+**Sprint Goal:** el guardián sigue el trayecto en vivo y el botón de pánico funciona de extremo a extremo con cancelación por PIN.
 
 **Antes de programar**
 - [ ] Migrar las tablas `alertas` y `eventos_incidente` (append-only: sin UPDATE ni DELETE en RLS).
@@ -248,7 +269,7 @@ Repite este ciclo en **todos** los sprints:
 | E4-02 | Posición en vivo por Supabase Realtime hacia el guardián | Backend | 8 |
 | E4-03 | Geocerca de llegada → cierre automático (`CERRADO`) | Backend | 5 |
 | E6-01 | Botón de pánico: mantener presionado 3 s | Móvil | 5 |
-| E6-03 | Ventana de 10 s para cancelar con PIN (criterio Gherkin de RF-22) | Móvil | 3 |
+| E6-03 | Ventana de 10 s para cancelar con PIN, verificado por `auth-pin` (criterio Gherkin de RF-22). Sin conexión la alerta no se cancela | Móvil | 3 |
 | E6-05 | Envío de ubicación cada 5–10 s durante la alerta | Backend | 5 |
 
 **Pruebas E2E:** flujo 2 (trayecto → llegada → cierre) y flujo 4 (pánico → cancelación con PIN).
@@ -256,34 +277,35 @@ Repite este ciclo en **todos** los sprints:
 
 ---
 
-### SPRINT 4 — 17 a 28 nov · 27 pts (ver la inconsistencia #1: suma 32)
+### SPRINT 4 — 17 a 24 nov · 32 pts
 
 **Sprint Goal:** el puesto de control atiende alertas desde la app y deja bitácora del incidente.
-**Hito H4 (14 nov):** flujo completo alerta → notificación → respuesta → cierre.
-**Hito H5 (25 nov):** release candidate firmado, sin hallazgos High o Critical.
+**Hito H4 (24 nov):** ubicación en vivo y flujo completo alerta → notificación → respuesta → cierre. Fin del desarrollo.
+
+> Es el sprint de mayor carga (32 pts en una semana efectiva). Usar la velocidad real del Sprint 1 y la revisión de alcance de H3 para decidir si se adelantan historias a los Sprints 2–3.
 
 | Historia | Qué construir | Responsable | Pts |
 |---|---|---|---|
 | E6-04 | Modo discreto (pantalla sin indicios de alerta) | Móvil | 5 |
 | E7-01 | Edge Function `notify-push` con sonido prioritario | Backend | 5 |
 | E7-02 | Botón "voy en camino" | Móvil | 3 |
-| E8-01 | Vista institucional con mapa de alertas activas | Móvil + Backend | 8 |
+| E8-01 | Vista institucional con mapa de alertas activas y gráfico interactivo con `react-native-gifted-charts` (aporte "gráficos" de Móviles) | Móvil + Backend | 8 |
 | E9-01 | Bitácora con timestamp de servidor inmutable | Backend | 5 |
 | E9-02 | Cierre clasificado de la alerta | Móvil | 3 |
 | E11-04 | No enviar ubicación fuera de un trayecto o alerta activos | Backend | 3 |
 
 **Prueba E2E del flujo 5:** pánico → alerta → recepción → "voy en camino" → cierre clasificado.
 
-**Nota de fechas:** H4 (14 nov) cae al final del Sprint 3, pero sus historias están en el Sprint 4. Ajusta H4 al 24 nov o adelanta E7-01 y E7-02.
-
 ---
 
-### CIERRE — 24 a 28 nov
+### CIERRE — 25 a 28 nov
+
+**Hito H5 (25 nov):** release candidate firmado, sin hallazgos High o Critical.
 
 | Entregable | Responsable | Cómo |
 |---|---|---|
 | Release candidate firmado | DevSecOps/QA | `eas build --profile production` + tag `v1.0.0-rc` |
-| SBOM + reporte consolidado de seguridad | Security Champion | Syft para el SBOM; MobSF sobre el APK; resumen de hallazgos |
+| SBOM + reporte consolidado de seguridad | Security Champion | Syft ejecutado a mano para el SBOM; MobSF sobre el APK; resumen de hallazgos |
 | Informe de Pruebas final | DevSecOps/QA | Actualizar el doc 05 con resultados reales de todos los sprints |
 | Manual de usuario e instalación | Equipo | `docs/manual/`, con capturas de cada rol |
 | Video demostrativo (5–7 min) | Equipo | Mostrar los flujos 1, 2, 4 y 5 en un celular real |
@@ -300,14 +322,15 @@ Repite este ciclo en **todos** los sprints:
 
 ---
 
-## 4. Trabajo futuro (fuera del semestre)
+## 4. Fase 2 (fuera del semestre)
 
-Se deja documentado y no se construye:
+Se deja documentado y no se construye (94 pts):
 
 - **E5:** detección automática de desvío (CU-03, flujo E2E 3).
 - **E10:** resiliencia offline completa.
-- **Historias sueltas:** E2-02, E2-03, E6-02, E6-06, E8-02, E8-03, E9-03, E11-02 y E11-03.
-- **"Sprint 6":** pentest interno y prueba de campo de 1 km.
+- **Historias sueltas:** E0-05, E2-02, E2-03, E6-02, E6-06, E7-03, E8-02, E8-03, E9-03, E11-02 y E11-03.
+- **Canales y funciones:** WhatsApp Cloud API (`notify-whatsapp`) y `escalate`.
+- **Pruebas:** pentest interno y prueba de campo de 1 km.
 
 ---
 

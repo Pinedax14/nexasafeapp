@@ -1,5 +1,7 @@
 # SanMateoApp - Descripción técnica del estado actual
 
+> **Documento histórico.** Describe el prototipo SanMateoApp tal como estaba antes de iniciar NexaSafe (septiembre de 2026). Desde el Sprint 0 el código vive en `apps/mobile/` y la fuente de verdad son los entregables v1.1 en `docs/entregables/ing-software-1/`. Las carpetas `catalog/` y `shared/` que aparecen abajo nunca existieron en el repositorio.
+
 ## 1. ¿Qué es esta aplicación?
 
 SanMateoApp es una aplicación móvil construida con React Native y Expo, cuyo objetivo principal por ahora es demostrar un flujo básico de autenticación y una estructura modular de proyecto para continuar desarrollando funcionalidades de catálogo o módulos académicos.
