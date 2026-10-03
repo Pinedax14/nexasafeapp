@@ -61,10 +61,12 @@ npm install
 ### 3. Arrancar la app
 
 ```powershell
-npx expo start
+npm start
 ```
 
-Escanea el QR con **Expo Go** (celular en la misma red Wi-Fi) o presiona `w` para abrirla en el navegador. Si el celular no conecta, usa `npx expo start --tunnel`.
+Escanea el QR con **Expo Go** (celular en la misma red Wi-Fi) o presiona `w` para abrirla en el navegador. Si el celular no conecta, usa `npm start -- --tunnel`.
+
+`npm start` fuerza el modo Expo Go. Cuando el equipo instale un *development build* (perfil `development` de EAS), usa `npm run start:dev-client`.
 
 ## Calidad: lint, pruebas y build
 
@@ -106,6 +108,23 @@ Para revisar secretos antes de cada commit en tu equipo: `pip install pre-commit
    cd apps/mobile
    eas build -p android --profile preview
    ```
+
+| Perfil | Para qué | Resultado |
+|---|---|---|
+| `development` | Desarrollo con `expo-dev-client` (necesario para ubicación en segundo plano) | APK interno |
+| `preview` | Probar el incremento en celulares del equipo | APK interno |
+| `production` | Release candidate firmado (`v1.0.0-rc`) | APK firmado |
+
+## Backend (Supabase)
+
+| Ambiente | Proyecto | Cómo se actualiza |
+|---|---|---|
+| dev | `nexasafe-dev` | Manual, desde cada equipo (`npx supabase db push`) |
+| staging | `nexasafe-staging` | Automático en cada merge a `main` ([`deploy-staging.yml`](.github/workflows/deploy-staging.yml)) |
+
+- Migraciones versionadas en [`supabase/migrations/`](supabase/migrations/); políticas RLS documentadas en [`supabase/policies/`](supabase/policies/).
+- Crear una migración: `npx supabase migration new <nombre>` (desde la raíz del repo).
+- Las llaves **nunca** van en el código. El pipeline usa los secretos `SUPABASE_ACCESS_TOKEN`, `SUPABASE_STAGING_PROJECT_REF` y `SUPABASE_STAGING_DB_PASSWORD` del ambiente `staging` de GitHub.
 
 ## Cómo contribuir (GitHub Flow)
 

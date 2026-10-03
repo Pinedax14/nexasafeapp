@@ -9,6 +9,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 - E0-02 Pipeline de CI (`.github/workflows/ci.yml`): `npm ci` → ESLint → Prettier → TypeScript → Jest con umbral de cobertura del 70 % → `expo export` Android.
 - Primeras pruebas unitarias sobre el login del prototipo (`AuthenticateUser`, `LocalAuthRepository`), caso piloto del Informe de Pruebas.
 - E0-03 Controles de seguridad en el CI: Gitleaks (secretos), Semgrep con reglas propias + CodeQL (SAST) y gate de `npm audit --audit-level=high` con excepciones que vencen (SCA); Dependabot y hook de pre-commit.
+- E0-04 Supabase inicializado (`supabase/`): migración inicial vacía, JWT de 15 min, carpeta de políticas RLS y workflow `deploy-staging.yml` que aplica migraciones y Edge Functions al hacer merge en `main`. Perfiles de EAS `development`, `preview` y `production` (`expo-dev-client` instalado).
 - Registro de seguridad inicial: `threat-model.md`, `risk-register.md` y `exceptions.md`.
 - Planning del Sprint 00.
 
@@ -18,4 +19,5 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 
 ### Cambiado
 - La app se llama NexaSafe (paquete Android `com.nexasafe.app`).
+- `npm start` abre la app en modo Expo Go (`expo start --go`).
 - Entregables de Ingeniería de Software I corregidos a v1.1 y `PLAN_NEXASAFE.md` a v1.2 (ver la sección 0 de la guía).

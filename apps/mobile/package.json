@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
+    "start": "expo start --go",
+    "android": "expo start --go --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
@@ -13,10 +13,12 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "build": "expo export --platform android",
-    "audit:gate": "node scripts/audit-gate.js"
+    "audit:gate": "node scripts/audit-gate.js",
+    "start:dev-client": "expo start --dev-client"
   },
   "dependencies": {
     "expo": "~54.0.35",
+    "expo-dev-client": "~6.0.21",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",

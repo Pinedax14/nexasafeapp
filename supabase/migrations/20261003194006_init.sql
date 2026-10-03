@@ -1,0 +1,3 @@
+-- Migración inicial (E0-04).
+-- Vacía a propósito: valida que el pipeline aplique migraciones a staging.
+-- Las tablas de la épica E1 llegan en el Sprint 01, con RLS activado en todas.
