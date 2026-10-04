@@ -66,6 +66,22 @@ jobs:
       - name: npm audit --audit-level=high con excepciones vigentes
         run: npm run audit:gate
 
+  database:
+    name: Base de datos · migraciones y pruebas RLS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Postgres efímero con todas las migraciones
+        run: supabase db start
+
+      - name: Pruebas de políticas RLS (pgTAP)
+        run: supabase test db
+
   mobile:
     name: Móvil · lint, tipos, pruebas y build
     runs-on: ubuntu-latest
