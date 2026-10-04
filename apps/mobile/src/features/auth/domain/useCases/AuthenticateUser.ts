@@ -1,10 +1,9 @@
-import { User } from '../entities/User';
-import { AuthRepository } from '../repositories/AuthRepository';
+import { AuthRepository, LoginResult } from '../repositories/AuthRepository';
 
 export class AuthenticateUser {
   constructor(private readonly authRepository: AuthRepository) {}
 
-  execute(email: string, password: string): Promise<User | null> {
-    return this.authRepository.login(email, password);
+  execute(email: string, password: string): Promise<LoginResult> {
+    return this.authRepository.login(email.trim().toLowerCase(), password);
   }
 }

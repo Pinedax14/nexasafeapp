@@ -1,22 +1,26 @@
-import { useCallback, useMemo, useState } from 'react';
-import { LocalAuthRepository } from '../../data/repositories/LocalAuthRepository';
+import { useCallback, useState } from 'react';
 import { User } from '../../domain/entities/User';
+import { LoginFailureReason } from '../../domain/repositories/AuthRepository';
 import { AuthenticateUser } from '../../domain/useCases/AuthenticateUser';
 
+export const LOGIN_ERROR_MESSAGES: Record<LoginFailureReason, string> = {
+  INVALID_CREDENTIALS: 'Correo o contraseña incorrectos.',
+  EMAIL_NOT_CONFIRMED: 'Confirma tu correo antes de iniciar sesión. Revisa tu bandeja de entrada.',
+  NETWORK: 'Sin conexión. Revisa tu internet e intenta de nuevo.',
+  RATE_LIMITED: 'Demasiados intentos. Espera unos minutos e intenta de nuevo.',
+  UNKNOWN: 'No se pudo iniciar sesión. Intenta de nuevo.',
+};
+
 type UseAuthViewModelProps = {
+  authenticateUser: AuthenticateUser;
   onLoginSuccess: (user: User) => void;
 };
 
-export function useAuthViewModel({ onLoginSuccess }: UseAuthViewModelProps) {
+export function useAuthViewModel({ authenticateUser, onLoginSuccess }: UseAuthViewModelProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const authenticateUser = useMemo(() => {
-    const repository = new LocalAuthRepository();
-    return new AuthenticateUser(repository);
-  }, []);
 
   const updateEmail = useCallback(
     (value: string) => {
@@ -42,15 +46,15 @@ export function useAuthViewModel({ onLoginSuccess }: UseAuthViewModelProps) {
 
     setIsLoading(true);
     setErrorMessage('');
-    const user = await authenticateUser.execute(email, password);
+    const result = await authenticateUser.execute(email, password);
     setIsLoading(false);
 
-    if (!user) {
-      setErrorMessage('Correo o contraseña incorrectos.');
+    if (!result.ok) {
+      setErrorMessage(LOGIN_ERROR_MESSAGES[result.reason]);
       return;
     }
 
-    onLoginSuccess(user);
+    onLoginSuccess(result.user);
   }, [authenticateUser, email, onLoginSuccess, password]);
 
   return {

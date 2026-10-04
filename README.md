@@ -58,7 +58,16 @@ cd apps/mobile
 npm install
 ```
 
-### 3. Arrancar la app
+### 3. Configurar la conexión con Supabase (solo la primera vez)
+
+Copia `apps/mobile/.env.example` como `apps/mobile/.env` y completa la URL y la llave **Publishable** de `nexasafe-dev` (Supabase → Project Settings → API Keys). El archivo `.env` no se sube a GitHub.
+
+```powershell
+cd apps/mobile
+copy .env.example .env
+```
+
+### 4. Arrancar la app
 
 ```powershell
 npm start
