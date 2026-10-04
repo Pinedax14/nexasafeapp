@@ -1,6 +1,6 @@
 # Modelo de datos — Épica E1 (Sprint 01)
 
-**Estado:** PROPUESTA — PENDIENTE: aprobación del equipo antes de crear la migración.
+**Estado:** APROBADO el 03/10/2026 (decisiones D1–D7). Siguiente paso: la migración.
 **Base:** Diseño Arquitectónico v1.1, capítulos 6 y 7; decisiones D (credenciales en Supabase Auth), E (PIN en el servidor), F (`consentimientos`) y G (`personal_institucion`).
 
 ## 1. Tablas
@@ -74,7 +74,8 @@ Nunca guarda valores de columnas: solo quién hizo qué sobre qué fila (sin dat
 
 - El rol vive en `auth.users.raw_app_meta_data ->> 'rol'`, que solo el servidor puede escribir.
 - **Guardián:** un trigger `security definer` sobre `auth.users` crea la fila en `guardianes` y asigna `rol = 'guardian'` cuando alguien se registra desde la app (E1-01).
-- **Personal institucional y colegios:** ver D3.
+- **Administrador (`admin`, E1-06):** crea colegios y registra personal institucional desde la app. El primer administrador se crea una sola vez desde el panel de Supabase, asignando `rol = 'admin'` en `app_metadata`.
+- **Personal institucional:** lo crea el administrador mediante la Edge Function `admin-personal`, que usa la API de administración de Auth en el servidor (crea la cuenta, asigna `rol = 'institucion'` e inserta la fila en `personal_institucion`).
 - **Protegido:** ver D5.
 
 ## 3. Políticas RLS
@@ -82,12 +83,16 @@ Nunca guarda valores de columnas: solo quién hizo qué sobre qué fila (sin dat
 | Tabla | Rol | SELECT | INSERT | UPDATE | DELETE |
 |---|---|---|---|---|---|
 | `colegios` | `guardian`, `institucion` | Todos (para elegir el colegio en el alta) | — | — | — |
+| `colegios` | `admin` | Todos | Sí | Sí | — |
 | `personal_institucion` | `institucion` | Su propia fila | — | — | — |
+| `personal_institucion` | `admin` | Todas | Solo vía `admin-personal` | `activo`, `cargo` | — |
 | `guardianes` | `guardian` | Su propia fila | Solo vía trigger | Su `nombre` | — |
 | `protegidos` | `guardian` | Sus menores (`guardian_id = auth.uid()`) | Solo vía función `registrar_protegido` | — | — |
 | `protegidos` | `institucion` | Menores de su colegio, si `activo` | — | Solo vía función `validar_protegido` | — |
 | `consentimientos` | `guardian` | Los propios | Solo vía `registrar_protegido` | Nunca | Nunca |
 | `audit_log` | todos | — | Solo funciones/triggers | Nunca | Nunca |
+
+El rol `admin` **no** tiene ninguna política sobre `protegidos`, `consentimientos` ni `audit_log`: no accede a datos de menores. Toda acción del administrador queda en `audit_log`.
 
 Los cambios sensibles pasan por **funciones de base de datos** que verifican el rol y escriben en `audit_log` en la misma transacción:
 
@@ -96,13 +101,13 @@ Los cambios sensibles pasan por **funciones de base de datos** que verifican el 
 
 Cada política tendrá su prueba en `supabase/tests/` (pgTAP, `supabase test db`), ejecutada en el CI (RNF-27).
 
-## 4. Decisiones que necesitan aprobación
+## 4. Decisiones (aprobadas el 03/10/2026)
 
 | # | Decisión | Propuesta |
 |---|---|---|
 | **D1** | Registro de lecturas en `audit_log` | PostgreSQL no tiene triggers de SELECT. Las lecturas del detalle de un menor se hacen con una función `obtener_protegido(id)` que registra `LEER`; las listas solo muestran nombre y estado |
 | **D2** | Correo duplicado en el registro | Supabase Auth con confirmación de correo activada; la app muestra siempre el mismo mensaje para no revelar si el correo existe |
-| **D3** | ¿Quién crea colegios y personal institucional? Ninguna historia lo cubre | Para el semestre: un script de *seed* en `supabase/seed.sql` (solo dev) y alta manual en staging con la CLI. Sin pantalla de administración |
+| **D3** | ¿Quién crea colegios y personal institucional? Ninguna historia lo cubre | **Rol `admin` con pantallas en la app** (nueva historia E1-06, 5 pts, Sprint 01, RF-42). `supabase/seed.sql` solo para datos de prueba en dev |
 | **D4** | Cifrado de `documento` y `foto` (RNF-02: cifrado por columna) | `documento` cifrado con `pgcrypto` usando una llave guardada en **Supabase Vault**. La foto, en un bucket privado de Storage con políticas por guardián y colegio (cifrado en reposo del proveedor) |
 | **D5** | ¿Quién asigna el PIN y cómo obtiene sesión el protegido? | El guardián asigna el PIN cuando el colegio valida al menor (estado `ACTIVO`), a través de `auth-pin`. El mecanismo exacto de sesión se define en el refinement de E1-04 |
 | **D6** | Datos mínimos del menor | Solo nombre, documento, foto y colegio (lo que pide el Gherkin de E1-02). Sin fecha de nacimiento, dirección ni teléfono |

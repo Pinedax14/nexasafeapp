@@ -3,7 +3,7 @@
 **Fechas:** 06/10 – 17/10/2026 (planning preparado el 03/10/2026)
 **Sprint Goal:** un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.
 **Hito asociado:** H2 (17/10) — alta de usuario funcionando en un dispositivo real.
-**Capacidad comprometida:** 24 pts · **Security Champion (Sprints 00–01):** Juan Felipe Pineda Cardona
+**Capacidad comprometida:** 29 pts · **Security Champion (Sprints 00–01):** Juan Felipe Pineda Cardona
 
 | Historia | Descripción | Responsable | Pts |
 |---|---|---|---|
@@ -13,14 +13,17 @@
 | E1-04 | Ingreso del protegido con PIN corto | Rol Móvil — Juan Felipe Pineda Cardona | 3 |
 | E1-05 | Sesión cifrada en el dispositivo | Rol Móvil — Juan Felipe Pineda Cardona | 3 |
 | E11-01 | Consentimiento explícito y verificable del acudiente | Rol Backend/Datos + Móvil (UI) — Juan Felipe Pineda Cardona | 5 |
+| E1-06 | Administrador: crear colegios y registrar su personal institucional | Rol Backend/Datos + Móvil (UI) — Juan Felipe Pineda Cardona | 5 |
 
-**Orden de trabajo propuesto:** E11-01 y el esquema base → E1-01 → E1-05 → E1-02 → E1-03 → E1-04. El consentimiento y las tablas son prerrequisito del alta; la sesión cifrada lo es de las demás pantallas.
+**Orden de trabajo propuesto:** esquema base + E11-01 → E1-01 → E1-05 → E1-06 → E1-02 → E1-03 → E1-04. El consentimiento y las tablas son prerrequisito del alta; la sesión cifrada, de las demás pantallas; y el administrador (E1-06), de la validación (E1-03).
+
+**Cambio de alcance (03/10/2026):** E1-06 es una historia nueva (decisión D3), agregada antes de iniciar el sprint. El compromiso pasa de 24 a 29 pts.
 
 ## Antes de programar (obligatorio: este sprint toca datos de menores)
 
 - [x] Evaluación de impacto en privacidad: [`docs/privacy/pia.md`](../../privacy/pia.md) (borrador).
 - [x] Política de tratamiento de datos: [`docs/privacy/politica-tratamiento.md`](../../privacy/politica-tratamiento.md) (borrador).
-- [ ] Esquema de la épica E1 aprobado: [`docs/architecture/modelo-datos-e1.md`](../../architecture/modelo-datos-e1.md) — PENDIENTE: aprobación del equipo.
+- [x] Esquema de la épica E1 aprobado: [`docs/architecture/modelo-datos-e1.md`](../../architecture/modelo-datos-e1.md) (decisiones D1–D7, 03/10/2026).
 - [ ] Migración con `colegios`, `personal_institucion`, `guardianes`, `protegidos`, `consentimientos` y `audit_log`, con RLS y pruebas de política en todas.
 
 ## Criterios de aceptación (Gherkin)
@@ -97,6 +100,30 @@ Cuando vuelvo a abrir la app
 Entonces se me pide autenticarme de nuevo
 ```
 
+### E1-06 · Administrador de colegios (RF-42)
+```gherkin
+Dado que soy administrador
+Cuando creo un colegio con nombre y NIT
+Entonces el colegio queda disponible para el alta de menores
+
+Dado que soy administrador
+Cuando registro a una persona del colegio X con nombre, cargo y correo
+Entonces se crea su cuenta con el rol institucion vinculada al colegio X
+Y la persona recibe un correo para definir su contraseña
+
+Dado que soy administrador
+Cuando desactivo a una persona del colegio X
+Entonces deja de poder ver y validar menores, sin borrar su historial
+
+Dado que soy guardián, protegido o personal institucional
+Cuando intento crear un colegio o registrar personal
+Entonces la operación es rechazada
+
+Dado que soy administrador
+Cuando intento ver los datos de un menor
+Entonces la operación es rechazada
+```
+
 ### E11-01 · Consentimiento (RF-38, RNF-20)
 ```gherkin
 Dado que voy a registrar a un menor
@@ -111,10 +138,10 @@ Y ese registro no se puede modificar ni borrar
 
 ## Riesgos del sprint
 
-- **R6 / R7:** 24 pts comprometidos con la velocidad de un solo integrante (Sprint 00: 18 pts en un día, con trabajo no planificado). Recalibrar la velocidad al cierre.
+- **R6 / R7:** 29 pts comprometidos con la velocidad de un solo integrante (Sprint 00: 18 pts en un día, con trabajo no planificado). Recalibrar la velocidad al cierre.
 - **R4:** primer sprint con datos personales de menores. Toda tabla nace con RLS y prueba de política; ningún dato personal en logs.
-- **Dependencia externa:** no hay historia para crear colegios ni personal institucional. Ver la decisión D3 en `modelo-datos-e1.md`.
+- **Primer administrador:** se crea una sola vez desde el panel de Supabase (no hay historia para eso). Ver `modelo-datos-e1.md`, sección 2.
 
 ## Tablero
 
-PENDIENTE: crear los issues de estas 6 historias con las etiquetas `sprint:01`, `epic:E1` / `epic:E11` y `security` (requiere GitHub CLI: `winget install GitHub.cli` y `gh auth login`).
+PENDIENTE: crear los issues de estas 7 historias con las etiquetas `sprint:01`, `epic:E1` / `epic:E11` y `security` (requiere GitHub CLI: `winget install GitHub.cli` y `gh auth login`).

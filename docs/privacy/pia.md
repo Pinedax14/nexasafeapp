@@ -18,6 +18,7 @@
 | PIN del menor | Menor | Sí | Solo su hash Argon2id en `protegidos.pin_hash` | Autenticar al menor sin contraseña (RF-04) |
 | Consentimiento (versión, fecha, actor) | Acudiente | No | `consentimientos`, append-only | Probar la autorización previa del representante legal (RF-38) |
 | Registro de accesos (actor, acción, fecha) | Acudiente / personal | No | `audit_log`, sin valores de columnas | Trazabilidad de todo acceso a datos del menor |
+| Nombre, cargo y correo del personal institucional | Personal del colegio | No | Supabase Auth y `personal_institucion` | Que el administrador (E1-06) habilite a quien valida matrículas |
 
 **No se recolecta en este sprint:** ubicación, fecha de nacimiento, dirección ni teléfono (decisión D6). La ubicación empieza en el Sprint 02 y solo durante trayectos o alertas (RF-41).
 
@@ -50,10 +51,12 @@ Protegido ─► Edge Function auth-pin ─► verificación Argon2id ─► ses
 | Robo del teléfono con sesión abierta | Media | Medio | Sesión en `expo-secure-store`; JWT de 15 min y refresh token rotativo | Medio |
 | Repudio del consentimiento | Baja | Medio | `consentimientos` append-only con timestamp del servidor | Bajo |
 | Datos personales en logs o capturas del CI | Media | Alto | Regla Semgrep contra `console.*` en la app; `audit_log` sin valores | Bajo |
+| El administrador accede a datos de menores | Baja | Crítico | El rol `admin` no tiene políticas sobre `protegidos` ni `consentimientos`; sus acciones quedan en `audit_log` | Bajo |
+| Toma de una cuenta de administrador | Baja | Crítico | Un solo administrador creado desde el panel; contraseña robusta; revisión de `audit_log` en cada Security Review | Medio |
 
 ## 5. Acciones pendientes
 
-- [ ] Aprobar las decisiones D1–D7 de `docs/architecture/modelo-datos-e1.md`.
+- [x] Aprobar las decisiones D1–D7 de `docs/architecture/modelo-datos-e1.md` (03/10/2026; D3 crea el rol administrador).
 - [ ] Verificar con pruebas de política que cada control de RLS de la sección 4 funciona (DoD del Sprint 01).
 - [ ] PENDIENTE: definir el canal de contacto para peticiones de habeas data (ver `politica-tratamiento.md`).
 - [ ] Actualizar esta evaluación en el Sprint 02 para incluir la ubicación.

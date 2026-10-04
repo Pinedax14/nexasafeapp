@@ -5,9 +5,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 01
 
 ### Agregado
-- Planning del Sprint 01 (24 pts) con criterios Gherkin de E1-01 a E1-05 y E11-01.
+- Planning del Sprint 01 (29 pts) con criterios Gherkin de E1-01 a E1-06 y E11-01.
+- Nueva historia E1-06 y requisito RF-42: rol administrador que crea colegios y personal institucional desde la app (decisión D3). Backlog 225 pts y capacidad 131 pts.
 - Evaluación de impacto en privacidad (`docs/privacy/pia.md`) y política de tratamiento de datos v1.0 (`docs/privacy/politica-tratamiento.md`), en borrador.
-- Propuesta del modelo de datos de la épica E1 con políticas RLS (`docs/architecture/modelo-datos-e1.md`), pendiente de aprobación.
+- Propuesta del modelo de datos de la épica E1 con políticas RLS (`docs/architecture/modelo-datos-e1.md`), aprobado (decisiones D1–D7).
 
 ## [0.0.0] — Sprint 00 — 03/10/2026
 

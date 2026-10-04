@@ -22,3 +22,4 @@ Fuente: Plan de Desarrollo v1.1, capítulo 8 (`PLAN_NEXASAFE.md` v1.2, sección 
 | 00 | Registro creado con R1–R8 del Plan. R3 suma `personal_institucion` (decisión G); R5 queda mitigado porque WhatsApp pasa a fase 2; R6 refleja el Sprint 4 de 32 pts. |
 | 00 | Decisión del 03/10/2026: caché (E3-01) y gráfico interactivo (E8-01) se agregan sin reestimar; aumenta la exposición de R6. Reestimar ambas historias en su refinement. |
 | 00 | R7 materializado: el trabajo del Sprint 00 lo ejecutó un integrante y los PR se integraron sin aprobación de par. Recalibrar la velocidad al cierre del Sprint 01. Nuevo control: Access Token de Supabase con permisos mínimos (solo staging, escritura en Migrations y Edge Functions) tras la exposición del token anterior. |
+| 01 | Decisión D3 (03/10/2026): nueva historia E1-06 (5 pts) en el Sprint 01, que sube a 29 pts con un solo integrante; aumenta la exposición de R6. |
