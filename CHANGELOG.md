@@ -2,7 +2,7 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
-## [Sin publicar] — Sprint 00
+## [0.0.0] — Sprint 00 — 03/10/2026
 
 ### Agregado
 - E0-01 Monorepo: la app pasa a `apps/mobile/`; plantillas de PR (con la Definition of Done) e issues (historia, bug, hallazgo de seguridad).
@@ -11,7 +11,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 - E0-03 Controles de seguridad en el CI: Gitleaks (secretos), Semgrep con reglas propias + CodeQL (SAST) y gate de `npm audit --audit-level=high` con excepciones que vencen (SCA); Dependabot (solo versiones menores y parches; los saltos mayores se hacen con la SDK de Expo) y hook de pre-commit.
 - E0-04 Supabase inicializado (`supabase/`): migración inicial vacía, JWT de 15 min, carpeta de políticas RLS y workflow `deploy-staging.yml` que aplica migraciones y Edge Functions al hacer merge en `main`. Perfiles de EAS `development`, `preview` y `production` (`expo-dev-client` instalado).
 - Registro de seguridad inicial: `threat-model.md`, `risk-register.md` y `exceptions.md`.
-- Planning del Sprint 00.
+- Registro del Sprint 00: `planning.md`, `review.md`, `retro.md` y `resumen.md`, y resultados del sprint en `05-informe-pruebas-calidad.md`.
 
 ### Seguridad
 - `postcss` forzado a 8.5.28 con `overrides` (GHSA-6g55-p6wh-862q, GHSA-r28c-9q8g-f849).

@@ -8,10 +8,10 @@
 
 | Historia | Descripción | Responsable | Pts |
 |---|---|---|---|
-| E0-01 | Monorepo con ramas protegidas y plantillas de PR | Rol DevSecOps/QA — PENDIENTE: integrante | 3 |
-| E0-02 | Pipeline de CI: lint, pruebas y build en cada PR | Rol DevSecOps/QA — PENDIENTE: integrante | 5 |
+| E0-01 | Monorepo con ramas protegidas y plantillas de PR | Rol DevSecOps/QA — Juan Felipe Pineda Cardona | 3 |
+| E0-02 | Pipeline de CI: lint, pruebas y build en cada PR | Rol DevSecOps/QA — Juan Felipe Pineda Cardona | 5 |
 | E0-03 | SAST, SCA y escaneo de secretos automáticos | Rol DevSecOps/QA (Security Champion) — Juan Felipe Pineda Cardona | 5 |
-| E0-04 | Ambientes dev y staging desplegados por pipeline | Rol Backend/Datos — PENDIENTE: integrante | 5 |
+| E0-04 | Ambientes dev y staging desplegados por pipeline | Rol Backend/Datos — Juan Felipe Pineda Cardona | 5 |
 | — | Modelado de amenazas inicial (STRIDE por épica) | Equipo completo | — |
 
 ## Desviación
@@ -27,10 +27,10 @@ Antes de iniciar el sprint, el 03/10/2026 se corrigieron las inconsistencias de 
 
 ## Tareas manuales del equipo
 
-- [ ] Proteger `main` (Settings → Branches): PR obligatorio, 1 aprobación y checks verdes.
+- [x] Proteger `main` (Settings → Branches): PR obligatorio y los 5 checks en verde. Aprobaciones obligatorias: 0 (ver `review.md`).
 - [ ] Crear GitHub Projects con las vistas *Backlog* y *Sprint actual*.
 - [ ] Cargar las historias como issues con etiquetas `epic:*`, `type:*`, `security` y `sprint:XX`.
-- [ ] Crear los proyectos de Supabase `nexasafe-dev` y `nexasafe-staging`.
-- [ ] Guardar en GitHub Secrets: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_STAGING_PROJECT_REF` y `SUPABASE_STAGING_DB_PASSWORD`.
+- [x] Crear los proyectos de Supabase `nexasafe-dev` y `nexasafe-staging` (PostgreSQL 17.11).
+- [x] Guardar en GitHub Secrets (ambiente `staging`): `SUPABASE_ACCESS_TOKEN`, `SUPABASE_STAGING_PROJECT_REF` y `SUPABASE_STAGING_DB_PASSWORD`.
 - [x] Nombrar al Security Champion de los Sprints 00–01: Juan Felipe Pineda Cardona (03/10/2026).
 - [ ] Asignar responsables de las demás historias y de los riesgos R1–R8.
