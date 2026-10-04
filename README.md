@@ -124,6 +124,9 @@ Para revisar secretos antes de cada commit en tu equipo: `pip install pre-commit
 
 - Migraciones versionadas en [`supabase/migrations/`](supabase/migrations/); políticas RLS documentadas en [`supabase/policies/`](supabase/policies/).
 - Crear una migración: `npx supabase migration new <nombre>` (desde la raíz del repo).
+- Aplicarla en dev: `npx supabase db push` (pide la contraseña de dev).
+- Regenerar los tipos de la app después de cambiar el esquema (DoD): `npx supabase gen types typescript --linked --schema public > apps/mobile/src/core/api/database.types.ts` y luego `npx prettier --write` sobre ese archivo.
+- Pruebas de políticas RLS: `supabase/tests/database/`; se ejecutan en el CI sobre una base efímera.
 - Las llaves **nunca** van en el código. El pipeline usa los secretos `SUPABASE_ACCESS_TOKEN`, `SUPABASE_STAGING_PROJECT_REF` y `SUPABASE_STAGING_DB_PASSWORD` del ambiente `staging` de GitHub.
 
 ## Cómo contribuir (GitHub Flow)

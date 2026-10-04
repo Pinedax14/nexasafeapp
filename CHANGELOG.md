@@ -9,6 +9,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 - Nueva historia E1-06 y requisito RF-42: rol administrador que crea colegios y personal institucional desde la app (decisión D3). Backlog 225 pts y capacidad 131 pts.
 - Evaluación de impacto en privacidad (`docs/privacy/pia.md`) y política de tratamiento de datos v1.0 (`docs/privacy/politica-tratamiento.md`), en borrador.
 - Migración `e1_esquema_base`: tablas `colegios`, `personal_institucion`, `guardianes`, `protegidos`, `consentimientos` y `audit_log` con RLS; rol `guardian` asignado al registrarse; funciones `registrar_protegido` (alta + consentimiento), `validar_protegido` y `obtener_protegido` (con auditoría de lectura); documento del menor cifrado con una llave en Supabase Vault.
+- Tipos de TypeScript de la base de datos en `apps/mobile/src/core/api/database.types.ts`.
 - 38 pruebas pgTAP de políticas RLS y un job de CI que las ejecuta sobre una base de datos efímera.
 - Propuesta del modelo de datos de la épica E1 con políticas RLS (`docs/architecture/modelo-datos-e1.md`), aprobado (decisiones D1–D7).
 
