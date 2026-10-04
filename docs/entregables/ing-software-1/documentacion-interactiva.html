@@ -405,6 +405,7 @@ tr[hidden]{display:none;}
               <tr><td class="mono-cell">Guardián</td><td>Acudiente o representante legal responsable de un protegido; administra su perfil, ruta y recibe alertas.</td></tr>
               <tr><td class="mono-cell">Contacto de apoyo</td><td>Persona adicional invitada por el guardián para recibir notificaciones de alerta.</td></tr>
               <tr><td class="mono-cell">Puesto de control</td><td>Rol institucional (colegio) que valida matrículas, visualiza alertas activas y atiende incidentes desde la propia app móvil.</td></tr>
+              <tr><td class="mono-cell">Administrador</td><td>Rol de la plataforma que crea colegios y registra a su personal institucional desde la app. No accede a datos de menores.</td></tr>
               <tr><td class="mono-cell">Corredor seguro</td><td>Franja geográfica de tolerancia alrededor de la ruta definida, dentro de la cual el trayecto se considera normal.</td></tr>
               <tr><td class="mono-cell">Trayecto</td><td>Instancia de acompañamiento activo entre el inicio y el cierre (automático o manual) de un recorrido.</td></tr>
               <tr><td class="mono-cell">Alerta</td><td>Evento de pánico disparado manual o automáticamente que notifica a la red de apoyo y al puesto de control.</td></tr>
@@ -496,7 +497,7 @@ tr[hidden]{display:none;}
         <p class="lead">Derivados directamente de las historias de usuario del Product Backlog, agrupados por épica. Prioridad MoSCoW: <span class="badge badge-must">MUST</span> obligatorio para el MVP académico, <span class="badge badge-should">SHOULD</span> deseable si hay capacidad, <span class="badge badge-could">COULD</span> se sacrifica primero, <span class="badge badge-wont">WON'T</span> no se construye en esta fase (requisito válido del producto, planificado para la fase 2).</p>
 
         <div class="filter-row" id="rfFilters">
-          <button class="chip active" data-f="all">Todas (41)</button>
+          <button class="chip active" data-f="all">Todas (42)</button>
           <button class="chip" data-f="MUST">MUST</button>
           <button class="chip" data-f="SHOULD">SHOULD</button>
           <button class="chip" data-f="COULD">COULD</button>
@@ -547,6 +548,7 @@ tr[hidden]{display:none;}
             <tr data-p="WONT"><td class="id-cell">RF-39</td><td>El sistema debe eliminar automáticamente los trayectos con más de 90 días de antigüedad.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-wont">WON'T</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-40</td><td>El sistema debe permitir exportar y solicitar la supresión de los datos del menor (habeas data).</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-41</td><td>El sistema no debe compartir la ubicación del protegido fuera de un trayecto o alerta activos.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
+            <tr data-p="MUST"><td class="id-cell">RF-42</td><td>El sistema debe permitir a un administrador crear colegios y registrar a su personal institucional desde la app.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
           </tbody>
         </table></div>
 
@@ -572,7 +574,7 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">RNF-01</td><td>Toda comunicación cliente–servidor debe cifrarse en tránsito.</td><td>TLS 1.3 obligatorio + certificate pinning en el cliente móvil.</td></tr>
               <tr><td class="id-cell">RNF-02</td><td>Los datos sensibles deben cifrarse en reposo.</td><td>Cifrado a nivel de columna para documento, foto y ubicación histórica.</td></tr>
               <tr><td class="id-cell">RNF-03</td><td>La autenticación debe usar tokens de vida corta.</td><td>JWT de 15 min + refresh token rotativo revocable.</td></tr>
-              <tr><td class="id-cell">RNF-04</td><td>La autorización debe verificarse por rol en cada endpoint.</td><td>RBAC: protegido, guardian, apoyo, institucion; pruebas de autorización en CI.</td></tr>
+              <tr><td class="id-cell">RNF-04</td><td>La autorización debe verificarse por rol en cada endpoint.</td><td>RBAC: protegido, guardian, apoyo, institucion, admin; pruebas de autorización en CI.</td></tr>
               <tr><td class="id-cell">RNF-05</td><td>El PIN del protegido nunca debe almacenarse en texto plano.</td><td>Hash Argon2id en <code>protegidos.pin_hash</code> (servidor), verificado solo por una Edge Function con rate limiting. El PIN nunca se guarda en el dispositivo.</td></tr>
               <tr><td class="id-cell">RNF-06</td><td>El sistema debe mitigar abuso de endpoints críticos.</td><td>Rate limiting por IP y por usuario en alerta y autenticación.</td></tr>
               <tr><td class="id-cell">RNF-07</td><td>El binario de producción debe dificultar la manipulación.</td><td>Detección de root/emulador y de mock location en modo release.</td></tr>
@@ -659,7 +661,7 @@ tr[hidden]{display:none;}
         <div class="table-wrap"><table>
           <thead><tr><th>Caso de uso</th><th>Épicas</th><th>Requisitos funcionales</th><th>Sprint objetivo</th></tr></thead>
           <tbody>
-            <tr><td class="id-cell">CU-01</td><td>E1, E11</td><td>RF-01 a RF-05, RF-38</td><td>Sprint 1</td></tr>
+            <tr><td class="id-cell">CU-01</td><td>E1, E11</td><td>RF-01 a RF-05, RF-38, RF-42</td><td>Sprint 1</td></tr>
             <tr><td class="id-cell">CU-02</td><td>E3, E4</td><td>RF-09 a RF-15</td><td>Sprint 2 – Sprint 3</td></tr>
             <tr><td class="id-cell">CU-03</td><td>E5</td><td>RF-16 a RF-19</td><td><span class="badge badge-medium">Trabajo futuro</span></td></tr>
             <tr><td class="id-cell">CU-04</td><td>E6</td><td>RF-20 a RF-25</td><td>Sprint 3 – Sprint 4</td></tr>
@@ -685,6 +687,7 @@ tr[hidden]{display:none;}
             <li>Notificación push con sonido prioritario a guardianes, red de apoyo y puesto de control.</li>
             <li>Confirmación de respuesta y cierre clasificado del incidente.</li>
             <li>Vista institucional con alertas activas dentro de la misma app móvil.</li>
+            <li>Rol administrador para crear colegios y registrar a su personal institucional.</li>
             <li>Pipeline DevSecOps completo desde el Sprint 0.</li>
           </ul>
         </div>
@@ -721,7 +724,7 @@ tr[hidden]{display:none;}
           </ul>
         </div>
 
-        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, PIN verificado en el servidor (con escenario sin conexión en RF-22), y caché de la ruta y gráfico interactivo en RF-09 y RF-29 (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
+        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, PIN verificado en el servidor (con escenario sin conexión en RF-22), caché de la ruta y gráfico interactivo en RF-09 y RF-29, y rol administrador (RF-42) (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
       </section>
 
       <!-- ============ DOC 2 — PLAN DE DESARROLLO ============ -->
@@ -1037,8 +1040,8 @@ tr[hidden]{display:none;}
         <div class="stat-grid">
           <div class="stat-tile"><b>6</b><span>Sprints (incl. Sprint 0 y cierre)</span></div>
           <div class="stat-tile"><b>68</b><span>Días calendario</span></div>
-          <div class="stat-tile"><b>126</b><span>Pts. comprometidos (Sprints 0–4)</span></div>
-          <div class="stat-tile"><b>220</b><span>Pts. del backlog completo</span></div>
+          <div class="stat-tile"><b>131</b><span>Pts. comprometidos (Sprints 0–4)</span></div>
+          <div class="stat-tile"><b>225</b><span>Pts. del backlog completo</span></div>
         </div>
 
         <div class="gantt">
@@ -1106,7 +1109,7 @@ tr[hidden]{display:none;}
         </div>
 
         <div class="subsection">
-          <h3>4.2 Sprint 1 — 6 a 17 oct <span class="badge badge-neutral">24 pts</span></h3>
+          <h3>4.2 Sprint 1 — 6 a 17 oct <span class="badge badge-neutral">29 pts</span></h3>
           <p class="lead" style="font-style:italic;">Sprint Goal: un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.</p>
           <div class="table-wrap"><table class="compact">
             <thead><tr><th>Historia</th><th>Tarea</th><th>Responsable</th><th>Pts</th></tr></thead>
@@ -1116,6 +1119,7 @@ tr[hidden]{display:none;}
               <tr><td class="id-cell">E1-03</td><td>Validación de matrícula por el colegio</td><td>Rol Backend/Datos</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E1-04</td><td>Ingreso del protegido con PIN corto</td><td>Rol Móvil</td><td class="center">3</td></tr>
               <tr><td class="id-cell">E1-05</td><td>Sesión cifrada en el dispositivo</td><td>Rol Móvil</td><td class="center">3</td></tr>
+              <tr><td class="id-cell">E1-06</td><td>Administrador: crear colegios y su personal institucional</td><td>Rol Backend/Datos + Rol Móvil (UI)</td><td class="center">5</td></tr>
               <tr><td class="id-cell">E11-01</td><td>Consentimiento explícito y verificable del acudiente</td><td>Rol Backend/Datos + Rol Móvil (UI)</td><td class="center">5</td></tr>
             </tbody>
           </table></div>
@@ -1221,7 +1225,7 @@ tr[hidden]{display:none;}
         </table></div>
         <div class="callout crit">
           <b>Brecha de capacidad frente al backlog completo</b>
-          <p>El backlog completo suma 220 puntos. Los 5 sprints planificados comprometen 126 puntos (18+24+26+26+32). La diferencia (94 puntos) se declara explícitamente como trabajo de la fase 2: E5 completa (23), E10 completa (16), E2-02 (5), E2-03 (3), E6-02 (5), E6-06 (8), E7-03 (3), E8-02 (5), E8-03 (8), E9-03 (5), E11-02 (5), E11-03 (5) y E0-05 (3).</p>
+          <p>El backlog completo suma 225 puntos. Los 5 sprints planificados comprometen 131 puntos (18+29+26+26+32). La diferencia (94 puntos) se declara explícitamente como trabajo de la fase 2: E5 completa (23), E10 completa (16), E2-02 (5), E2-03 (3), E6-02 (5), E6-06 (8), E7-03 (3), E8-02 (5), E8-03 (8), E9-03 (5), E11-02 (5), E11-03 (5) y E0-05 (3).</p>
         </div>
       </section>
 
@@ -1235,7 +1239,7 @@ tr[hidden]{display:none;}
             <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2 para no comprometer la ubicación en vivo (E4-02, Sprint 3) ni el hito H4.</td></tr>
           </tbody>
         </table></div>
-        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, backlog recontado (220 pts), y caché (E3-01) y gráfico interactivo (E8-01) dentro de su estimación.</div>
+        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, backlog recontado (220 pts; 225 con E1-06), caché (E3-01) y gráfico interactivo (E8-01) dentro de su estimación, y E1-06 (rol administrador, 5 pts) en el Sprint 1 (29 pts).</div>
       </section>
 
       <!-- ============ DOC 4 — DISEÑO ARQUITECTÓNICO ============ -->
@@ -1409,9 +1413,9 @@ tr[hidden]{display:none;}
           <div class="table-wrap"><table>
             <thead><tr><th>Entidad</th><th>Notas de diseño</th></tr></thead>
             <tbody>
-              <tr><td class="mono-cell">Roles</td><td>El rol del usuario (<code>protegido</code>, <code>guardian</code>, <code>apoyo</code>, <code>institucion</code>) se guarda en <code>app_metadata.rol</code> de Supabase Auth, que solo el servidor puede escribir; las políticas RLS lo leen del JWT.</td></tr>
+              <tr><td class="mono-cell">Roles</td><td>El rol del usuario (<code>protegido</code>, <code>guardian</code>, <code>apoyo</code>, <code>institucion</code>, <code>admin</code>) se guarda en <code>app_metadata.rol</code> de Supabase Auth, que solo el servidor puede escribir; las políticas RLS lo leen del JWT.</td></tr>
               <tr><td class="mono-cell">guardianes</td><td><code>id</code> es el mismo identificador de <code>auth.users</code>. Las credenciales las gestiona Supabase Auth: no existe <code>password_hash</code> propio.</td></tr>
-              <tr><td class="mono-cell">personal_institucion</td><td>Cuentas del puesto de control; <code>id</code> es el de <code>auth.users</code>. Un colegio puede tener varias; <code>activo = false</code> retira el acceso sin borrar el historial. RLS: solo el personal activo de un colegio ve y valida los protegidos de ese colegio.</td></tr>
+              <tr><td class="mono-cell">personal_institucion</td><td>Cuentas del puesto de control, creadas por el administrador (E1-06) mediante la Edge Function <code>admin-personal</code>; <code>id</code> es el de <code>auth.users</code>. Un colegio puede tener varias; <code>activo = false</code> retira el acceso sin borrar el historial. RLS: solo el personal activo de un colegio ve y valida los protegidos de ese colegio.</td></tr>
               <tr><td class="mono-cell">protegidos.pin_hash</td><td>Hash Argon2id del PIN. Solo lo lee y verifica la Edge Function <code>auth-pin</code> (rate limiting), que entrega la sesión del protegido; el mecanismo exacto de sesión se detalla en el refinement de E1-04.</td></tr>
               <tr><td class="mono-cell">protegidos.estado</td><td>Máquina de estados: PENDIENTE_VALIDACION → ACTIVO → INACTIVO. Solo el personal activo del colegio puede mover a ACTIVO (RF-03).</td></tr>
               <tr><td class="mono-cell">consentimientos</td><td>Append-only (RF-38): registra versión de la política, actor y <code>aceptado_en</code> con timestamp de servidor. Una revocación se registra como fila nueva; ninguna fila se actualiza ni se borra.</td></tr>
@@ -1434,7 +1438,7 @@ tr[hidden]{display:none;}
             <tr><td><b>Cifrado en tránsito</b></td><td>TLS 1.3 obligatorio + certificate pinning en el cliente móvil.</td></tr>
             <tr><td><b>Cifrado en reposo</b></td><td>Cifrado a nivel de columna para documento, foto y ubicación histórica.</td></tr>
             <tr><td><b>Autenticación</b></td><td>JWT de vida corta (15 min) + refresh token rotativo revocable.</td></tr>
-            <tr><td><b>Autorización</b></td><td>RBAC: protegido, guardian, apoyo, institucion — rol en <code>app_metadata</code> (solo escribible por el servidor), verificado por RLS y en cada Edge Function.</td></tr>
+            <tr><td><b>Autorización</b></td><td>RBAC: protegido, guardian, apoyo, institucion, admin — rol en <code>app_metadata</code> (solo escribible por el servidor), verificado por RLS y en cada Edge Function.</td></tr>
             <tr><td><b>Protección del PIN</b></td><td>Hash Argon2id en <code>protegidos.pin_hash</code>, nunca en texto plano ni en el dispositivo; verificado solo por la Edge Function <code>auth-pin</code> con rate limiting. En el dispositivo, expo-secure-store custodia únicamente la sesión.</td></tr>
             <tr><td><b>Anti-abuso</b></td><td>Rate limiting por IP y por usuario en endpoints de alerta y autenticación.</td></tr>
             <tr><td><b>Anti-tampering</b></td><td>Detección de root/emulador en modo release.</td></tr>
@@ -1458,6 +1462,7 @@ tr[hidden]{display:none;}
             <tr><td><b>PIN verificado en el servidor</b></td><td>Supabase Auth no ofrece login por PIN. Verificarlo en una Edge Function permite rate limiting y evita que el hash viaje o se guarde en el teléfono.</td></tr>
             <tr><td><b>Tabla <code>personal_institucion</code></b></td><td>Permite varios responsables por colegio y desactivarlos sin borrar historial, lo que mitiga R3 (colegio sin responsable).</td></tr>
             <tr><td><b>GitHub Flow (solo <code>main</code>)</b></td><td>Solo existen los ambientes dev y staging; <code>main</code> despliega a staging y las versiones se publican por tag (<code>vX.Y.Z</code>) con EAS Build. Una rama <code>develop</code> no tendría ambiente propio y duplicaría PR.</td></tr>
+            <tr><td><b>Rol administrador (E1-06)</b></td><td>Ninguna historia permitía crear colegios ni personal institucional, y sin ellos no hay validación de matrículas. El rol <code>admin</code> crea colegios (RLS) y personal (Edge Function <code>admin-personal</code>, que usa la API de administración de Auth en el servidor); no accede a datos de menores.</td></tr>
           </tbody>
         </table></div>
       </section>
@@ -1484,7 +1489,7 @@ tr[hidden]{display:none;}
 │              └── incidents/
 ├── <span class="fd">supabase/</span>
 │  ├── migrations/       <span class="fc"># esquema versionado</span>
-│  ├── functions/        <span class="fc"># Edge Functions (Deno): auth-pin, notify-push · fase 2: notify-whatsapp, escalate</span>
+│  ├── functions/        <span class="fc"># Edge Functions (Deno): auth-pin, admin-personal, notify-push · fase 2: notify-whatsapp, escalate</span>
 │  └── policies/         <span class="fc"># políticas RLS documentadas y probadas</span>
 ├── <span class="fd">docs/</span>
 │  ├── entregables/       <span class="fc"># ing-software-1/: los 5 documentos oficiales (PDF + versión interactiva)</span>
@@ -1497,7 +1502,7 @@ tr[hidden]{display:none;}
 ├── semgrep.yml
 ├── CHANGELOG.md
 └── README.md</div>
-        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable. Cambios frente a v1.0: credenciales solo en Supabase Auth, tablas personal_institucion y consentimientos, PIN verificado en el servidor, rol en app_metadata, GitHub Flow, PostgreSQL 17, caché local de la ruta, gráficos con react-native-gifted-charts y componentes de fase 2 identificados.</div>
+        <div class="doc-footer">Documento de Diseño Arquitectónico — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2 (sección 3, 9.4 y Anexo A), con flujo de datos y modelo de datos desarrollados para este entregable. Cambios frente a v1.0: credenciales solo en Supabase Auth, tablas personal_institucion y consentimientos, PIN verificado en el servidor, rol en app_metadata, GitHub Flow, PostgreSQL 17, caché local de la ruta, gráficos con react-native-gifted-charts, rol admin con la Edge Function admin-personal y componentes de fase 2 identificados.</div>
       </section>
 
       <!-- ============ DOC 5 — PRUEBAS DE CALIDAD ============ -->

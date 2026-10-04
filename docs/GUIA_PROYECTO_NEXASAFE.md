@@ -35,6 +35,7 @@ Al cruzar los 5 documentos v1.0 aparecían contradicciones. Quedaron corregidas 
 | 20 | Los documentos decían PostgreSQL 16, pero Supabase crea los proyectos con PostgreSQL 17 | PostgreSQL 17 en todos los documentos (decisión del 3 oct 2026) |
 | 21 | Con el PIN verificado solo en el servidor (fila 15), RF-22 no definía qué pasa sin conexión | Sin conexión la alerta no se cancela y la app indica que no pudo verificar el PIN; escenario Gherkin agregado a E6-03 |
 | 22 | Los aportes "gráficos interactivos" y "caché" de Programación para Dispositivos Móviles no tenían historia en los Sprints 0–4 | Se cubren dentro de historias existentes: caché local de la ruta en E3-01 y gráfico interactivo en E8-01, sin reestimar (riesgo R6) |
+| 23 | Ninguna historia permitía crear colegios ni personal institucional, y sin ellos E1-03 no se puede cumplir | Nueva historia E1-06 (rol administrador con pantallas en la app, 5 pts, MUST) y RF-42 en el Sprint 1, que sube a 29 pts; backlog 225 pts y capacidad 131 pts (decisión D3 del 03/10/2026) |
 
 **Regla desde ahora:** si aparece una contradicción nueva, no se resuelve en silencio. Se explica, se propone una opción y se registra aquí como fila nueva cuando el equipo la apruebe.
 
@@ -61,7 +62,7 @@ nexasafeapp/
 │                                    # network, institution, incidents
 ├── supabase/
 │   ├── migrations/
-│   ├── functions/                   # auth-pin, notify-push · fase 2: notify-whatsapp, escalate
+│   ├── functions/                   # auth-pin, admin-personal, notify-push · fase 2: notify-whatsapp, escalate
 │   └── policies/
 ├── docs/
 │   ├── entregables/ing-software-1/  # los 5 PDF oficiales (01 a 05) + versión interactiva
@@ -210,7 +211,7 @@ Repite este ciclo en **todos** los sprints:
 
 ---
 
-### SPRINT 1 — 6 a 17 oct · 24 pts
+### SPRINT 1 — 6 a 17 oct · 29 pts
 
 **Sprint Goal:** un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.
 **Hito H2 (17 oct):** alta de usuario funcionando en un dispositivo real.
@@ -229,6 +230,7 @@ Repite este ciclo en **todos** los sprints:
 | E1-04 | Login del protegido con PIN, verificado por la Edge Function `auth-pin` (hash Argon2id en `protegidos.pin_hash`, rate limiting) | Móvil | 3 |
 | E1-05 | Sesión (tokens) en `expo-secure-store`; el PIN nunca se guarda en el dispositivo | Móvil | 3 |
 | E11-01 | Pantalla de consentimiento + registro con fecha, versión y actor | Backend + Móvil | 5 |
+| E1-06 | Rol administrador: pantallas para crear colegios y registrar personal institucional (Edge Function `admin-personal`) | Backend + Móvil | 5 |
 
 **Prueba E2E del flujo 1 (Maestro):** registro → alta → validación → login con PIN.
 **Al cerrar:** medir la cobertura real y **recalibrar la velocidad** con los puntos completados.

@@ -12,7 +12,7 @@ Eres el desarrollador principal y asistente Scrum del proyecto **NexaSafe**, de 
 
 Antes de hacer cualquier cosa, lee completos estos archivos (versión v1.1):
 
-1. `docs/entregables/ing-software-1/01-documento-requisitos-sistema.pdf` → **QUÉ** construir (RF-01 a RF-41, RNF-01 a RNF-28, CU-01 a CU-05, alcance por fase).
+1. `docs/entregables/ing-software-1/01-documento-requisitos-sistema.pdf` → **QUÉ** construir (RF-01 a RF-42, RNF-01 a RNF-28, CU-01 a CU-05, alcance por fase).
 2. `docs/entregables/ing-software-1/02-plan-desarrollo-software.pdf` → **CÓMO** trabajar (Scrum, ceremonias, DoR, DoD, DevSecOps, riesgos, métricas).
 3. `docs/entregables/ing-software-1/03-cronograma-tareas-proyecto.pdf` → **CUÁNDO y QUIÉN** (sprints, hitos H0–H6, historias por sprint, responsables).
 4. `docs/entregables/ing-software-1/04-diseno-arquitectonico.pdf` → **CON QUÉ y CÓMO se organiza** (stack, capas, flujos, modelo de datos, seguridad, estructura del repo).
@@ -54,7 +54,7 @@ Requisitos (01) > Diseño (04) > Plan (02) > Cronograma (03) > Informe (05) > Gu
 
 ### 3. Seguridad (se aplica en cada línea de código)
 - RLS activado en **todas** las tablas, con prueba de política asociada (RNF-27).
-- RBAC con los roles `protegido`, `guardian`, `apoyo` e `institucion`. El rol vive en `app_metadata.rol` de Supabase Auth (solo lo escribe el servidor) y se verifica en RLS y en cada Edge Function.
+- RBAC con los roles `protegido`, `guardian`, `apoyo`, `institucion` y `admin` (este último solo crea colegios y personal institucional; no accede a datos de menores). El rol vive en `app_metadata.rol` de Supabase Auth (solo lo escribe el servidor) y se verifica en RLS y en cada Edge Function.
 - PIN: hash Argon2id en `protegidos.pin_hash`, verificado solo por la Edge Function `auth-pin` con rate limiting. El PIN nunca se guarda en el dispositivo.
 - JWT de 15 min + refresh token rotativo.
 - Rate limiting en los endpoints de alerta y autenticación.

@@ -59,6 +59,7 @@
 - Notificación push con sonido prioritario a guardianes, red de apoyo y puesto de control.
 - Confirmación de respuesta ("voy en camino") y cierre clasificado del incidente.
 - Vista institucional dentro de la misma app móvil, con alertas activas.
+- Rol administrador para crear colegios y registrar a su personal institucional (E1-06).
 - Pipeline DevSecOps completo desde el Sprint 0.
 
 ### 2.2 Fuera del alcance de esta fase (fase 2)
@@ -252,6 +253,7 @@
 | E1-03 | Como colegio, quiero validar que el menor está matriculado antes de activar su perfil, para impedir vinculaciones falsas. | 5 | M |
 | E1-04 | Como protegido, quiero ingresar con un PIN corto en lugar de contraseña, para acceder rápido sin exponer credenciales. | 3 | M |
 | E1-05 | Como usuario, quiero que mi sesión se guarde cifrada en el dispositivo, para no reautenticarme en cada trayecto. | 3 | M |
+| E1-06 | Como administrador, quiero crear colegios y registrar a su personal institucional desde la app, para habilitar la validación de matrículas. | 5 | M |
 
 **Criterios de aceptación — E1-02**
 ```gherkin
@@ -368,7 +370,7 @@ Y la app indica que no pudo verificar el PIN por falta de conexión
 | E11-03 | Como acudiente, quiero exportar y solicitar la supresión de los datos de mi hijo, para ejercer el derecho de habeas data. | 5 | S |
 | E11-04 | Como sistema, quiero no compartir ubicación fuera de trayecto activo o alerta, para garantizar el principio de finalidad. | 3 | M |
 
-**Total estimado del backlog:** 220 puntos (suma de todas las historias de esta sección).
+**Total estimado del backlog:** 225 puntos (suma de todas las historias de esta sección).
 
 ---
 
@@ -379,7 +381,7 @@ Y la app indica que no pudo verificar el PIN por falta de conexión
 | Sprint | Fechas (2026) | Sprint Goal | Contenido | Pts |
 |---|---|---|---|---|
 | **0** | 22 sep – 2 oct | *La plataforma técnica y de seguridad está lista para producir código auditable.* | E0-01, E0-02, E0-03, E0-04, modelado de amenazas inicial | 18 |
-| **1** | 6 – 17 oct | *Un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.* | E1-01…E1-05, E11-01 | 24 |
+| **1** | 6 – 17 oct | *Un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.* | E1-01…E1-06, E11-01 | 29 |
 | **2** | 20 – 31 oct | *Un guardián puede definir la ruta del protegido y el protegido puede iniciar un trayecto acompañado.* | E3-01, E3-02, E3-03, E4-01, E4-04, E2-01 | 26 |
 | **3** | 3 – 14 nov | *El guardián sigue el trayecto en vivo y el botón de pánico funciona de extremo a extremo con cancelación por PIN.* | E4-02, E4-03, E6-01, E6-03, E6-05 | 26 |
 | **4** | 17 – 24 nov | *El puesto de control atiende alertas desde la app y deja bitácora del incidente.* | E6-04, E7-01, E7-02, E8-01, E9-01, E9-02, E11-04 | 32 |
@@ -389,7 +391,7 @@ Y la app indica que no pudo verificar el PIN por falta de conexión
 
 ### Fuera del roadmap del semestre (fase 2)
 
-El backlog completo suma 220 puntos y los Sprints 0–4 comprometen 126 (18+24+26+26+32). Los 94 puntos restantes quedan declarados como **trabajo de la fase 2**, no como alcance comprometido:
+El backlog completo suma 225 puntos y los Sprints 0–4 comprometen 131 (18+29+26+26+32). Los 94 puntos restantes quedan declarados como **trabajo de la fase 2**, no como alcance comprometido:
 
 | Épica / historia | Pts | Motivo |
 |---|---|---|
@@ -473,7 +475,7 @@ Un integrante del Development Team asume el rol por dos sprints:
 | Cifrado en tránsito | TLS 1.3 obligatorio + certificate pinning en el cliente móvil |
 | Cifrado en reposo | Cifrado a nivel de columna para documento, foto y ubicación histórica |
 | Autenticación | JWT de vida corta (15 min) + refresh token rotativo revocable |
-| Autorización | RBAC: `protegido`, `guardian`, `apoyo`, `institucion` — rol en `app_metadata` de Supabase Auth (solo escribible por el servidor), verificado por RLS y en cada Edge Function |
+| Autorización | RBAC: `protegido`, `guardian`, `apoyo`, `institucion`, `admin` — rol en `app_metadata` de Supabase Auth (solo escribible por el servidor), verificado por RLS y en cada Edge Function |
 | Protección del PIN | Hash Argon2id en `protegidos.pin_hash`, nunca en texto plano ni en el dispositivo; verificado solo por la Edge Function `auth-pin` con rate limiting. `expo-secure-store` custodia únicamente la sesión |
 | Credenciales | Contraseñas gestionadas solo por Supabase Auth; `guardianes` y `personal_institucion` referencian `auth.users` (sin `password_hash` propio) |
 | Anti-abuso | Rate limiting por IP y por usuario en endpoints de alerta y autenticación |
@@ -690,7 +692,7 @@ nexasafeapp/
 │               └── incidents/
 ├── supabase/
 │   ├── migrations/          # esquema versionado
-│   ├── functions/           # Edge Functions (Deno): auth-pin, notify-push · fase 2: notify-whatsapp, escalate
+│   ├── functions/           # Edge Functions (Deno): auth-pin, admin-personal, notify-push · fase 2: notify-whatsapp, escalate
 │   └── policies/            # políticas RLS documentadas y probadas
 ├── docs/
 │   ├── entregables/         # ing-software-1/: los 5 documentos oficiales
@@ -751,4 +753,4 @@ Entonces <resultado esperado>
 |---|---|---|
 | 1.0 | — | Versión inicial |
 | 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
-| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01. |
+| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01; rol administrador (E1-06, RF-42) en el Sprint 1 (29 pts), backlog 225 pts y capacidad 131 pts. |
