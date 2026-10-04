@@ -47,3 +47,7 @@ coverage/
 supabase/.branches/
 supabase/.temp/
 .env
+
+# notas privadas (contraseñas, tokens): nunca se suben
+clave.txt
+*.local.txt

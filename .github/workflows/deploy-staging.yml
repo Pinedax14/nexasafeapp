@@ -31,6 +31,23 @@ jobs:
             echo "::error::Faltan secretos: SUPABASE_ACCESS_TOKEN, SUPABASE_STAGING_DB_PASSWORD o SUPABASE_STAGING_PROJECT_REF (ambiente staging)."
             exit 1
           fi
+          # Quita espacios y saltos de línea que se cuelan al pegar en GitHub.
+          token="$(printf '%s' "$SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]')"
+          ref="$(printf '%s' "$PROJECT_REF" | tr -d '[:space:]')"
+          echo "::add-mask::$token"
+          echo "::add-mask::$ref"
+          if ! printf '%s' "$token" | grep -Eq '^sbp_[A-Za-z0-9_]{40,}$'; then
+            echo "::error::SUPABASE_ACCESS_TOKEN no tiene el formato sbp_… (longitud recibida: ${#token}). Usa el token de https://supabase.com/dashboard/account/tokens."
+            exit 1
+          fi
+          if ! printf '%s' "$ref" | grep -Eq '^[a-z0-9]{20}$'; then
+            echo "::error::SUPABASE_STAGING_PROJECT_REF debe ser el Project ID de 20 caracteres (longitud recibida: ${#ref})."
+            exit 1
+          fi
+          {
+            echo "SUPABASE_ACCESS_TOKEN=$token"
+            echo "PROJECT_REF=$ref"
+          } >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v4
 

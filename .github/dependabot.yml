@@ -1,14 +1,26 @@
 version: 2
 updates:
+  # Expo SDK 54 fija las versiones compatibles de sus librerías: los saltos de
+  # versión mayor se hacen al actualizar la SDK (`npx expo install --fix`), no
+  # paquete por paquete. Las alertas de seguridad de Dependabot siguen activas.
   - package-ecosystem: npm
     directory: /apps/mobile
     schedule:
       interval: weekly
     labels: ["security", "type:chore"]
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      menores:
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     labels: ["type:chore"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
