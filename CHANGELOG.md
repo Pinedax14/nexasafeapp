@@ -2,6 +2,13 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 01
+
+### Agregado
+- Planning del Sprint 01 (24 pts) con criterios Gherkin de E1-01 a E1-05 y E11-01.
+- Evaluación de impacto en privacidad (`docs/privacy/pia.md`) y política de tratamiento de datos v1.0 (`docs/privacy/politica-tratamiento.md`), en borrador.
+- Propuesta del modelo de datos de la épica E1 con políticas RLS (`docs/architecture/modelo-datos-e1.md`), pendiente de aprobación.
+
 ## [0.0.0] — Sprint 00 — 03/10/2026
 
 ### Agregado
