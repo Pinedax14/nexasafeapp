@@ -149,6 +149,11 @@ Viven en [`supabase/functions/`](supabase/functions/) (Deno). El CI ejecuta lint
 | `npx deno test` | Pruebas de las funciones |
 | `npx deno lint` | Lint |
 
+| Función | Para qué |
+|---|---|
+| `admin-personal` | El administrador crea y activa personal institucional (E1-06) |
+| `auth-pin` | El acudiente asigna el PIN del menor y el menor entra con documento + PIN (E1-04) |
+
 Desplegar una función en dev (desde la raíz): `npx supabase functions deploy <nombre> --use-api`.
 
 ### Crear el primer administrador (una sola vez por ambiente)

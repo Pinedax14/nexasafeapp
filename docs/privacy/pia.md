@@ -16,6 +16,8 @@
 | Foto del menor | Menor | Sí | Bucket privado de Storage | Que el colegio y la red de apoyo reconozcan al menor |
 | Colegio del menor | Menor | Sí | `protegidos.colegio_id` | Enviar la validación al colegio correcto |
 | PIN del menor | Menor | Sí | Solo su hash Argon2id en `protegidos.pin_hash` | Autenticar al menor sin contraseña (RF-04) |
+| Huella del documento del menor | Menor | Sí | `protegidos.documento_huella` (HMAC-SHA256 con llave en Vault, no reversible sin la llave) | Encontrar al menor cuando ingresa con documento y PIN sin descifrar documentos (RF-04) |
+| Cuenta de acceso del menor | Menor | No | Supabase Auth, con un correo sintético `@example.org` que no identifica al menor | Darle al menor una sesión con rol `protegido` |
 | Consentimiento (versión, fecha, actor) | Acudiente | No | `consentimientos`, append-only | Probar la autorización previa del representante legal (RF-38) |
 | Registro de accesos (actor, acción, fecha) | Acudiente / personal | No | `audit_log`, sin valores de columnas | Trazabilidad de todo acceso a datos del menor |
 | Nombre, cargo y correo del personal institucional | Personal del colegio | No | Supabase Auth y `personal_institucion` | Que el administrador (E1-06) habilite a quien valida matrículas |
@@ -36,7 +38,8 @@ Acudiente ──registro──► Supabase Auth ──trigger──► guardiane
                                 │                 + consentimientos (OTORGADO)
                                 └──────────────► audit_log
 Personal del colegio ─► validar_protegido() ─► protegidos (ACTIVO) + audit_log
-Protegido ─► Edge Function auth-pin ─► verificación Argon2id ─► sesión
+Acudiente ─► auth-pin (asignar) ─► protegidos.pin_hash + cuenta Auth del menor + audit_log
+Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─► verificación Argon2id ─► sesión + audit_log
 ```
 
 ## 4. Riesgos y controles

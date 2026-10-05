@@ -6,10 +6,12 @@ import { colors } from '../core/theme/colors';
 import { SupabaseAuthRepository } from '../features/auth/data/repositories/SupabaseAuthRepository';
 import { User } from '../features/auth/domain/entities/User';
 import { AuthenticateUser } from '../features/auth/domain/useCases/AuthenticateUser';
+import { LoginWithPin } from '../features/auth/domain/useCases/LoginWithPin';
 import { RegisterGuardian } from '../features/auth/domain/useCases/RegisterGuardian';
 import { RestoreSession } from '../features/auth/domain/useCases/RestoreSession';
 import { SignOut } from '../features/auth/domain/useCases/SignOut';
 import { AuthScreen } from '../features/auth/presentation/screens/AuthScreen';
+import { PinLoginScreen } from '../features/auth/presentation/screens/PinLoginScreen';
 import { RegisterScreen } from '../features/auth/presentation/screens/RegisterScreen';
 import { SupabaseInstitutionAdminRepository } from '../features/institution/data/repositories/SupabaseInstitutionAdminRepository';
 import { School } from '../features/institution/domain/entities/School';
@@ -23,13 +25,17 @@ import { ValidateEnrollment } from '../features/institution/domain/useCases/Vali
 import { EnrollmentReviewScreen } from '../features/institution/presentation/screens/EnrollmentReviewScreen';
 import { PendingEnrollmentsScreen } from '../features/institution/presentation/screens/PendingEnrollmentsScreen';
 import { SupabaseProtegidoRepository } from '../features/profile/data/repositories/SupabaseProtegidoRepository';
+import { Protegido } from '../features/profile/domain/entities/Protegido';
+import { AssignPin } from '../features/profile/domain/useCases/AssignPin';
 import { ListMyProtegidos } from '../features/profile/domain/useCases/ListMyProtegidos';
 import { RegisterProtegido } from '../features/profile/domain/useCases/RegisterProtegido';
+import { AssignPinScreen } from '../features/profile/presentation/screens/AssignPinScreen';
 import { GuardianHomeScreen } from '../features/profile/presentation/screens/GuardianHomeScreen';
+import { ProtegidoHomeScreen } from '../features/profile/presentation/screens/ProtegidoHomeScreen';
 import { RegisterProtegidoScreen } from '../features/profile/presentation/screens/RegisterProtegidoScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
 
-type AuthRoute = 'login' | 'register';
+type AuthRoute = 'login' | 'register' | 'pinLogin';
 type GuardianRoute = 'home' | 'registerProtegido';
 
 export function AppContent() {
@@ -40,16 +46,19 @@ export function AppContent() {
   const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
   const [guardianRoute, setGuardianRoute] = useState<GuardianRoute>('home');
   const [reviewedEnrollment, setReviewedEnrollment] = useState<PendingEnrollment | null>(null);
+  const [pinProtegido, setPinProtegido] = useState<Protegido | null>(null);
 
   // Raíz de composición: la única parte de la app que conoce la capa data.
   const useCases = useMemo(() => {
-    const repository = new SupabaseAuthRepository(supabase.auth);
+    const repository = new SupabaseAuthRepository(supabase.auth, supabase.functions);
     const institutionAdmin = new SupabaseInstitutionAdminRepository(supabase);
     const protegidos = new SupabaseProtegidoRepository(supabase);
     return {
       listMyProtegidos: new ListMyProtegidos(protegidos),
       registerProtegido: new RegisterProtegido(protegidos),
       authenticateUser: new AuthenticateUser(repository),
+      loginWithPin: new LoginWithPin(repository),
+      assignPin: new AssignPin(protegidos),
       registerGuardian: new RegisterGuardian(repository),
       restoreSession: new RestoreSession(repository),
       signOut: new SignOut(repository),
@@ -88,6 +97,7 @@ export function AppContent() {
     setSelectedSchool(null);
     setGuardianRoute('home');
     setReviewedEnrollment(null);
+    setPinProtegido(null);
     setAuthRoute('login');
   }, [useCases]);
 
@@ -96,6 +106,15 @@ export function AppContent() {
   }
 
   if (!loggedUser) {
+    if (authRoute === 'pinLogin') {
+      return (
+        <PinLoginScreen
+          loginWithPin={useCases.loginWithPin}
+          onLoginSuccess={handleSignedIn}
+          onBack={goToLogin}
+        />
+      );
+    }
     return authRoute === 'register' ? (
       <RegisterScreen
         registerGuardian={useCases.registerGuardian}
@@ -107,8 +126,14 @@ export function AppContent() {
         authenticateUser={useCases.authenticateUser}
         onLoginSuccess={handleSignedIn}
         onGoToRegister={goToRegister}
+        onGoToPinLogin={() => setAuthRoute('pinLogin')}
       />
     );
+  }
+
+  // E1-04: el protegido entra con documento y PIN.
+  if (loggedUser.role === 'protegido') {
+    return <ProtegidoHomeScreen userName={loggedUser.name} onSignOut={handleSignOut} />;
   }
 
   // E1-06: el administrador solo ve la gestión de colegios y personal.
@@ -149,6 +174,15 @@ export function AppContent() {
 
   // E1-02: el acudiente ve sus menores y puede registrar uno nuevo.
   if (loggedUser.role === 'guardian') {
+    if (pinProtegido) {
+      return (
+        <AssignPinScreen
+          assignPin={useCases.assignPin}
+          protegido={pinProtegido}
+          onBack={() => setPinProtegido(null)}
+        />
+      );
+    }
     return guardianRoute === 'registerProtegido' ? (
       <RegisterProtegidoScreen
         registerProtegido={useCases.registerProtegido}
@@ -162,6 +196,7 @@ export function AppContent() {
         listMyProtegidos={useCases.listMyProtegidos}
         userName={loggedUser.name}
         onRegisterProtegido={() => setGuardianRoute('registerProtegido')}
+        onAssignPin={setPinProtegido}
         onSignOut={handleSignOut}
       />
     );

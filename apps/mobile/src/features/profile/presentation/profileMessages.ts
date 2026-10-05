@@ -7,6 +7,9 @@ export const PROFILE_ERROR_MESSAGES: Record<ProfileFailureReason, string> = {
     'La política de tratamiento cambió. Vuelve a abrir el formulario y acéptala de nuevo.',
   INVALID_DATA: 'Revisa los datos del menor e intenta de nuevo.',
   PHOTO_UPLOAD_FAILED: 'No se pudo subir la foto. Revisa tu conexión e intenta de nuevo.',
+  NOT_ACTIVE: 'El colegio todavía no ha validado a este menor.',
+  DOCUMENT_HAS_PIN:
+    'Ya existe otro registro de este menor con PIN. Comunícate con el colegio para revisarlo.',
   NETWORK: 'Sin conexión. Revisa tu internet e intenta de nuevo.',
   UNKNOWN: 'No se pudo completar la acción. Intenta de nuevo.',
 };

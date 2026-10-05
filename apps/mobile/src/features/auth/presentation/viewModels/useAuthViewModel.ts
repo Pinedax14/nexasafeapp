@@ -8,6 +8,8 @@ export const LOGIN_ERROR_MESSAGES: Record<LoginFailureReason, string> = {
   EMAIL_NOT_CONFIRMED: 'Confirma tu correo antes de iniciar sesión. Revisa tu bandeja de entrada.',
   NETWORK: 'Sin conexión. Revisa tu internet e intenta de nuevo.',
   RATE_LIMITED: 'Demasiados intentos. Espera unos minutos e intenta de nuevo.',
+  LOCKED:
+    'Por seguridad, el ingreso con PIN quedó bloqueado 15 minutos. Pide ayuda a tu acudiente.',
   UNKNOWN: 'No se pudo iniciar sesión. Intenta de nuevo.',
 };
 

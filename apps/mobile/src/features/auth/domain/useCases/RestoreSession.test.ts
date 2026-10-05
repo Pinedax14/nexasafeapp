@@ -7,6 +7,7 @@ const user: User = { id: 'u-1', name: 'Ana', email: 'ana@example.com', role: 'gu
 function createRepository(): jest.Mocked<AuthRepository> {
   return {
     login: jest.fn(),
+    loginWithPin: jest.fn(),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
     getCurrentUser: jest.fn(),

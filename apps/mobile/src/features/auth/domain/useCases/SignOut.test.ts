@@ -5,6 +5,7 @@ describe('SignOut', () => {
   it('cierra la sesión en el repositorio', async () => {
     const repository: jest.Mocked<AuthRepository> = {
       login: jest.fn(),
+      loginWithPin: jest.fn(),
       registerGuardian: jest.fn(),
       signOut: jest.fn().mockResolvedValue(undefined),
       getCurrentUser: jest.fn(),

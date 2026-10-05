@@ -6,6 +6,7 @@ import { RegisterScreen } from './RegisterScreen';
 function createRegisterGuardian() {
   const repository: jest.Mocked<AuthRepository> = {
     login: jest.fn(),
+    loginWithPin: jest.fn(),
     registerGuardian: jest.fn().mockResolvedValue({ ok: true, status: 'CONFIRMATION_PENDING' }),
     signOut: jest.fn(),
     getCurrentUser: jest.fn(),

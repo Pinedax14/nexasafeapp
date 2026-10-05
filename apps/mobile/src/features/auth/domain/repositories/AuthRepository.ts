@@ -1,7 +1,7 @@
 import { User } from '../entities/User';
 
 export type LoginFailureReason =
-  'INVALID_CREDENTIALS' | 'EMAIL_NOT_CONFIRMED' | 'NETWORK' | 'RATE_LIMITED' | 'UNKNOWN';
+  'INVALID_CREDENTIALS' | 'EMAIL_NOT_CONFIRMED' | 'NETWORK' | 'RATE_LIMITED' | 'LOCKED' | 'UNKNOWN';
 
 export type LoginResult = { ok: true; user: User } | { ok: false; reason: LoginFailureReason };
 
@@ -22,6 +22,8 @@ export type SessionListener = (user: User | null) => void;
 
 export interface AuthRepository {
   login(email: string, password: string): Promise<LoginResult>;
+  /** E1-04: el protegido entra con su documento y un PIN de 4 dígitos (Edge Function auth-pin). */
+  loginWithPin(document: string, pin: string): Promise<LoginResult>;
   registerGuardian(registration: GuardianRegistration): Promise<RegisterResult>;
   signOut(): Promise<void>;
   /** Usuario de la sesión guardada en el dispositivo, renovándola si hace falta. */
