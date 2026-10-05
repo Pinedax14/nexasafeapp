@@ -254,6 +254,7 @@
 | E1-04 | Como protegido, quiero ingresar con un PIN corto en lugar de contraseña, para acceder rápido sin exponer credenciales. | 3 | M |
 | E1-05 | Como usuario, quiero que mi sesión se guarde cifrada en el dispositivo, para no reautenticarme en cada trayecto. | 3 | M |
 | E1-06 | Como administrador, quiero crear colegios y registrar a su personal institucional desde la app, para habilitar la validación de matrículas. | 5 | M |
+| E1-07 | Como acudiente, quiero registrarme e iniciar sesión con mi cuenta de Google, para no tener que crear otra contraseña. | 5 | S |
 
 **Criterios de aceptación — E1-02**
 ```gherkin
@@ -370,7 +371,7 @@ Y la app indica que no pudo verificar el PIN por falta de conexión
 | E11-03 | Como acudiente, quiero exportar y solicitar la supresión de los datos de mi hijo, para ejercer el derecho de habeas data. | 5 | S |
 | E11-04 | Como sistema, quiero no compartir ubicación fuera de trayecto activo o alerta, para garantizar el principio de finalidad. | 3 | M |
 
-**Total estimado del backlog:** 225 puntos (suma de todas las historias de esta sección).
+**Total estimado del backlog:** 230 puntos (suma de todas las historias de esta sección).
 
 ---
 
@@ -391,7 +392,7 @@ Y la app indica que no pudo verificar el PIN por falta de conexión
 
 ### Fuera del roadmap del semestre (fase 2)
 
-El backlog completo suma 225 puntos y los Sprints 0–4 comprometen 131 (18+29+26+26+32). Los 94 puntos restantes quedan declarados como **trabajo de la fase 2**, no como alcance comprometido:
+El backlog completo suma 230 puntos y los Sprints 0–4 comprometen 131 (18+29+26+26+32). Los 99 puntos restantes quedan declarados como **trabajo de la fase 2**, no como alcance comprometido:
 
 | Épica / historia | Pts | Motivo |
 |---|---|---|
@@ -404,6 +405,7 @@ El backlog completo suma 225 puntos y los Sprints 0–4 comprometen 131 (18+29+2
 | E8-02, E8-03 — reporte de escalamiento y mapa de calor | 13 | E8-02 pasa a `Won't` en esta fase; E8-03 `Should` |
 | E9-03, E11-02, E11-03 — histórico, purga automática y exportación | 15 | E11-02 pasa a `Won't` en esta fase; en la fase 1 ningún dato del piloto alcanza 90 días |
 | E0-05 — SBOM automático en cada release | 3 | `Should`; en el cierre el SBOM se genera manualmente con Syft |
+| E1-07 — inicio de sesión con Google | 5 | `Should` (decisión del 05/10/2026). Requiere Google Cloud Console y un development build; se construye solo si sobra capacidad tras la revisión de alcance de H3 |
 | Canal WhatsApp Cloud API (`notify-whatsapp`) | — | No tiene historia en los Sprints 0–4; la fase 1 notifica solo por Expo Push |
 
 ### Hitos
@@ -753,4 +755,4 @@ Entonces <resultado esperado>
 |---|---|---|
 | 1.0 | — | Versión inicial |
 | 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
-| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01; rol administrador (E1-06, RF-42) en el Sprint 1 (29 pts), backlog 225 pts y capacidad 131 pts. |
+| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01; rol administrador (E1-06, RF-42) en el Sprint 1 (29 pts), backlog 225 pts y capacidad 131 pts; E1-07 (Google, RF-43, `Should`) fuera del roadmap, backlog 230 pts (05/10/2026). |

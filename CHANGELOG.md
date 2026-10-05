@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 01
 
 ### Agregado
+- Historia E1-07 (inicio de sesión con Google, RF-43, `Should`) en el backlog, fuera del roadmap: backlog 230 pts y trabajo futuro 99 pts.
 - Planning del Sprint 01 (29 pts) con criterios Gherkin de E1-01 a E1-06 y E11-01.
 - Nueva historia E1-06 y requisito RF-42: rol administrador que crea colegios y personal institucional desde la app (decisión D3). Backlog 225 pts y capacidad 131 pts.
 - Evaluación de impacto en privacidad (`docs/privacy/pia.md`) y política de tratamiento de datos v1.0 (`docs/privacy/politica-tratamiento.md`), en borrador.
