@@ -18,8 +18,14 @@ export type GuardianRegistration = {
   password: string;
 };
 
+export type SessionListener = (user: User | null) => void;
+
 export interface AuthRepository {
   login(email: string, password: string): Promise<LoginResult>;
   registerGuardian(registration: GuardianRegistration): Promise<RegisterResult>;
   signOut(): Promise<void>;
+  /** Usuario de la sesión guardada en el dispositivo, renovándola si hace falta. */
+  getCurrentUser(): Promise<User | null>;
+  /** Avisa cada vez que la sesión empieza o termina. Devuelve la función para dejar de escuchar. */
+  observeSession(listener: SessionListener): () => void;
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { supabase } from '../core/api/supabaseClient';
 import { colors } from '../core/theme/colors';
@@ -6,6 +6,7 @@ import { SupabaseAuthRepository } from '../features/auth/data/repositories/Supab
 import { User } from '../features/auth/domain/entities/User';
 import { AuthenticateUser } from '../features/auth/domain/useCases/AuthenticateUser';
 import { RegisterGuardian } from '../features/auth/domain/useCases/RegisterGuardian';
+import { RestoreSession } from '../features/auth/domain/useCases/RestoreSession';
 import { SignOut } from '../features/auth/domain/useCases/SignOut';
 import { AuthScreen } from '../features/auth/presentation/screens/AuthScreen';
 import { RegisterScreen } from '../features/auth/presentation/screens/RegisterScreen';
@@ -15,6 +16,7 @@ type AuthRoute = 'login' | 'register';
 
 export function AppContent() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
+  const [isSessionRestored, setIsSessionRestored] = useState(false);
   const [authRoute, setAuthRoute] = useState<AuthRoute>('login');
   const [loggedUser, setLoggedUser] = useState<User | null>(null);
 
@@ -24,9 +26,28 @@ export function AppContent() {
     return {
       authenticateUser: new AuthenticateUser(repository),
       registerGuardian: new RegisterGuardian(repository),
+      restoreSession: new RestoreSession(repository),
       signOut: new SignOut(repository),
     };
   }, []);
+
+  // E1-05: al abrir la app se recupera la sesión cifrada; si luego vence o se
+  // revoca (refresh token rotativo), la app vuelve a la pantalla de ingreso.
+  useEffect(() => {
+    let isMounted = true;
+    useCases.restoreSession.execute().then((user) => {
+      if (!isMounted) return;
+      setLoggedUser(user);
+      setIsSessionRestored(true);
+    });
+    const stopObserving = useCases.restoreSession.observe((user) => {
+      if (isMounted) setLoggedUser(user);
+    });
+    return () => {
+      isMounted = false;
+      stopObserving();
+    };
+  }, [useCases]);
 
   const handleSplashFinish = useCallback(() => setIsSplashVisible(false), []);
   const handleSignedIn = useCallback((user: User) => setLoggedUser(user), []);
@@ -39,7 +60,7 @@ export function AppContent() {
     setAuthRoute('login');
   }, [useCases]);
 
-  if (isSplashVisible) {
+  if (isSplashVisible || !isSessionRestored) {
     return <SplashScreen onFinish={handleSplashFinish} />;
   }
 

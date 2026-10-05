@@ -7,6 +7,8 @@ describe('SignOut', () => {
       login: jest.fn(),
       registerGuardian: jest.fn(),
       signOut: jest.fn().mockResolvedValue(undefined),
+      getCurrentUser: jest.fn(),
+      observeSession: jest.fn(),
     };
 
     await new SignOut(repository).execute();

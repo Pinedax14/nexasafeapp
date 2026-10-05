@@ -14,6 +14,8 @@ function createRepository(result: LoginResult): jest.Mocked<AuthRepository> {
     login: jest.fn().mockResolvedValue(result),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
+    getCurrentUser: jest.fn(),
+    observeSession: jest.fn(),
   };
 }
 

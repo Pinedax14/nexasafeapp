@@ -5,6 +5,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 01
 
 ### Agregado
+- E1-05 Sesión cifrada en el dispositivo: la sesión de Supabase se guarda con `expo-secure-store` (Keystore de Android), partida en trozos de menos de 2 KB; al abrir la app se restaura y, si el refresh token vence o se revoca, la app vuelve al ingreso. En web la sesión no se persiste.
+- E1-01 Registro e inicio de sesión del acudiente con Supabase Auth: pantallas de registro e ingreso, validación de nombre, correo y contraseña (mínimo 8 caracteres, D7), mensaje genérico ante correos ya registrados (D2) y cierre de sesión.
 - Planning del Sprint 01 (29 pts) con criterios Gherkin de E1-01 a E1-06 y E11-01.
 - Nueva historia E1-06 y requisito RF-42: rol administrador que crea colegios y personal institucional desde la app (decisión D3). Backlog 225 pts y capacidad 131 pts.
 - Evaluación de impacto en privacidad (`docs/privacy/pia.md`) y política de tratamiento de datos v1.0 (`docs/privacy/politica-tratamiento.md`), en borrador.

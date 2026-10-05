@@ -20,6 +20,7 @@
     "@supabase/supabase-js": "^2.117.2",
     "expo": "~54.0.35",
     "expo-dev-client": "~6.0.21",
+    "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
@@ -46,7 +47,8 @@
     "preset": "jest-expo",
     "collectCoverageFrom": [
       "src/features/**/domain/**/*.ts",
-      "src/features/**/data/**/*.ts"
+      "src/features/**/data/**/*.ts",
+      "src/core/storage/**/*.ts"
     ],
     "coverageThreshold": {
       "global": {

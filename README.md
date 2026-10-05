@@ -75,6 +75,8 @@ npm start
 
 Escanea el QR con **Expo Go** (celular en la misma red Wi-Fi) o presiona `w` para abrirla en el navegador. Si el celular no conecta, usa `npm start -- --tunnel`.
 
+La sesión queda guardada cifrada en el teléfono (`expo-secure-store`): al volver a abrir la app no hace falta iniciar sesión. En el navegador (`w`) la sesión no se guarda.
+
 `npm start` fuerza el modo Expo Go. Cuando el equipo instale un *development build* (perfil `development` de EAS), usa `npm run start:dev-client`.
 
 ## Calidad: lint, pruebas y build

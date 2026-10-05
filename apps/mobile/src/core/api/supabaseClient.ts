@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
-import { AppState } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { AppState, Platform } from 'react-native';
+import { createSecureSessionStorage } from '../storage/secureSessionStorage';
 import { Database } from './database.types';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -11,10 +13,14 @@ if (!supabaseUrl || !supabasePublishableKey) {
   );
 }
 
-// La sesión todavía no se persiste: E1-05 la guarda cifrada en expo-secure-store.
+// E1-05: la sesión se guarda cifrada con expo-secure-store (Keystore de Android).
+// En web no hay SecureStore, así que allí la sesión no se persiste.
+const canPersistSession = Platform.OS !== 'web';
+
 export const supabase = createClient<Database>(supabaseUrl, supabasePublishableKey, {
   auth: {
-    persistSession: false,
+    storage: canPersistSession ? createSecureSessionStorage(SecureStore) : undefined,
+    persistSession: canPersistSession,
     autoRefreshToken: true,
     detectSessionInUrl: false,
   },
