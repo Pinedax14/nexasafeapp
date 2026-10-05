@@ -5,7 +5,13 @@ import { LOGIN_ERROR_MESSAGES } from '../viewModels/useAuthViewModel';
 import { PIN_INVALID_MESSAGE } from '../viewModels/usePinLoginViewModel';
 import { PinLoginScreen } from './PinLoginScreen';
 
-const menor = { id: 'u-1', name: 'Menor Uno', email: '', role: 'protegido' as const };
+const menor = {
+  id: 'u-1',
+  name: 'Menor Uno',
+  email: '',
+  role: 'protegido' as const,
+  mustChangePassword: false,
+};
 
 async function setup(result: LoginResult) {
   const repository: jest.Mocked<AuthRepository> = {
@@ -13,6 +19,7 @@ async function setup(result: LoginResult) {
     loginWithPin: jest.fn().mockResolvedValue(result),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
+    changePassword: jest.fn(),
     getCurrentUser: jest.fn(),
     observeSession: jest.fn(),
   };

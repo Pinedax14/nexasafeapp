@@ -1,7 +1,8 @@
 // E1-04 · Edge Function auth-pin (RF-04, RNF-05, D5, D7).
 //  - "asignar": el guardián asigna un PIN de 4 dígitos a su menor ACTIVO. Con "generar": true
 //    el servidor elige un PIN aleatorio y lo devuelve una sola vez al guardián.
-//  - "ingresar": el menor entra con su documento + PIN y recibe una sesión.
+//  - "ingresar": el menor entra con su documento + PIN y recibe una sesión. Los fallos se
+//    limitan por menor (D7) y por IP (SEC-01).
 // El PIN solo se guarda como hash Argon2id en protegidos.pin_hash.
 
 export type Caller = { id: string; rol: string | null };
@@ -45,6 +46,9 @@ export type AuthPinDeps = {
   recordSuccess(protegidoId: string): Promise<void>;
   createSession(usuarioId: string): Promise<SessionTokens | null>;
   audit(actorId: string | null, protegidoId: string, accion: string): Promise<void>;
+  /** SEC-01: true si la IP superó los ingresos fallidos permitidos. */
+  ipBlocked(ip: string): Promise<boolean>;
+  recordIpFailure(ip: string): Promise<void>;
   /** Entero aleatorio criptográficamente seguro en [0, max). */
   randomInt(max: number): number;
   now(): Date;
@@ -83,6 +87,12 @@ function json(status: number, body: unknown): Response {
     status,
     headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
   });
+}
+
+/** IP del cliente según el proxy de Supabase; null si no viene (pruebas locales). */
+export function clientIp(req: Request): string | null {
+  const forwarded = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  return forwarded || null;
 }
 
 /** Igual que normalizeDocument de la app: sin espacios, puntos ni guiones. */
@@ -136,17 +146,28 @@ async function assignPin(
   return json(200, generated ? { ok: true, pin } : { ok: true });
 }
 
-async function login(body: Record<string, unknown>, deps: AuthPinDeps): Promise<Response> {
+async function login(
+  req: Request,
+  body: Record<string, unknown>,
+  deps: AuthPinDeps,
+): Promise<Response> {
   const documento = normalizeDocument(typeof body.documento === 'string' ? body.documento : '');
   const pin = typeof body.pin === 'string' ? body.pin : '';
   if (!DOCUMENT_PATTERN.test(documento) || !PIN_PATTERN.test(pin)) {
     return json(400, { error: 'INVALID_INPUT' });
   }
 
+  const ip = clientIp(req);
+  if (ip && (await deps.ipBlocked(ip))) return json(429, { error: 'LOCKED' });
+  const recordIpFailure = async () => {
+    if (ip) await deps.recordIpFailure(ip);
+  };
+
   const huella = await deps.fingerprint(documento);
   const candidate = huella ? await deps.findLoginCandidate(huella) : null;
   if (!candidate) {
     await deps.verifyPin(pin, null);
+    await recordIpFailure();
     return json(401, { error: 'INVALID_CREDENTIALS' });
   }
 
@@ -157,12 +178,14 @@ async function login(body: Record<string, unknown>, deps: AuthPinDeps): Promise<
 
   if (candidate.estado !== 'ACTIVO' || !candidate.pinHash) {
     await deps.verifyPin(pin, null);
+    await recordIpFailure();
     return json(401, { error: 'INVALID_CREDENTIALS' });
   }
 
   if (!(await deps.verifyPin(pin, candidate.pinHash))) {
     const intentos = candidate.intentosFallidos + 1;
     await deps.audit(null, candidate.id, 'INGRESO_PIN_FALLIDO');
+    await recordIpFailure();
     if (intentos >= MAX_FAILED_ATTEMPTS) {
       await deps.recordFailure(
         candidate.id,
@@ -197,7 +220,7 @@ export function createHandler(deps: AuthPinDeps): (req: Request) => Promise<Resp
     }
 
     if (body.accion === 'asignar') return assignPin(req, body, deps);
-    if (body.accion === 'ingresar') return login(body, deps);
+    if (body.accion === 'ingresar') return login(req, body, deps);
     return json(400, { error: 'INVALID_INPUT' });
   };
 }

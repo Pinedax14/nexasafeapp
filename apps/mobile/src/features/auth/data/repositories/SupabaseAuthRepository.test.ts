@@ -34,6 +34,7 @@ describe('toDomainUser', () => {
       email: 'ana@example.com',
       name: 'Ana Acudiente',
       role: 'guardian',
+      mustChangePassword: false,
     });
   });
 
@@ -50,6 +51,7 @@ describe('toDomainUser', () => {
       email: 'x@example.com',
       name: 'x@example.com',
       role: null,
+      mustChangePassword: false,
     });
   });
 });
@@ -329,6 +331,71 @@ describe('SupabaseAuthRepository.loginWithPin (E1-04)', () => {
 
     const withoutFunctions = new SupabaseAuthRepository(createClient());
     await expect(withoutFunctions.loginWithPin('1023456789', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'UNKNOWN',
+    });
+  });
+});
+
+describe('SupabaseAuthRepository.changePassword (SEC-03)', () => {
+  const staffUser = {
+    ...supabaseUser,
+    app_metadata: { rol: 'institucion', debe_cambiar_contrasena: true },
+  } as unknown as SupabaseUser;
+  const staffUserChanged = {
+    ...supabaseUser,
+    app_metadata: { rol: 'institucion' },
+  } as unknown as SupabaseUser;
+
+  function setup(updateError: AuthError | null, refreshed?: unknown) {
+    const client = createClient() as unknown as Record<string, jest.Mock>;
+    client.updateUser = jest
+      .fn()
+      .mockResolvedValue({ data: { user: staffUser }, error: updateError });
+    client.refreshSession = jest
+      .fn()
+      .mockResolvedValue(refreshed ?? { data: { user: staffUserChanged }, error: null });
+    return {
+      client,
+      repository: new SupabaseAuthRepository(client as unknown as SupabaseAuthClient),
+    };
+  }
+
+  it('lee la marca de contraseña temporal de app_metadata', () => {
+    expect(toDomainUser(staffUser).mustChangePassword).toBe(true);
+    expect(toDomainUser(supabaseUser).mustChangePassword).toBe(false);
+  });
+
+  it('cambia la contraseña y renueva la sesión para quitar la marca', async () => {
+    const { client, repository } = setup(null);
+
+    const result = await repository.changePassword('clave-definitiva');
+
+    expect(client.updateUser).toHaveBeenCalledWith({ password: 'clave-definitiva' });
+    expect(client.refreshSession).toHaveBeenCalled();
+    expect(result).toEqual({ ok: true, user: toDomainUser(staffUserChanged) });
+  });
+
+  it.each([
+    ['same_password', 422, undefined, 'SAME_PASSWORD'],
+    ['weak_password', 422, undefined, 'WEAK_PASSWORD'],
+    [undefined, 0, 'AuthRetryableFetchError', 'NETWORK'],
+    [undefined, 429, undefined, 'RATE_LIMITED'],
+    [undefined, 500, undefined, 'UNKNOWN'],
+  ])('traduce el error %s (HTTP %s) de Supabase', async (code, status, name, reason) => {
+    const { client, repository } = setup(authError({ code, status, name }));
+
+    await expect(repository.changePassword('clave-definitiva')).resolves.toEqual({
+      ok: false,
+      reason,
+    });
+    expect(client.refreshSession).not.toHaveBeenCalled();
+  });
+
+  it('falla si no puede renovar la sesión', async () => {
+    const { repository } = setup(null, { data: { user: null }, error: authError({}) });
+
+    await expect(repository.changePassword('clave-definitiva')).resolves.toEqual({
       ok: false,
       reason: 'UNKNOWN',
     });

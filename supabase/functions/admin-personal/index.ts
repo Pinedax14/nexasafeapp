@@ -46,7 +46,8 @@ Deno.serve(
         email,
         password,
         email_confirm: true,
-        app_metadata: { rol: 'institucion' },
+        // SEC-03: la contraseña es temporal; se cambia en el primer ingreso.
+        app_metadata: { rol: 'institucion', debe_cambiar_contrasena: true },
         user_metadata: { nombre },
       });
       if (error || !data.user) {
@@ -57,7 +58,9 @@ Deno.serve(
         return { ok: false, reason: 'UNKNOWN' };
       }
       // Defensa: la cuenta debe quedar con rol institucion y nunca como guardián.
-      await admin.auth.admin.updateUserById(data.user.id, { app_metadata: { rol: 'institucion' } });
+      await admin.auth.admin.updateUserById(data.user.id, {
+        app_metadata: { rol: 'institucion', debe_cambiar_contrasena: true },
+      });
       await admin.from('guardianes').delete().eq('id', data.user.id);
       return { ok: true, id: data.user.id };
     },

@@ -1,6 +1,7 @@
 import { deepStrictEqual as assertEquals } from 'node:assert/strict';
 import {
   AuthPinDeps,
+  clientIp,
   createHandler,
   generatePin,
   LOCK_DURATION_MS,
@@ -38,10 +39,18 @@ type Calls = {
   successes: string[];
   audits: Array<[string | null, string, string]>;
   verifiedAgainst: Array<string | null>;
+  ipFailures: string[];
 };
 
 function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
-  const calls: Calls = { saved: [], failures: [], successes: [], audits: [], verifiedAgainst: [] };
+  const calls: Calls = {
+    saved: [],
+    failures: [],
+    successes: [],
+    audits: [],
+    verifiedAgainst: [],
+    ipFailures: [],
+  };
   return {
     ...calls,
     getCaller: () => Promise.resolve({ id: 'guardian-1', rol: 'guardian' }),
@@ -74,6 +83,11 @@ function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
       return Promise.resolve();
     },
     randomInt: () => 4826,
+    ipBlocked: (ip) => Promise.resolve(calls.ipFailures.filter((x) => x === ip).length >= 20),
+    recordIpFailure: (ip) => {
+      calls.ipFailures.push(ip);
+      return Promise.resolve();
+    },
     now: () => NOW,
     ...overrides,
   };
@@ -313,4 +327,50 @@ Deno.test('responde a CORS y solo acepta POST', async () => {
 
   assertEquals((await handler(new Request('http://localhost', { method: 'OPTIONS' }))).status, 200);
   assertEquals((await handler(new Request('http://localhost', { method: 'GET' }))).status, 405);
+});
+
+// ---------------------------------------------------------------------------
+// Límite por IP (SEC-01)
+// ---------------------------------------------------------------------------
+
+function postFrom(ip: string, body: unknown): Request {
+  const request = post(body, null);
+  request.headers.set('x-forwarded-for', `${ip}, 10.0.0.1`);
+  return request;
+}
+
+Deno.test('toma la IP del cliente del primer valor de x-forwarded-for', () => {
+  assertEquals(clientIp(postFrom('203.0.113.7', loginBody)), '203.0.113.7');
+  assertEquals(clientIp(post(loginBody)), null);
+});
+
+Deno.test('cada ingreso fallido cuenta para la IP, sin importar el documento', async () => {
+  const deps = fakeDeps();
+  const handler = createHandler(deps);
+
+  await handler(postFrom('203.0.113.7', { ...loginBody, documento: '99999999' }));
+  await handler(postFrom('203.0.113.7', { ...loginBody, pin: '0001' }));
+  await handler(postFrom('203.0.113.7', loginBody));
+
+  assertEquals(deps.ipFailures, ['203.0.113.7', '203.0.113.7']);
+});
+
+Deno.test('una IP con 20 fallos no puede intentar más, ni con el PIN correcto', async () => {
+  const deps = fakeDeps();
+  deps.ipFailures.push(...Array(20).fill('203.0.113.7'));
+
+  const response = await createHandler(deps)(postFrom('203.0.113.7', loginBody));
+
+  assertEquals(response.status, 429);
+  assertEquals(await response.json(), { error: 'LOCKED' });
+  assertEquals(deps.verifiedAgainst, []);
+});
+
+Deno.test('el bloqueo de una IP no afecta a otra', async () => {
+  const deps = fakeDeps();
+  deps.ipFailures.push(...Array(20).fill('203.0.113.7'));
+
+  const response = await createHandler(deps)(postFrom('198.51.100.2', loginBody));
+
+  assertEquals(response.status, 200);
 });

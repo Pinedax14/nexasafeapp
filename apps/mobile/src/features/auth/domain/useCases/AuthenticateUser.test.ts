@@ -7,6 +7,7 @@ const user: User = {
   name: 'Usuario de prueba',
   email: 'test@example.com',
   role: 'guardian',
+  mustChangePassword: false,
 };
 
 function createRepository(result: LoginResult): jest.Mocked<AuthRepository> {
@@ -15,6 +16,7 @@ function createRepository(result: LoginResult): jest.Mocked<AuthRepository> {
     loginWithPin: jest.fn(),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
+    changePassword: jest.fn(),
     getCurrentUser: jest.fn(),
     observeSession: jest.fn(),
   };

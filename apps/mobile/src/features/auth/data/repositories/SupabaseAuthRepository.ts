@@ -2,6 +2,8 @@ import { AuthError, SupabaseClient, User as SupabaseUser } from '@supabase/supab
 import { Role, User } from '../../domain/entities/User';
 import {
   AuthRepository,
+  ChangePasswordFailureReason,
+  ChangePasswordResult,
   GuardianRegistration,
   LoginFailureReason,
   LoginResult,
@@ -12,7 +14,14 @@ import {
 
 export type SupabaseAuthClient = Pick<
   SupabaseClient['auth'],
-  'signInWithPassword' | 'signUp' | 'signOut' | 'getSession' | 'onAuthStateChange' | 'setSession'
+  | 'signInWithPassword'
+  | 'signUp'
+  | 'signOut'
+  | 'getSession'
+  | 'onAuthStateChange'
+  | 'setSession'
+  | 'updateUser'
+  | 'refreshSession'
 >;
 
 export type SupabaseFunctionsClient = Pick<SupabaseClient['functions'], 'invoke'>;
@@ -49,6 +58,7 @@ export function toDomainUser(user: SupabaseUser): User {
     email,
     name: name || email,
     role: toRole(user.app_metadata?.rol),
+    mustChangePassword: user.app_metadata?.debe_cambiar_contrasena === true,
   };
 }
 
@@ -65,6 +75,14 @@ function loginFailureReason(error: AuthError): LoginFailureReason {
   if (isRateLimited(error)) return 'RATE_LIMITED';
   if (error.code === 'email_not_confirmed') return 'EMAIL_NOT_CONFIRMED';
   if (error.code === 'invalid_credentials' || error.status === 400) return 'INVALID_CREDENTIALS';
+  return 'UNKNOWN';
+}
+
+function changePasswordFailureReason(error: AuthError): ChangePasswordFailureReason {
+  if (isNetworkError(error)) return 'NETWORK';
+  if (isRateLimited(error)) return 'RATE_LIMITED';
+  if (error.code === 'same_password') return 'SAME_PASSWORD';
+  if (error.code === 'weak_password') return 'WEAK_PASSWORD';
   return 'UNKNOWN';
 }
 
@@ -124,6 +142,16 @@ export class SupabaseAuthRepository implements AuthRepository {
       return { ok: true, status: 'SIGNED_IN', user: toDomainUser(data.user) };
     }
     return { ok: true, status: 'CONFIRMATION_PENDING' };
+  }
+
+  async changePassword(newPassword: string): Promise<ChangePasswordResult> {
+    const { error } = await this.auth.updateUser({ password: newPassword });
+    if (error) return { ok: false, reason: changePasswordFailureReason(error) };
+
+    // El token anterior aún trae la marca de contraseña temporal: se pide uno nuevo.
+    const refreshed = await this.auth.refreshSession();
+    if (refreshed.error || !refreshed.data.user) return { ok: false, reason: 'UNKNOWN' };
+    return { ok: true, user: toDomainUser(refreshed.data.user) };
   }
 
   async signOut(): Promise<void> {
