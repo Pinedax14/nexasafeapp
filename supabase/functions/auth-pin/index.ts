@@ -68,6 +68,16 @@ Deno.serve(
 
     hashPin,
 
+    randomInt(max) {
+      // Muestreo por rechazo: evita el sesgo del módulo.
+      const limit = Math.floor(0x100000000 / max) * max;
+      const buffer = new Uint32Array(1);
+      do {
+        crypto.getRandomValues(buffer);
+      } while (buffer[0] >= limit);
+      return buffer[0] % max;
+    },
+
     async verifyPin(pin, pinHash) {
       dummyHash ??= hashPin('0000');
       try {

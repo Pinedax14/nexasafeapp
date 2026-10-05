@@ -30,4 +30,6 @@ export interface ProtegidoRepository {
   register(registration: ProtegidoRegistration): Promise<ProfileResult<string>>;
   /** E1-04 (D5): el guardián asigna el PIN de 4 dígitos a su menor ACTIVO. */
   assignPin(protegidoId: string, pin: string): Promise<ProfileResult<void>>;
+  /** E1-04: el servidor genera un PIN aleatorio, lo asigna y lo devuelve una sola vez. */
+  generatePin(protegidoId: string): Promise<ProfileResult<string>>;
 }

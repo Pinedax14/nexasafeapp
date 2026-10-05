@@ -222,3 +222,46 @@ describe('SupabaseProtegidoRepository.assignPin (E1-04)', () => {
     });
   });
 });
+
+describe('SupabaseProtegidoRepository.generatePin (E1-04)', () => {
+  function withFunctions(invokeResult: unknown) {
+    const { client } = setup();
+    const functions = { invoke: jest.fn().mockResolvedValue(invokeResult) };
+    const repository = new SupabaseProtegidoRepository({ ...client, functions } as never);
+    return { functions, repository };
+  }
+
+  it('pide a auth-pin que genere el PIN y lo devuelve', async () => {
+    const { functions, repository } = withFunctions({
+      data: { ok: true, pin: '4826' },
+      error: null,
+    });
+
+    const result = await repository.generatePin('p-1');
+
+    expect(functions.invoke).toHaveBeenCalledWith('auth-pin', {
+      body: { accion: 'asignar', protegido_id: 'p-1', generar: true },
+    });
+    expect(result).toEqual({ ok: true, value: '4826' });
+  });
+
+  it('falla si el servidor responde con error o sin PIN', async () => {
+    const failed = withFunctions({
+      data: null,
+      error: {
+        name: 'FunctionsHttpError',
+        context: { json: () => Promise.resolve({ error: 'NOT_ACTIVE' }) },
+      },
+    });
+    await expect(failed.repository.generatePin('p-1')).resolves.toEqual({
+      ok: false,
+      reason: 'NOT_ACTIVE',
+    });
+
+    const empty = withFunctions({ data: { ok: true }, error: null });
+    await expect(empty.repository.generatePin('p-1')).resolves.toEqual({
+      ok: false,
+      reason: 'UNKNOWN',
+    });
+  });
+});

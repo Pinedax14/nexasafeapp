@@ -1,7 +1,8 @@
 // E1-04 · Edge Function auth-pin (RF-04, RNF-05, D5, D7).
-//  - "asignar": el guardián asigna un PIN de 4 dígitos a su menor ACTIVO.
+//  - "asignar": el guardián asigna un PIN de 4 dígitos a su menor ACTIVO. Con "generar": true
+//    el servidor elige un PIN aleatorio y lo devuelve una sola vez al guardián.
 //  - "ingresar": el menor entra con su documento + PIN y recibe una sesión.
-// El PIN solo existe como hash Argon2id en protegidos.pin_hash; nunca sale del servidor.
+// El PIN solo se guarda como hash Argon2id en protegidos.pin_hash.
 
 export type Caller = { id: string; rol: string | null };
 
@@ -36,10 +37,16 @@ export type AuthPinDeps = {
   savePin(protegidoId: string, usuarioId: string, pinHash: string): Promise<boolean>;
   fingerprint(documento: string): Promise<string | null>;
   findLoginCandidate(documentoHuella: string): Promise<LoginCandidate | null>;
-  recordFailure(protegidoId: string, intentos: number, bloqueadoHasta: string | null): Promise<void>;
+  recordFailure(
+    protegidoId: string,
+    intentos: number,
+    bloqueadoHasta: string | null,
+  ): Promise<void>;
   recordSuccess(protegidoId: string): Promise<void>;
   createSession(usuarioId: string): Promise<SessionTokens | null>;
   audit(actorId: string | null, protegidoId: string, accion: string): Promise<void>;
+  /** Entero aleatorio criptográficamente seguro en [0, max). */
+  randomInt(max: number): number;
   now(): Date;
 };
 
@@ -48,6 +55,21 @@ export const MAX_FAILED_ATTEMPTS = 5;
 export const LOCK_DURATION_MS = 15 * 60 * 1000;
 const PIN_PATTERN = /^[0-9]{4}$/;
 const DOCUMENT_PATTERN = /^[A-Za-z0-9]{5,20}$/;
+/** PIN demasiado fáciles de adivinar; igual que la validación de la app. */
+export const WEAK_PINS = new Set([
+  '0000',
+  '1111',
+  '2222',
+  '3333',
+  '4444',
+  '5555',
+  '6666',
+  '7777',
+  '8888',
+  '9999',
+  '1234',
+  '4321',
+]);
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const CORS_HEADERS = {
@@ -68,6 +90,14 @@ export function normalizeDocument(documento: string): string {
   return documento.replace(/[\s.-]/g, '');
 }
 
+export function generatePin(randomInt: (max: number) => number): string {
+  let pin: string;
+  do {
+    pin = String(randomInt(10000)).padStart(4, '0');
+  } while (WEAK_PINS.has(pin));
+  return pin;
+}
+
 async function assignPin(
   req: Request,
   body: Record<string, unknown>,
@@ -78,7 +108,12 @@ async function assignPin(
   if (caller.rol !== 'guardian') return json(403, { error: 'FORBIDDEN' });
 
   const protegidoId = typeof body.protegido_id === 'string' ? body.protegido_id : '';
-  const pin = typeof body.pin === 'string' ? body.pin : '';
+  const generated = body.generar === true;
+  const pin = generated
+    ? generatePin(deps.randomInt)
+    : typeof body.pin === 'string'
+      ? body.pin
+      : '';
   if (!UUID_PATTERN.test(protegidoId) || !PIN_PATTERN.test(pin)) {
     return json(400, { error: 'INVALID_INPUT' });
   }
@@ -98,7 +133,7 @@ async function assignPin(
   if (!saved) return json(500, { error: 'UNKNOWN' });
 
   await deps.audit(caller.id, protegido.id, 'ASIGNAR_PIN');
-  return json(200, { ok: true });
+  return json(200, generated ? { ok: true, pin } : { ok: true });
 }
 
 async function login(body: Record<string, unknown>, deps: AuthPinDeps): Promise<Response> {

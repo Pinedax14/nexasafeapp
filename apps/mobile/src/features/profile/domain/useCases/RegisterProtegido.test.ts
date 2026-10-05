@@ -28,6 +28,7 @@ function createRepository(): jest.Mocked<ProtegidoRepository> {
     uploadPhoto: jest.fn().mockResolvedValue({ ok: true, value: 'g-1/foto.jpg' }),
     register: jest.fn().mockResolvedValue({ ok: true, value: 'p-1' }),
     assignPin: jest.fn(),
+    generatePin: jest.fn(),
   };
 }
 

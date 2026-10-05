@@ -5,6 +5,9 @@ import { PROFILE_ERROR_MESSAGES } from '../profileMessages';
 export const PIN_ASSIGNED_MESSAGE =
   'PIN asignado. El menor ya puede entrar en su celular con su número de documento y este PIN. No lo compartas por chat.';
 
+export const PIN_GENERATED_MESSAGE =
+  'Anota este PIN y dáselo al menor en persona. No se volverá a mostrar ni lo compartas por chat.';
+
 const onlyDigits = (value: string) => value.replace(/[^0-9]/g, '').slice(0, 4);
 
 export function useAssignPinViewModel(assignPin: AssignPin, protegidoId: string) {
@@ -14,6 +17,7 @@ export function useAssignPinViewModel(assignPin: AssignPin, protegidoId: string)
   const [errorMessage, setErrorMessage] = useState('');
   const [notice, setNotice] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [generatedPin, setGeneratedPin] = useState('');
 
   const updatePin = useCallback((value: string) => {
     setPin(onlyDigits(value));
@@ -44,8 +48,27 @@ export function useAssignPinViewModel(assignPin: AssignPin, protegidoId: string)
     }
     setPin('');
     setConfirmation('');
+    setGeneratedPin('');
     setNotice(PIN_ASSIGNED_MESSAGE);
   }, [assignPin, confirmation, pin, protegidoId]);
+
+  const generate = useCallback(async () => {
+    setIsSaving(true);
+    setErrorMessage('');
+    setNotice('');
+    setFieldErrors({});
+    const result = await assignPin.generate(protegidoId);
+    setIsSaving(false);
+
+    if (!result.ok) {
+      setErrorMessage(PROFILE_ERROR_MESSAGES[result.reason]);
+      return;
+    }
+    setPin('');
+    setConfirmation('');
+    setGeneratedPin(result.value);
+    setNotice(PIN_GENERATED_MESSAGE);
+  }, [assignPin, protegidoId]);
 
   return {
     pin,
@@ -54,8 +77,10 @@ export function useAssignPinViewModel(assignPin: AssignPin, protegidoId: string)
     errorMessage,
     notice,
     isSaving,
+    generatedPin,
     updatePin,
     updateConfirmation,
     save,
+    generate,
   };
 }

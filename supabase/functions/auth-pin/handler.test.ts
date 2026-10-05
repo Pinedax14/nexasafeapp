@@ -2,11 +2,13 @@ import { deepStrictEqual as assertEquals } from 'node:assert/strict';
 import {
   AuthPinDeps,
   createHandler,
+  generatePin,
   LOCK_DURATION_MS,
   LoginCandidate,
   MAX_FAILED_ATTEMPTS,
   normalizeDocument,
   ProtegidoForPin,
+  WEAK_PINS,
 } from './handler.ts';
 
 const NOW = new Date('2026-10-05T12:00:00Z');
@@ -56,7 +58,8 @@ function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
       return Promise.resolve(true);
     },
     fingerprint: (doc) => Promise.resolve(`huella-${doc}`),
-    findLoginCandidate: (huella) => Promise.resolve(huella === 'huella-1023456789' ? candidate : null),
+    findLoginCandidate: (huella) =>
+      Promise.resolve(huella === 'huella-1023456789' ? candidate : null),
     recordFailure: (id, intentos, hasta) => {
       calls.failures.push([id, intentos, hasta]);
       return Promise.resolve();
@@ -70,6 +73,7 @@ function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
       calls.audits.push([actor, id, accion]);
       return Promise.resolve();
     },
+    randomInt: () => 4826,
     now: () => NOW,
     ...overrides,
   };
@@ -101,6 +105,34 @@ Deno.test('el guardián asigna un PIN a su menor activo', async () => {
   assertEquals(deps.audits, [['guardian-1', PROTEGIDO_ID, 'ASIGNAR_PIN']]);
 });
 
+Deno.test('el servidor genera un PIN aleatorio y lo devuelve una sola vez', async () => {
+  const deps = fakeDeps();
+  const response = await createHandler(deps)(
+    post({ accion: 'asignar', protegido_id: PROTEGIDO_ID, generar: true }),
+  );
+
+  assertEquals(response.status, 200);
+  assertEquals(await response.json(), { ok: true, pin: '4826' });
+  assertEquals(deps.saved, [[PROTEGIDO_ID, 'usuario-protegido-1', 'hash-de-4826']]);
+  assertEquals(deps.audits, [['guardian-1', PROTEGIDO_ID, 'ASIGNAR_PIN']]);
+});
+
+Deno.test('el PIN asignado por el guardián no se devuelve', async () => {
+  const response = await createHandler(fakeDeps())(post(assignBody));
+  assertEquals(await response.json(), { ok: true });
+});
+
+Deno.test('el PIN generado tiene 4 dígitos y nunca es fácil de adivinar', () => {
+  const values = [1234, 0, 7, 9999, 305];
+  const pin = generatePin(() => values.shift() as number);
+  assertEquals(pin, '0007');
+  for (const weak of WEAK_PINS) assertEquals(weak === pin, false);
+  assertEquals(
+    generatePin(() => 305),
+    '0305',
+  );
+});
+
 Deno.test('reutiliza la cuenta del menor si ya tenía PIN', async () => {
   let created = false;
   const deps = fakeDeps({
@@ -119,8 +151,11 @@ Deno.test('reutiliza la cuenta del menor si ya tenía PIN', async () => {
 
 Deno.test('solo un guardián con sesión puede asignar PIN', async () => {
   assertEquals(
-    (await createHandler(fakeDeps({ getCaller: () => Promise.resolve(null) }))(post(assignBody, null)))
-      .status,
+    (
+      await createHandler(fakeDeps({ getCaller: () => Promise.resolve(null) }))(
+        post(assignBody, null),
+      )
+    ).status,
     401,
   );
   for (const rol of ['institucion', 'admin', 'protegido', 'apoyo']) {
@@ -185,7 +220,9 @@ Deno.test('el protegido activo entra con su documento y PIN correcto', async () 
 });
 
 Deno.test('acepta el documento con puntos, espacios o guiones', async () => {
-  const response = await createHandler(fakeDeps())(post({ ...loginBody, documento: ' 1.023.456-789 ' }));
+  const response = await createHandler(fakeDeps())(
+    post({ ...loginBody, documento: ' 1.023.456-789 ' }),
+  );
 
   assertEquals(response.status, 200);
   assertEquals(normalizeDocument(' 1.023 456-7 '), '10234567');
