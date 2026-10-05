@@ -16,7 +16,7 @@ Fuente: Plan de Desarrollo v1.1, capítulo 8 (`PLAN_NEXASAFE.md` v1.2, sección 
 | R8 | Falsos positivos por sacudida | Alta | Medio | Aplica a la fase 2 (E6-02) | Abierto | PENDIENTE: asignar | Sprint 00 |
 | R9 | Sin Android físico para probar: el hito H2 (17/10), la demo de la review, la DoD de cada historia y la prueba E2E con Maestro lo necesitan | Alta | Alto | Conseguir un Android 9+ prestado e instalar el APK de EAS (`preview`); mientras tanto se prueba en el navegador. 05/10/2026: APK `preview` (build EAS 773d8111) instalado en un Android prestado; el flujo completo funcionó según el equipo. Celular OPPO; versión de Android no registrada. Falta la prueba E2E con Maestro | Mitigado | Juan Felipe Pineda Cardona | Sprint 01 |
 | R10 | Pérdida o fuga de las llaves de Vault (`documento_cifrado_key`, `documento_huella_key`) | Baja | Crítico | Llaves solo en Supabase Vault, leídas por funciones `security definer`; nunca en el repo ni en la app. Sin las llaves los documentos no se pueden descifrar: definir un respaldo antes del piloto | Abierto | Juan Felipe Pineda Cardona (Security Champion) | Sprint 01 |
-| R11 | Bloqueo del PIN usado contra el menor: quien conozca su documento puede fallar 5 veces y bloquear su ingreso 15 minutos | Media | Medio | El bloqueo solo afecta un ingreso nuevo (la sesión guardada sigue activa); seguimiento en SEC-02 | Abierto | Juan Felipe Pineda Cardona (Security Champion) | Sprint 01 |
+| R11 | Bloqueo del PIN usado contra el menor: quien conozca su documento puede fallar 5 veces y bloquear su ingreso 15 minutos | Baja | Medio | El bloqueo solo afecta un ingreso nuevo (la sesión guardada sigue activa), asignar un PIN nuevo lo levanta y el límite por IP (SEC-01) frena al atacante; riesgo aceptado (SEC-02) | Abierto | Juan Felipe Pineda Cardona (Security Champion) | Sprint 01 |
 
 ## Historial de cambios
 
@@ -35,10 +35,10 @@ Fuentes: pipeline de `main` en verde (CI con Gitleaks, Semgrep, `npm audit` y pg
 
 | ID | Hallazgo | Severidad | Acción propuesta | Issue |
 |---|---|---|---|---|
-| SEC-01 | `auth-pin` limita los intentos por menor (5 fallos → 15 min) pero no por IP, como pedía el modelo de amenazas: se pueden probar PIN contra muchos documentos | Medium | Límite de intentos por IP en `auth-pin` | PENDIENTE: crear issue `security` |
-| SEC-02 | El bloqueo por menor permite bloquear a propósito el ingreso de un menor cuyo documento se conozca (R11) | Low | Evaluar junto con SEC-01; avisar al acudiente del bloqueo | PENDIENTE: crear issue `security` |
-| SEC-03 | El personal institucional entra con la contraseña temporal que le dio el administrador y la app no le pide cambiarla | Medium | Obligar el cambio de contraseña en el primer ingreso | PENDIENTE: crear issue `security` |
-| SEC-04 | `npm audit` reporta 11 hallazgos Moderate (`uuid` < 11.1.1, `xcode` y paquetes de configuración de Expo) sin corrección compatible con Expo SDK 54 | Low | Revisar en cada Security Review y al actualizar la SDK de Expo | PENDIENTE: crear issue `security` |
+| SEC-01 | `auth-pin` limita los intentos por menor (5 fallos → 15 min) pero no por IP, como pedía el modelo de amenazas: se pueden probar PIN contra muchos documentos | Medium | Límite de intentos por IP en `auth-pin` | **Corregido** (05/10/2026): 20 fallos por IP cada 15 min, con la IP guardada como huella |
+| SEC-02 | El bloqueo por menor permite bloquear a propósito el ingreso de un menor cuyo documento se conozca (R11) | Low | Asignar un PIN nuevo desbloquea al menor de inmediato y SEC-01 limita al atacante | **Riesgo aceptado** (05/10/2026), seguimiento en R11 |
+| SEC-03 | El personal institucional entra con la contraseña temporal que le dio el administrador y la app no le pide cambiarla | Medium | Obligar el cambio de contraseña en el primer ingreso | **Corregido** (05/10/2026): sin acceso a menores hasta cambiarla |
+| SEC-04 | `npm audit` reporta 11 hallazgos Moderate (`uuid` < 11.1.1, `xcode` y paquetes de configuración de Expo) sin corrección compatible con Expo SDK 54 | Low | Revisar en cada Security Review y al actualizar la SDK de Expo | **Riesgo aceptado** hasta la próxima actualización de la SDK de Expo; PENDIENTE: crear issue `security` de seguimiento |
 
 **Pendientes de verificación (requieren la sesión del Security Champion):**
 

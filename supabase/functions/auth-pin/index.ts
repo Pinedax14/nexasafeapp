@@ -179,6 +179,15 @@ Deno.serve(
       };
     },
 
+    async ipBlocked(ip) {
+      const { data, error } = await admin.rpc('pin_ip_bloqueada', { p_ip: ip });
+      return !error && data === true;
+    },
+
+    async recordIpFailure(ip) {
+      await admin.rpc('pin_registrar_fallo_ip', { p_ip: ip });
+    },
+
     async audit(actorId, protegidoId, accion) {
       await admin.from('audit_log').insert({
         actor_id: actorId,

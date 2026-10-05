@@ -74,12 +74,21 @@ Todas en el esquema `public`, con **RLS activado** y sin acceso para el rol `ano
 
 Nunca guarda valores de columnas: solo quién hizo qué sobre qué fila (sin datos personales).
 
+### `private.intentos_pin_ip` (SEC-01)
+| Columna | Tipo | Notas |
+|---|---|---|
+| `ip_huella` | `text` PK | HMAC-SHA256 de la IP con la llave `documento_huella_key`; nunca se guarda la IP |
+| `intentos` | `int` not null | Ingresos con PIN fallidos en la ventana |
+| `ventana_inicio` | `timestamptz` not null | Inicio de la ventana de 15 minutos |
+
+Esquema privado (la API no lo expone), RLS activado y sin permisos para `anon` ni `authenticated`. `auth-pin` la usa solo a través de `pin_ip_bloqueada(ip)` y `pin_registrar_fallo_ip(ip)` (solo `service_role`): 20 fallos por IP en 15 minutos bloquean nuevos intentos desde esa IP. Las filas de más de un día se borran.
+
 ## 2. Roles y alta de usuarios
 
 - El rol vive en `auth.users.raw_app_meta_data ->> 'rol'`, que solo el servidor puede escribir.
 - **Guardián:** un trigger `security definer` sobre `auth.users` crea la fila en `guardianes` y asigna `rol = 'guardian'` cuando alguien se registra desde la app (E1-01).
 - **Administrador (`admin`, E1-06):** crea colegios y registra personal institucional desde la app. El primer administrador se crea una sola vez a mano (ver README, "Crear el primer administrador").
-- **Personal institucional:** lo crea el administrador mediante la Edge Function `admin-personal`, que verifica `rol = admin`, crea la cuenta en Supabase Auth ya con `rol = institucion` y una **contraseña temporal** que el administrador entrega en privado (el correo gratuito de Supabase no envía invitaciones fuera de la organización), inserta la fila en `personal_institucion` y registra `CREAR_PERSONAL` en `audit_log`. Rate limiting: máximo 10 altas cada 10 minutos por administrador.
+- **Personal institucional:** lo crea el administrador mediante la Edge Function `admin-personal`, que verifica `rol = admin`, crea la cuenta en Supabase Auth ya con `rol = institucion` y una **contraseña temporal** que el administrador entrega en privado (el correo gratuito de Supabase no envía invitaciones fuera de la organización), inserta la fila en `personal_institucion` y registra `CREAR_PERSONAL` en `audit_log`. Rate limiting: máximo 10 altas cada 10 minutos por administrador. **SEC-03:** la cuenta nace con `app_metadata.debe_cambiar_contrasena = true`; mientras la marca exista, `private.es_personal_activo_de` devuelve falso (el personal no ve ningún menor ni foto) y la app solo muestra la pantalla para cambiar la contraseña. El trigger `quitar_contrasena_temporal` sobre `auth.users` borra la marca únicamente cuando cambia la contraseña.
 - **Protegido (E1-04):** el guardián asigna el PIN desde la app con la Edge Function `auth-pin` (`accion: asignar`), que verifica que el menor sea suyo y esté `ACTIVO`. La primera vez crea una cuenta en Supabase Auth con `rol = protegido` y un correo sintético `protegido-<id>@example.org` que nadie usa ni recibe; el menor nunca ve ese correo ni una contraseña. Para entrar (`accion: ingresar`), el menor escribe su documento y su PIN; `auth-pin` busca por `documento_huella`, verifica el Argon2id, aplica el bloqueo de D7 y devuelve la sesión (JWT de 15 min + refresh token rotativo). Documento desconocido y PIN incorrecto dan la misma respuesta.
 
 ## 3. Políticas RLS

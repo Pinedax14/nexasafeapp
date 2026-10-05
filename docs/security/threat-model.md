@@ -22,7 +22,7 @@ Estado: **Planificado** (control definido, sin construir) · **Implementado** ·
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
 | Spoofing | Un tercero se registra como guardián de un menor ajeno | Alta de protegido | Validación de matrícula por `personal_institucion` del colegio (E1-03) | Verificado (pgTAP) |
-| Spoofing | Fuerza bruta sobre el PIN del protegido | Edge Function `auth-pin` | Argon2id + bloqueo de 15 min tras 5 fallos por menor + mensaje genérico. Falta el límite por IP (SEC-01) | Verificado (Deno), parcial |
+| Spoofing | Fuerza bruta sobre el PIN del protegido | Edge Function `auth-pin` | Argon2id + bloqueo de 15 min tras 5 fallos por menor + 20 fallos por IP cada 15 min (SEC-01) + mensaje genérico | Verificado (Deno y pgTAP) |
 | Tampering | El cliente se asigna un rol superior | Supabase Auth | Rol en `app_metadata` (solo escribe el servidor) | Implementado |
 | Repudiation | El acudiente niega haber dado el consentimiento | `consentimientos` | Tabla append-only con versión, actor y timestamp de servidor | Verificado (pgTAP) |
 | Information disclosure | Lectura de protegidos de otro colegio o guardián | `protegidos` | RLS por guardián y por `personal_institucion.colegio_id` | Verificado (pgTAP) |
@@ -31,7 +31,7 @@ Estado: **Planificado** (control definido, sin construir) · **Implementado** ·
 | Elevation of privilege | Un guardián activa a su propio protegido | `protegidos.estado` | Solo `personal_institucion` activo puede pasar a `ACTIVO` (RLS) | Verificado (pgTAP) |
 | Elevation of privilege | Un usuario se asigna el rol admin o crea personal institucional | Edge Function `admin-personal`, `colegios` | Rol en `app_metadata` solo escribible por el servidor; la función verifica `rol = admin` antes de usar la API de administración | Verificado (Deno) |
 | Spoofing | Alguien entra como un menor con el documento de otro | Edge Function `auth-pin` | Documento + PIN que solo conoce el menor; el acudiente lo entrega en persona; el PIN generado en el servidor excluye PIN débiles | Verificado (Deno) |
-| Elevation of privilege | El personal institucional conserva la contraseña temporal que conoce el administrador | `admin-personal` | Cambio de contraseña en el primer ingreso (SEC-03) | Planificado |
+| Elevation of privilege | El personal institucional conserva la contraseña temporal que conoce el administrador | `admin-personal`, RLS | Marca `debe_cambiar_contrasena`: sin acceso a menores hasta cambiar la contraseña en el primer ingreso (SEC-03) | Verificado (pgTAP y Jest) |
 | Information disclosure | El administrador consulta datos de menores | `protegidos` | Sin políticas RLS para `admin` sobre `protegidos` ni `consentimientos` | Verificado (pgTAP) |
 | Repudiation | Un administrador niega haber creado o desactivado personal | `audit_log` | Toda acción del administrador se registra | Verificado (Deno) |
 

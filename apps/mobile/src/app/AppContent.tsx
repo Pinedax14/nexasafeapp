@@ -6,11 +6,13 @@ import { colors } from '../core/theme/colors';
 import { SupabaseAuthRepository } from '../features/auth/data/repositories/SupabaseAuthRepository';
 import { User } from '../features/auth/domain/entities/User';
 import { AuthenticateUser } from '../features/auth/domain/useCases/AuthenticateUser';
+import { ChangePassword } from '../features/auth/domain/useCases/ChangePassword';
 import { LoginWithPin } from '../features/auth/domain/useCases/LoginWithPin';
 import { RegisterGuardian } from '../features/auth/domain/useCases/RegisterGuardian';
 import { RestoreSession } from '../features/auth/domain/useCases/RestoreSession';
 import { SignOut } from '../features/auth/domain/useCases/SignOut';
 import { AuthScreen } from '../features/auth/presentation/screens/AuthScreen';
+import { ChangePasswordScreen } from '../features/auth/presentation/screens/ChangePasswordScreen';
 import { PinLoginScreen } from '../features/auth/presentation/screens/PinLoginScreen';
 import { RegisterScreen } from '../features/auth/presentation/screens/RegisterScreen';
 import { SupabaseInstitutionAdminRepository } from '../features/institution/data/repositories/SupabaseInstitutionAdminRepository';
@@ -57,6 +59,7 @@ export function AppContent() {
       listMyProtegidos: new ListMyProtegidos(protegidos),
       registerProtegido: new RegisterProtegido(protegidos),
       authenticateUser: new AuthenticateUser(repository),
+      changePassword: new ChangePassword(repository),
       loginWithPin: new LoginWithPin(repository),
       assignPin: new AssignPin(protegidos),
       registerGuardian: new RegisterGuardian(repository),
@@ -127,6 +130,18 @@ export function AppContent() {
         onLoginSuccess={handleSignedIn}
         onGoToRegister={goToRegister}
         onGoToPinLogin={() => setAuthRoute('pinLogin')}
+      />
+    );
+  }
+
+  // SEC-03: con la contraseña temporal no se puede hacer nada más que cambiarla.
+  if (loggedUser.mustChangePassword) {
+    return (
+      <ChangePasswordScreen
+        changePassword={useCases.changePassword}
+        userName={loggedUser.name}
+        onChanged={handleSignedIn}
+        onSignOut={handleSignOut}
       />
     );
   }

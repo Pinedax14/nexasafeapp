@@ -8,6 +8,7 @@ describe('SignOut', () => {
       loginWithPin: jest.fn(),
       registerGuardian: jest.fn(),
       signOut: jest.fn().mockResolvedValue(undefined),
+      changePassword: jest.fn(),
       getCurrentUser: jest.fn(),
       observeSession: jest.fn(),
     };

@@ -17,6 +17,7 @@
 | Colegio del menor | Menor | Sí | `protegidos.colegio_id` | Enviar la validación al colegio correcto |
 | PIN del menor | Menor | Sí | Solo su hash Argon2id en `protegidos.pin_hash` | Autenticar al menor sin contraseña (RF-04) |
 | Huella del documento del menor | Menor | Sí | `protegidos.documento_huella` (HMAC-SHA256 con llave en Vault, no reversible sin la llave) | Encontrar al menor cuando ingresa con documento y PIN sin descifrar documentos (RF-04) |
+| Huella de la IP de ingresos con PIN fallidos | Quien intenta entrar | No | `private.intentos_pin_ip` (HMAC con llave en Vault), máximo 1 día | Frenar ataques de fuerza bruta al PIN (SEC-01) |
 | Cuenta de acceso del menor | Menor | No | Supabase Auth, con un correo sintético `@example.org` que no identifica al menor | Darle al menor una sesión con rol `protegido` |
 | Consentimiento (versión, fecha, actor) | Acudiente | No | `consentimientos`, append-only | Probar la autorización previa del representante legal (RF-38) |
 | Registro de accesos (actor, acción, fecha) | Acudiente / personal | No | `audit_log`, sin valores de columnas | Trazabilidad de todo acceso a datos del menor |

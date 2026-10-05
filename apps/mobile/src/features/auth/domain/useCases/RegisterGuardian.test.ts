@@ -7,6 +7,7 @@ function createRepository(): jest.Mocked<AuthRepository> {
     loginWithPin: jest.fn(),
     registerGuardian: jest.fn().mockResolvedValue({ ok: true, status: 'CONFIRMATION_PENDING' }),
     signOut: jest.fn(),
+    changePassword: jest.fn(),
     getCurrentUser: jest.fn(),
     observeSession: jest.fn(),
   };

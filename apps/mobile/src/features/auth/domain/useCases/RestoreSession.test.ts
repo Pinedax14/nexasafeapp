@@ -2,7 +2,13 @@ import { User } from '../entities/User';
 import { AuthRepository } from '../repositories/AuthRepository';
 import { RestoreSession } from './RestoreSession';
 
-const user: User = { id: 'u-1', name: 'Ana', email: 'ana@example.com', role: 'guardian' };
+const user: User = {
+  id: 'u-1',
+  name: 'Ana',
+  email: 'ana@example.com',
+  role: 'guardian',
+  mustChangePassword: false,
+};
 
 function createRepository(): jest.Mocked<AuthRepository> {
   return {
@@ -10,6 +16,7 @@ function createRepository(): jest.Mocked<AuthRepository> {
     loginWithPin: jest.fn(),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
+    changePassword: jest.fn(),
     getCurrentUser: jest.fn(),
     observeSession: jest.fn(),
   };

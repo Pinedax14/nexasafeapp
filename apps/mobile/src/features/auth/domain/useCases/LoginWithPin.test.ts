@@ -7,6 +7,7 @@ function createRepository(): jest.Mocked<AuthRepository> {
     loginWithPin: jest.fn().mockResolvedValue({ ok: false, reason: 'INVALID_CREDENTIALS' }),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
+    changePassword: jest.fn(),
     getCurrentUser: jest.fn(),
     observeSession: jest.fn(),
   };
