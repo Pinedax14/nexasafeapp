@@ -4,6 +4,7 @@ import { MAX_NAME_LENGTH, RegisterGuardian, validateRegistration } from './Regis
 function createRepository(): jest.Mocked<AuthRepository> {
   return {
     login: jest.fn(),
+    loginWithPin: jest.fn(),
     registerGuardian: jest.fn().mockResolvedValue({ ok: true, status: 'CONFIRMATION_PENDING' }),
     signOut: jest.fn(),
     getCurrentUser: jest.fn(),

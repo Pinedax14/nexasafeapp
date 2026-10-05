@@ -12,8 +12,28 @@ import {
 
 export type SupabaseAuthClient = Pick<
   SupabaseClient['auth'],
-  'signInWithPassword' | 'signUp' | 'signOut' | 'getSession' | 'onAuthStateChange'
+  'signInWithPassword' | 'signUp' | 'signOut' | 'getSession' | 'onAuthStateChange' | 'setSession'
 >;
+
+export type SupabaseFunctionsClient = Pick<SupabaseClient['functions'], 'invoke'>;
+
+type PinSessionTokens = { access_token: string; refresh_token: string };
+
+async function pinLoginFailure(error: {
+  name?: string;
+  context?: unknown;
+}): Promise<LoginFailureReason> {
+  if (error.name === 'FunctionsFetchError') return 'NETWORK';
+  const context = error.context as { json?: () => Promise<{ error?: string }> } | undefined;
+  try {
+    const code = context?.json ? (await context.json()).error : undefined;
+    if (code === 'LOCKED') return 'LOCKED';
+    if (code === 'INVALID_CREDENTIALS' || code === 'INVALID_INPUT') return 'INVALID_CREDENTIALS';
+  } catch {
+    return 'UNKNOWN';
+  }
+  return 'UNKNOWN';
+}
 
 const ROLES: readonly Role[] = ['guardian', 'institucion', 'admin', 'protegido', 'apoyo'];
 
@@ -56,7 +76,27 @@ function registerFailureReason(error: AuthError): RegisterFailureReason {
 }
 
 export class SupabaseAuthRepository implements AuthRepository {
-  constructor(private readonly auth: SupabaseAuthClient) {}
+  constructor(
+    private readonly auth: SupabaseAuthClient,
+    private readonly functions?: SupabaseFunctionsClient,
+  ) {}
+
+  async loginWithPin(document: string, pin: string): Promise<LoginResult> {
+    if (!this.functions) return { ok: false, reason: 'UNKNOWN' };
+    const { data, error } = await this.functions.invoke<PinSessionTokens>('auth-pin', {
+      body: { accion: 'ingresar', documento: document, pin },
+    });
+    if (error || !data?.access_token || !data.refresh_token) {
+      return { ok: false, reason: error ? await pinLoginFailure(error) : 'UNKNOWN' };
+    }
+
+    const session = await this.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+    if (session.error || !session.data.user) return { ok: false, reason: 'UNKNOWN' };
+    return { ok: true, user: toDomainUser(session.data.user) };
+  }
 
   async login(email: string, password: string): Promise<LoginResult> {
     const { data, error } = await this.auth.signInWithPassword({ email, password });

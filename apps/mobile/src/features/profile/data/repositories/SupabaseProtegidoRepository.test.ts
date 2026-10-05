@@ -167,3 +167,58 @@ describe('SupabaseProtegidoRepository', () => {
     await expect(repository.register(registration)).resolves.toEqual({ ok: false, reason });
   });
 });
+
+describe('SupabaseProtegidoRepository.assignPin (E1-04)', () => {
+  function withFunctions(invokeResult: unknown) {
+    const { client } = setup();
+    const functions = { invoke: jest.fn().mockResolvedValue(invokeResult) };
+    const repository = new SupabaseProtegidoRepository({ ...client, functions } as never);
+    return { functions, repository };
+  }
+
+  it('asigna el PIN con la Edge Function auth-pin', async () => {
+    const { functions, repository } = withFunctions({ data: { ok: true }, error: null });
+
+    const result = await repository.assignPin('p-1', '4826');
+
+    expect(functions.invoke).toHaveBeenCalledWith('auth-pin', {
+      body: { accion: 'asignar', protegido_id: 'p-1', pin: '4826' },
+    });
+    expect(result).toEqual({ ok: true, value: undefined });
+  });
+
+  it.each([
+    ['NOT_ACTIVE', 'NOT_ACTIVE'],
+    ['DOCUMENT_HAS_PIN', 'DOCUMENT_HAS_PIN'],
+    ['NOT_FOUND', 'FORBIDDEN'],
+    ['INVALID_INPUT', 'INVALID_DATA'],
+    ['ALGO_NUEVO', 'UNKNOWN'],
+  ])('traduce la respuesta %s a %s', async (code, reason) => {
+    const { repository } = withFunctions({
+      data: null,
+      error: {
+        name: 'FunctionsHttpError',
+        context: { json: () => Promise.resolve({ error: code }) },
+      },
+    });
+
+    await expect(repository.assignPin('p-1', '4826')).resolves.toEqual({ ok: false, reason });
+  });
+
+  it('distingue la falta de conexión y las respuestas ilegibles', async () => {
+    const offline = withFunctions({ data: null, error: { name: 'FunctionsFetchError' } });
+    await expect(offline.repository.assignPin('p-1', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'NETWORK',
+    });
+
+    const unreadable = withFunctions({
+      data: null,
+      error: { name: 'FunctionsHttpError', context: { json: () => Promise.reject(new Error()) } },
+    });
+    await expect(unreadable.repository.assignPin('p-1', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'UNKNOWN',
+    });
+  });
+});

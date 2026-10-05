@@ -84,7 +84,17 @@ Entonces la Edge Function auth-pin bloquea temporalmente los intentos (rate limi
 Dado que soy un protegido en estado PENDIENTE_VALIDACION o INACTIVO
 Cuando ingreso mi PIN
 Entonces no puedo iniciar sesión
+
+Dado que soy el acudiente de un menor en estado ACTIVO
+Cuando le asigno un PIN de 4 dígitos que no es fácil de adivinar
+Entonces el menor puede entrar con su documento y ese PIN
+
+Dado que alguien escribe un documento que no existe o un PIN incorrecto
+Cuando intenta entrar
+Entonces ve el mismo mensaje "Documento o PIN incorrectos." y no sabe cuál de los dos falló
 ```
+
+> **Refinement (05/10/2026):** el menor se identifica con su **número de documento + PIN de 4 dígitos** (decisión del equipo). La historia resultó más grande de lo estimado (3 pts): además de la pantalla hizo falta la Edge Function `auth-pin`, una migración (huella del documento y cuenta de Auth del menor) y la pantalla del acudiente para asignar el PIN. Se registra para la review.
 
 ### E1-05 · Sesión cifrada (RF-05, RNF-03)
 ```gherkin

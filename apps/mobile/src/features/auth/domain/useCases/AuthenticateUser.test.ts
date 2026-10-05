@@ -12,6 +12,7 @@ const user: User = {
 function createRepository(result: LoginResult): jest.Mocked<AuthRepository> {
   return {
     login: jest.fn().mockResolvedValue(result),
+    loginWithPin: jest.fn(),
     registerGuardian: jest.fn(),
     signOut: jest.fn(),
     getCurrentUser: jest.fn(),

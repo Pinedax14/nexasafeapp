@@ -8,9 +8,15 @@ type AuthScreenProps = {
   authenticateUser: AuthenticateUser;
   onLoginSuccess: (user: User) => void;
   onGoToRegister: () => void;
+  onGoToPinLogin: () => void;
 };
 
-export function AuthScreen({ authenticateUser, onLoginSuccess, onGoToRegister }: AuthScreenProps) {
+export function AuthScreen({
+  authenticateUser,
+  onLoginSuccess,
+  onGoToRegister,
+  onGoToPinLogin,
+}: AuthScreenProps) {
   const vm = useAuthViewModel({ authenticateUser, onLoginSuccess });
 
   return (
@@ -64,6 +70,15 @@ export function AuthScreen({ authenticateUser, onLoginSuccess, onGoToRegister }:
         style={styles.link}
       >
         <Text style={styles.linkText}>¿No tienes cuenta? Regístrate</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={onGoToPinLogin}
+        disabled={vm.isLoading}
+        accessibilityRole="link"
+        style={styles.link}
+      >
+        <Text style={styles.linkText}>Soy menor: entrar con documento y PIN</Text>
       </Pressable>
     </View>
   );

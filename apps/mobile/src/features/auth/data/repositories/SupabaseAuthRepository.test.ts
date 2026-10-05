@@ -247,3 +247,90 @@ describe('SupabaseAuthRepository.observeSession (E1-05)', () => {
     expect(unsubscribe).toHaveBeenCalled();
   });
 });
+
+describe('SupabaseAuthRepository.loginWithPin (E1-04)', () => {
+  function setup(invokeResult: unknown, setSessionResult?: unknown) {
+    const client = createClient();
+    (client as unknown as { setSession: jest.Mock }).setSession = jest
+      .fn()
+      .mockResolvedValue(setSessionResult ?? { data: { user: supabaseUser }, error: null });
+    const functions = { invoke: jest.fn().mockResolvedValue(invokeResult) };
+    return {
+      client,
+      functions,
+      repository: new SupabaseAuthRepository(client, functions as never),
+    };
+  }
+
+  it('pide la sesión a auth-pin y la guarda en el cliente', async () => {
+    const { client, functions, repository } = setup({
+      data: { access_token: 'at', refresh_token: 'rt' },
+      error: null,
+    });
+
+    const result = await repository.loginWithPin('1023456789', '4826');
+
+    expect(functions.invoke).toHaveBeenCalledWith('auth-pin', {
+      body: { accion: 'ingresar', documento: '1023456789', pin: '4826' },
+    });
+    expect((client as unknown as { setSession: jest.Mock }).setSession).toHaveBeenCalledWith({
+      access_token: 'at',
+      refresh_token: 'rt',
+    });
+    expect(result).toEqual({ ok: true, user: toDomainUser(supabaseUser) });
+  });
+
+  it.each([
+    ['INVALID_CREDENTIALS', 'INVALID_CREDENTIALS'],
+    ['INVALID_INPUT', 'INVALID_CREDENTIALS'],
+    ['LOCKED', 'LOCKED'],
+    ['UNKNOWN', 'UNKNOWN'],
+  ])('traduce la respuesta %s de auth-pin a %s', async (code, reason) => {
+    const { repository } = setup({
+      data: null,
+      error: {
+        name: 'FunctionsHttpError',
+        context: { json: () => Promise.resolve({ error: code }) },
+      },
+    });
+
+    await expect(repository.loginWithPin('1023456789', '4826')).resolves.toEqual({
+      ok: false,
+      reason,
+    });
+  });
+
+  it('distingue la falta de conexión y las respuestas ilegibles', async () => {
+    const offline = setup({ data: null, error: { name: 'FunctionsFetchError' } });
+    await expect(offline.repository.loginWithPin('1023456789', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'NETWORK',
+    });
+
+    const unreadable = setup({
+      data: null,
+      error: { name: 'FunctionsHttpError', context: { json: () => Promise.reject(new Error()) } },
+    });
+    await expect(unreadable.repository.loginWithPin('1023456789', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'UNKNOWN',
+    });
+  });
+
+  it('falla si no puede guardar la sesión o no hay cliente de funciones', async () => {
+    const noSession = setup(
+      { data: { access_token: 'at', refresh_token: 'rt' }, error: null },
+      { data: { user: null }, error: { message: 'invalid' } },
+    );
+    await expect(noSession.repository.loginWithPin('1023456789', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'UNKNOWN',
+    });
+
+    const withoutFunctions = new SupabaseAuthRepository(createClient());
+    await expect(withoutFunctions.loginWithPin('1023456789', '4826')).resolves.toEqual({
+      ok: false,
+      reason: 'UNKNOWN',
+    });
+  });
+});

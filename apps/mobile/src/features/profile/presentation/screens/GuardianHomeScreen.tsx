@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { Protegido } from '../../domain/entities/Protegido';
 import { ListMyProtegidos } from '../../domain/useCases/ListMyProtegidos';
 import { STATUS_LABELS } from '../profileMessages';
 import { useGuardianHomeViewModel } from '../viewModels/useGuardianHomeViewModel';
@@ -9,6 +10,7 @@ type GuardianHomeScreenProps = {
   listMyProtegidos: ListMyProtegidos;
   userName: string;
   onRegisterProtegido: () => void;
+  onAssignPin: (protegido: Protegido) => void;
   onSignOut: () => void;
 };
 
@@ -16,6 +18,7 @@ export function GuardianHomeScreen({
   listMyProtegidos,
   userName,
   onRegisterProtegido,
+  onAssignPin,
   onSignOut,
 }: GuardianHomeScreenProps) {
   const vm = useGuardianHomeViewModel(listMyProtegidos);
@@ -42,6 +45,15 @@ export function GuardianHomeScreen({
               <Text style={styles.rowTitle}>{protegido.name}</Text>
               <Text style={styles.rowSubtitle}>{STATUS_LABELS[protegido.status]}</Text>
             </View>
+            {protegido.status === 'ACTIVO' && (
+              <Pressable
+                onPress={() => onAssignPin(protegido)}
+                accessibilityRole="button"
+                accessibilityLabel={`Asignar PIN a ${protegido.name}`}
+              >
+                <Text style={styles.linkText}>PIN ›</Text>
+              </Pressable>
+            )}
           </View>
         ))
       )}

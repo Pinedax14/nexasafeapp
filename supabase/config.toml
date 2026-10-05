@@ -413,3 +413,8 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# E1-04: el menor llama a auth-pin (accion ingresar) antes de tener sesión. La función
+# verifica por sí misma el JWT del guardián en la acción asignar.
+[functions.auth-pin]
+verify_jwt = false

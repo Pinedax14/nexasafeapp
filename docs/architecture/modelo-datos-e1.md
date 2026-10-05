@@ -43,6 +43,10 @@ Todas en el esquema `public`, con **RLS activado** y sin acceso para el rol `ano
 | `documento_cifrado` | `bytea` not null | Ver decisión D4 (RNF-02) |
 | `foto_path` | `text` | Ruta en un bucket **privado** de Storage. Ver D4 |
 | `pin_hash` | `text` null | Argon2id; solo lo escribe y lee la Edge Function `auth-pin`. Ver D5 |
+| `documento_huella` | `text` not null, indexada | HMAC-SHA256 del documento normalizado con la llave `documento_huella_key` de Vault (E1-04). Permite buscar al menor en el ingreso sin descifrar documentos. Única entre los menores que ya tienen cuenta |
+| `usuario_id` | `uuid` null, único → `auth.users(id)` | Cuenta de Supabase Auth del menor; la crea `auth-pin` al asignar el primer PIN (E1-04) |
+| `pin_intentos_fallidos` | `int` not null | `0` por defecto; lo maneja `auth-pin` (D7) |
+| `pin_bloqueado_hasta` | `timestamptz` null | Fin del bloqueo tras 5 PIN incorrectos (D7) |
 | `estado` | enum `estado_protegido` not null | `PENDIENTE_VALIDACION` (por defecto), `ACTIVO`, `INACTIVO` |
 | `validado_por` | `uuid` null → `personal_institucion(id)` | |
 | `validado_en` | `timestamptz` null | |
@@ -76,7 +80,7 @@ Nunca guarda valores de columnas: solo quién hizo qué sobre qué fila (sin dat
 - **Guardián:** un trigger `security definer` sobre `auth.users` crea la fila en `guardianes` y asigna `rol = 'guardian'` cuando alguien se registra desde la app (E1-01).
 - **Administrador (`admin`, E1-06):** crea colegios y registra personal institucional desde la app. El primer administrador se crea una sola vez a mano (ver README, "Crear el primer administrador").
 - **Personal institucional:** lo crea el administrador mediante la Edge Function `admin-personal`, que verifica `rol = admin`, crea la cuenta en Supabase Auth ya con `rol = institucion` y una **contraseña temporal** que el administrador entrega en privado (el correo gratuito de Supabase no envía invitaciones fuera de la organización), inserta la fila en `personal_institucion` y registra `CREAR_PERSONAL` en `audit_log`. Rate limiting: máximo 10 altas cada 10 minutos por administrador.
-- **Protegido:** ver D5.
+- **Protegido (E1-04):** el guardián asigna el PIN desde la app con la Edge Function `auth-pin` (`accion: asignar`), que verifica que el menor sea suyo y esté `ACTIVO`. La primera vez crea una cuenta en Supabase Auth con `rol = protegido` y un correo sintético `protegido-<id>@example.org` que nadie usa ni recibe; el menor nunca ve ese correo ni una contraseña. Para entrar (`accion: ingresar`), el menor escribe su documento y su PIN; `auth-pin` busca por `documento_huella`, verifica el Argon2id, aplica el bloqueo de D7 y devuelve la sesión (JWT de 15 min + refresh token rotativo). Documento desconocido y PIN incorrecto dan la misma respuesta.
 
 ## 3. Políticas RLS
 
@@ -89,6 +93,7 @@ Nunca guarda valores de columnas: solo quién hizo qué sobre qué fila (sin dat
 | `guardianes` | `guardian` | Su propia fila | Solo vía trigger | Su `nombre` | — |
 | `protegidos` | `guardian` | Sus menores (`guardian_id = auth.uid()`) | Solo vía función `registrar_protegido` | — | — |
 | `protegidos` | `institucion` | Menores de su colegio, si `activo` | — | Solo vía función `validar_protegido` | — |
+| `protegidos` | `protegido` | Su propia fila (`usuario_id = auth.uid()`), sin `pin_hash` ni columnas de E1-04 | — | — | — |
 | `consentimientos` | `guardian` | Los propios | Solo vía `registrar_protegido` | Nunca | Nunca |
 | `audit_log` | todos | — | Solo funciones/triggers | Nunca | Nunca |
 
@@ -119,6 +124,6 @@ Cada política tendrá su prueba en `supabase/tests/` (pgTAP, `supabase test db`
 | **D2** | Correo duplicado en el registro | Supabase Auth con confirmación de correo activada; la app muestra siempre el mismo mensaje para no revelar si el correo existe |
 | **D3** | ¿Quién crea colegios y personal institucional? Ninguna historia lo cubre | **Rol `admin` con pantallas en la app** (nueva historia E1-06, 5 pts, Sprint 01, RF-42). `supabase/seed.sql` solo para datos de prueba en dev |
 | **D4** | Cifrado de `documento` y `foto` (RNF-02: cifrado por columna) | `documento` cifrado con `pgcrypto` usando una llave guardada en **Supabase Vault**. La foto, en un bucket privado de Storage con políticas por guardián y colegio (cifrado en reposo del proveedor) |
-| **D5** | ¿Quién asigna el PIN y cómo obtiene sesión el protegido? | El guardián asigna el PIN cuando el colegio valida al menor (estado `ACTIVO`), a través de `auth-pin`. El mecanismo exacto de sesión se define en el refinement de E1-04 |
+| **D5** | ¿Quién asigna el PIN y cómo obtiene sesión el protegido? | El guardián asigna el PIN cuando el colegio valida al menor (estado `ACTIVO`), a través de `auth-pin`. Sesión (refinement de E1-04, 05/10/2026): el menor se identifica con su documento + PIN de 4 dígitos; `auth-pin` crea su cuenta de Auth y le entrega la sesión |
 | **D6** | Datos mínimos del menor | Solo nombre, documento, foto y colegio (lo que pide el Gherkin de E1-02). Sin fecha de nacimiento, dirección ni teléfono |
 | **D7** | Umbrales de seguridad no definidos en los documentos | Contraseña de al menos 8 caracteres; `auth-pin` bloquea 15 minutos tras 5 PIN incorrectos |

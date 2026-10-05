@@ -10,7 +10,33 @@ import {
 
 export const PHOTO_BUCKET = 'fotos-protegidos';
 
-export type ProtegidoClient = Pick<SupabaseClient<Database>, 'from' | 'rpc' | 'storage'>;
+export type ProtegidoClient = Pick<
+  SupabaseClient<Database>,
+  'from' | 'rpc' | 'storage' | 'functions'
+>;
+
+const PIN_ERRORS: Record<string, ProfileFailureReason> = {
+  NOT_ACTIVE: 'NOT_ACTIVE',
+  DOCUMENT_HAS_PIN: 'DOCUMENT_HAS_PIN',
+  NOT_FOUND: 'FORBIDDEN',
+  FORBIDDEN: 'FORBIDDEN',
+  UNAUTHORIZED: 'FORBIDDEN',
+  INVALID_INPUT: 'INVALID_DATA',
+};
+
+async function pinFailure(error: {
+  name?: string;
+  context?: unknown;
+}): Promise<ProfileFailureReason> {
+  if (error.name === 'FunctionsFetchError') return 'NETWORK';
+  const context = error.context as { json?: () => Promise<{ error?: string }> } | undefined;
+  try {
+    const code = context?.json ? (await context.json()).error : undefined;
+    return PIN_ERRORS[code ?? ''] ?? 'UNKNOWN';
+  } catch {
+    return 'UNKNOWN';
+  }
+}
 export type ReadFile = (uri: string) => Promise<ArrayBuffer>;
 
 type ErrorLike = { code?: string; message?: string; name?: string } | null;
@@ -96,5 +122,13 @@ export class SupabaseProtegidoRepository implements ProtegidoRepository {
     });
     if (error || typeof data !== 'string') return { ok: false, reason: failure(error) };
     return { ok: true, value: data };
+  }
+
+  async assignPin(protegidoId: string, pin: string): Promise<ProfileResult<void>> {
+    const { error } = await this.client.functions.invoke('auth-pin', {
+      body: { accion: 'asignar', protegido_id: protegidoId, pin },
+    });
+    if (error) return { ok: false, reason: await pinFailure(error) };
+    return { ok: true, value: undefined };
   }
 }
