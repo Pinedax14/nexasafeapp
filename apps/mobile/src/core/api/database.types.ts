@@ -159,12 +159,16 @@ export type Database = {
           colegio_id: string;
           creado_en: string;
           documento_cifrado: string;
+          documento_huella: string;
           estado: Database['public']['Enums']['estado_protegido'];
           foto_path: string | null;
           guardian_id: string;
           id: string;
           nombre: string;
+          pin_bloqueado_hasta: string | null;
           pin_hash: string | null;
+          pin_intentos_fallidos: number;
+          usuario_id: string | null;
           validado_en: string | null;
           validado_por: string | null;
         };
@@ -172,12 +176,16 @@ export type Database = {
           colegio_id: string;
           creado_en?: string;
           documento_cifrado: string;
+          documento_huella: string;
           estado?: Database['public']['Enums']['estado_protegido'];
           foto_path?: string | null;
           guardian_id: string;
           id?: string;
           nombre: string;
+          pin_bloqueado_hasta?: string | null;
           pin_hash?: string | null;
+          pin_intentos_fallidos?: number;
+          usuario_id?: string | null;
           validado_en?: string | null;
           validado_por?: string | null;
         };
@@ -185,12 +193,16 @@ export type Database = {
           colegio_id?: string;
           creado_en?: string;
           documento_cifrado?: string;
+          documento_huella?: string;
           estado?: Database['public']['Enums']['estado_protegido'];
           foto_path?: string | null;
           guardian_id?: string;
           id?: string;
           nombre?: string;
+          pin_bloqueado_hasta?: string | null;
           pin_hash?: string | null;
+          pin_intentos_fallidos?: number;
+          usuario_id?: string | null;
           validado_en?: string | null;
           validado_por?: string | null;
         };
@@ -234,6 +246,7 @@ export type Database = {
           nombre: string;
         }[];
       };
+      pin_huella_documento: { Args: { p_documento: string }; Returns: string };
       registrar_protegido: {
         Args: {
           p_colegio_id: string;
