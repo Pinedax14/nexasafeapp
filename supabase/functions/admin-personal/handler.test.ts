@@ -14,7 +14,7 @@ const validBody = {
   nombre: '  Docente Uno ',
   cargo: 'Coordinación',
   email: ' Docente@Example.com ',
-  password: 'temporal-123',
+  password: 'clave-temporal',
 };
 
 type Calls = {
@@ -83,7 +83,7 @@ Deno.test('crea la cuenta con el correo normalizado y la contraseña temporal', 
 
   assertEquals(received, {
     email: 'docente@example.com',
-    password: 'temporal-123',
+    password: 'clave-temporal',
     nombre: 'Docente Uno',
   });
 });

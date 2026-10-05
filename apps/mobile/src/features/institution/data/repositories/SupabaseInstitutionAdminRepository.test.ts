@@ -106,7 +106,7 @@ describe('SupabaseInstitutionAdminRepository: personal', () => {
       name: 'Docente',
       position: 'Coordinación',
       email: 'docente@example.com',
-      temporaryPassword: 'temporal-123',
+      temporaryPassword: 'clave-temporal',
     });
 
     expect(client.functions.invoke).toHaveBeenCalledWith('admin-personal', {
@@ -115,7 +115,7 @@ describe('SupabaseInstitutionAdminRepository: personal', () => {
         nombre: 'Docente',
         cargo: 'Coordinación',
         email: 'docente@example.com',
-        password: 'temporal-123',
+        password: 'clave-temporal',
       },
     });
     expect(result).toEqual({ ok: true, value: 'p-9' });
@@ -139,7 +139,7 @@ describe('SupabaseInstitutionAdminRepository: personal', () => {
       name: 'Docente',
       position: null,
       email: 'docente@example.com',
-      temporaryPassword: 'temporal-123',
+      temporaryPassword: 'clave-temporal',
     });
 
     expect(result).toEqual({ ok: false, reason });
@@ -156,7 +156,7 @@ describe('SupabaseInstitutionAdminRepository: personal', () => {
       name: 'Docente',
       position: null,
       email: 'docente@example.com',
-      temporaryPassword: 'temporal-123',
+      temporaryPassword: 'clave-temporal',
     });
 
     expect(result).toEqual({ ok: false, reason: 'NETWORK' });
@@ -174,7 +174,7 @@ describe('SupabaseInstitutionAdminRepository: personal', () => {
       name: 'Docente',
       position: null,
       email: 'docente@example.com',
-      temporaryPassword: 'temporal-123',
+      temporaryPassword: 'clave-temporal',
     });
 
     expect(result).toEqual({ ok: false, reason: 'UNKNOWN' });

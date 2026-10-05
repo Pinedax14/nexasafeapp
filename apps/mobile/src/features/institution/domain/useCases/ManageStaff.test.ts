@@ -5,7 +5,7 @@ const validForm: StaffForm = {
   name: '  Docente Uno ',
   position: ' Coordinación ',
   email: ' Docente@Example.com ',
-  temporaryPassword: 'temporal-123',
+  temporaryPassword: 'clave-temporal',
 };
 
 function createRepository(): jest.Mocked<InstitutionAdminRepository> {
@@ -66,7 +66,7 @@ describe('ManageStaff', () => {
       name: 'Docente Uno',
       position: 'Coordinación',
       email: 'docente@example.com',
-      temporaryPassword: 'temporal-123',
+      temporaryPassword: 'clave-temporal',
     });
     expect(result).toEqual({ ok: true, value: 'staff-1' });
   });
