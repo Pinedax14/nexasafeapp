@@ -74,8 +74,8 @@ Nunca guarda valores de columnas: solo quién hizo qué sobre qué fila (sin dat
 
 - El rol vive en `auth.users.raw_app_meta_data ->> 'rol'`, que solo el servidor puede escribir.
 - **Guardián:** un trigger `security definer` sobre `auth.users` crea la fila en `guardianes` y asigna `rol = 'guardian'` cuando alguien se registra desde la app (E1-01).
-- **Administrador (`admin`, E1-06):** crea colegios y registra personal institucional desde la app. El primer administrador se crea una sola vez desde el panel de Supabase, asignando `rol = 'admin'` en `app_metadata`.
-- **Personal institucional:** lo crea el administrador mediante la Edge Function `admin-personal`, que usa la API de administración de Auth en el servidor (crea la cuenta, asigna `rol = 'institucion'` e inserta la fila en `personal_institucion`).
+- **Administrador (`admin`, E1-06):** crea colegios y registra personal institucional desde la app. El primer administrador se crea una sola vez a mano (ver README, "Crear el primer administrador").
+- **Personal institucional:** lo crea el administrador mediante la Edge Function `admin-personal`, que verifica `rol = admin`, crea la cuenta en Supabase Auth ya con `rol = institucion` y una **contraseña temporal** que el administrador entrega en privado (el correo gratuito de Supabase no envía invitaciones fuera de la organización), inserta la fila en `personal_institucion` y registra `CREAR_PERSONAL` en `audit_log`. Rate limiting: máximo 10 altas cada 10 minutos por administrador.
 - **Protegido:** ver D5.
 
 ## 3. Políticas RLS

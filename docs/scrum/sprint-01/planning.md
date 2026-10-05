@@ -17,6 +17,8 @@
 
 **Orden de trabajo propuesto:** esquema base + E11-01 → E1-01 → E1-05 → E1-06 → E1-02 → E1-03 → E1-04. El consentimiento y las tablas son prerrequisito del alta; la sesión cifrada, de las demás pantallas; y el administrador (E1-06), de la validación (E1-03).
 
+**Ajuste de E1-06 (05/10/2026):** el servicio de correo gratuito de Supabase solo envía a los miembros de la organización, así que el personal institucional no recibe invitación por correo: el administrador define una contraseña temporal y la entrega en privado. La Edge Function `admin-personal` crea la cuenta ya con el rol `institucion`.
+
 **Cambio de alcance (03/10/2026):** E1-06 es una historia nueva (decisión D3), agregada antes de iniciar el sprint. El compromiso pasa de 24 a 29 pts.
 
 ## Antes de programar (obligatorio: este sprint toca datos de menores)
@@ -107,9 +109,9 @@ Cuando creo un colegio con nombre y NIT
 Entonces el colegio queda disponible para el alta de menores
 
 Dado que soy administrador
-Cuando registro a una persona del colegio X con nombre, cargo y correo
+Cuando registro a una persona del colegio X con nombre, cargo, correo y una contraseña temporal de al menos 8 caracteres
 Entonces se crea su cuenta con el rol institucion vinculada al colegio X
-Y la persona recibe un correo para definir su contraseña
+Y la persona puede iniciar sesión con la contraseña temporal que le entrego en privado
 
 Dado que soy administrador
 Cuando desactivo a una persona del colegio X

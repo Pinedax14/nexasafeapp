@@ -10,6 +10,12 @@ import { RestoreSession } from '../features/auth/domain/useCases/RestoreSession'
 import { SignOut } from '../features/auth/domain/useCases/SignOut';
 import { AuthScreen } from '../features/auth/presentation/screens/AuthScreen';
 import { RegisterScreen } from '../features/auth/presentation/screens/RegisterScreen';
+import { SupabaseInstitutionAdminRepository } from '../features/institution/data/repositories/SupabaseInstitutionAdminRepository';
+import { School } from '../features/institution/domain/entities/School';
+import { ManageSchools } from '../features/institution/domain/useCases/ManageSchools';
+import { ManageStaff } from '../features/institution/domain/useCases/ManageStaff';
+import { AdminSchoolsScreen } from '../features/institution/presentation/screens/AdminSchoolsScreen';
+import { SchoolStaffScreen } from '../features/institution/presentation/screens/SchoolStaffScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
 
 type AuthRoute = 'login' | 'register';
@@ -19,15 +25,19 @@ export function AppContent() {
   const [isSessionRestored, setIsSessionRestored] = useState(false);
   const [authRoute, setAuthRoute] = useState<AuthRoute>('login');
   const [loggedUser, setLoggedUser] = useState<User | null>(null);
+  const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
 
   // Raíz de composición: la única parte de la app que conoce la capa data.
   const useCases = useMemo(() => {
     const repository = new SupabaseAuthRepository(supabase.auth);
+    const institutionAdmin = new SupabaseInstitutionAdminRepository(supabase);
     return {
       authenticateUser: new AuthenticateUser(repository),
       registerGuardian: new RegisterGuardian(repository),
       restoreSession: new RestoreSession(repository),
       signOut: new SignOut(repository),
+      manageSchools: new ManageSchools(institutionAdmin),
+      manageStaff: new ManageStaff(institutionAdmin),
     };
   }, []);
 
@@ -57,6 +67,7 @@ export function AppContent() {
   const handleSignOut = useCallback(async () => {
     await useCases.signOut.execute();
     setLoggedUser(null);
+    setSelectedSchool(null);
     setAuthRoute('login');
   }, [useCases]);
 
@@ -76,6 +87,24 @@ export function AppContent() {
         authenticateUser={useCases.authenticateUser}
         onLoginSuccess={handleSignedIn}
         onGoToRegister={goToRegister}
+      />
+    );
+  }
+
+  // E1-06: el administrador solo ve la gestión de colegios y personal.
+  if (loggedUser.role === 'admin') {
+    return selectedSchool ? (
+      <SchoolStaffScreen
+        manageStaff={useCases.manageStaff}
+        school={selectedSchool}
+        onBack={() => setSelectedSchool(null)}
+      />
+    ) : (
+      <AdminSchoolsScreen
+        manageSchools={useCases.manageSchools}
+        userName={loggedUser.name}
+        onOpenSchool={setSelectedSchool}
+        onSignOut={handleSignOut}
       />
     );
   }

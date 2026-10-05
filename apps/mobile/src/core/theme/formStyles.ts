@@ -1,0 +1,56 @@
+import { StyleSheet } from 'react-native';
+import { colors } from './colors';
+
+export const formStyles = StyleSheet.create({
+  screen: { flexGrow: 1, padding: 24, backgroundColor: colors.background },
+  title: { fontSize: 26, fontWeight: '700', color: colors.text },
+  subtitle: { marginTop: 4, marginBottom: 20, fontSize: 15, color: colors.textMuted },
+  sectionTitle: {
+    marginTop: 24,
+    marginBottom: 12,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 8,
+    fontSize: 16,
+  },
+  error: { color: colors.error, marginBottom: 12 },
+  notice: {
+    marginVertical: 12,
+    padding: 14,
+    borderRadius: 10,
+    backgroundColor: colors.successBackground,
+    color: colors.success,
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  button: {
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    minHeight: 52,
+    marginTop: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonDisabled: { opacity: 0.7 },
+  buttonText: { color: colors.onPrimary, fontSize: 16, fontWeight: '700' },
+  link: { paddingVertical: 8 },
+  linkText: { color: colors.primary, fontSize: 15, fontWeight: '600' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  rowTitle: { fontSize: 16, fontWeight: '600', color: colors.text },
+  rowSubtitle: { fontSize: 14, color: colors.textMuted },
+  empty: { color: colors.textMuted, paddingVertical: 12 },
+});
