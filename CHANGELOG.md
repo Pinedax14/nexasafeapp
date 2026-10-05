@@ -13,6 +13,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 - 38 pruebas pgTAP de políticas RLS y un job de CI que las ejecuta sobre una base de datos efímera.
 - Propuesta del modelo de datos de la épica E1 con políticas RLS (`docs/architecture/modelo-datos-e1.md`), aprobado (decisiones D1–D7).
 
+### Eliminado
+- Login de prueba del prototipo (`LocalAuthRepository` y `users.json` con contraseñas en texto plano).
+
 ## [0.0.0] — Sprint 00 — 03/10/2026
 
 ### Agregado
