@@ -23,6 +23,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 - 38 pruebas pgTAP de políticas RLS y un job de CI que las ejecuta sobre una base de datos efímera.
 - Propuesta del modelo de datos de la épica E1 con políticas RLS (`docs/architecture/modelo-datos-e1.md`), aprobado (decisiones D1–D7).
 
+### Seguridad
+- Security Review del Sprint 01 (05/10/2026): excepciones EX-001 a EX-003 renovadas hasta el 31/10/2026 (sigue sin haber corrección compatible con Expo SDK 54); riesgos R9 (sin Android físico), R10 (llaves de Vault) y R11 (bloqueo del PIN como denegación de servicio); hallazgos SEC-01 a SEC-04; estados de E0 y E1 actualizados en el modelo de amenazas.
+
 ### Eliminado
 - Login de prueba del prototipo (`LocalAuthRepository` y `users.json` con contraseñas en texto plano).
 

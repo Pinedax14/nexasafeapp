@@ -1,6 +1,6 @@
 # Modelo de amenazas (STRIDE) — NexaSafe
 
-Versión inicial del Sprint 00 (03/10/2026), a partir del Plan (`PLAN_NEXASAFE.md` v1.2, secciones 9.4 y 11) y del Diseño v1.1 (capítulo 7). Cubre solo las épicas de la fase 1. Cada refinement amplía la épica que entra al siguiente sprint.
+Versión inicial del Sprint 00 (03/10/2026), a partir del Plan (`PLAN_NEXASAFE.md` v1.2, secciones 9.4 y 11) y del Diseño v1.1 (capítulo 7). Cubre solo las épicas de la fase 1. Cada refinement amplía la épica que entra al siguiente sprint. Estados de E0 y E1 actualizados en la Security Review del Sprint 01 (05/10/2026).
 
 > PENDIENTE: revisión del equipo, facilitada por el Security Champion de los Sprints 00–01 (Juan Felipe Pineda Cardona).
 
@@ -10,28 +10,30 @@ Estado: **Planificado** (control definido, sin construir) · **Implementado** ·
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
-| Spoofing | Push directo a `main` sin revisión | GitHub | Protección de `main`: PR + 1 aprobación + checks verdes | Planificado |
-| Tampering | Dependencia maliciosa o vulnerable | `package-lock.json` | `npm ci`, `npm audit --audit-level=high`, Dependabot | Planificado |
-| Repudiation | Cambio sin autor trazable | Repositorio | PR obligatorio, historial de git y Conventional Commits | Planificado |
-| Information disclosure | Llaves de Supabase o EAS en el código | Repositorio, CI | Gitleaks (pre-commit + CI); secretos solo en GitHub/EAS Secrets | Planificado |
-| Denial of service | Pipeline roto que bloquea al equipo | GitHub Actions | Jobs independientes; corrección en el mismo día | Planificado |
-| Elevation of privilege | Workflow con permisos excesivos | GitHub Actions | `permissions` mínimos por workflow | Planificado |
+| Spoofing | Push directo a `main` sin revisión | GitHub | Protección de `main`: PR + checks verdes. Desviación: 0 aprobaciones obligatorias porque un solo integrante ejecuta el trabajo (R7) | Implementado (parcial) |
+| Tampering | Dependencia maliciosa o vulnerable | `package-lock.json` | `npm ci`, `npm audit --audit-level=high`, Dependabot | Implementado |
+| Repudiation | Cambio sin autor trazable | Repositorio | PR obligatorio, historial de git y Conventional Commits | Implementado |
+| Information disclosure | Llaves de Supabase o EAS en el código | Repositorio, CI | Gitleaks (pre-commit + CI); secretos solo en GitHub/EAS Secrets | Implementado |
+| Denial of service | Pipeline roto que bloquea al equipo | GitHub Actions | Jobs independientes; corrección en el mismo día | Implementado |
+| Elevation of privilege | Workflow con permisos excesivos | GitHub Actions | `permissions` mínimos por workflow | Implementado |
 
 ## E1 — Identidad y vinculación
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
-| Spoofing | Un tercero se registra como guardián de un menor ajeno | Alta de protegido | Validación de matrícula por `personal_institucion` del colegio (E1-03) | Planificado |
-| Spoofing | Fuerza bruta sobre el PIN del protegido | Edge Function `auth-pin` | Argon2id + rate limiting por IP y por usuario | Planificado |
-| Tampering | El cliente se asigna un rol superior | Supabase Auth | Rol en `app_metadata` (solo escribe el servidor) | Planificado |
-| Repudiation | El acudiente niega haber dado el consentimiento | `consentimientos` | Tabla append-only con versión, actor y timestamp de servidor | Planificado |
-| Information disclosure | Lectura de protegidos de otro colegio o guardián | `protegidos` | RLS por guardián y por `personal_institucion.colegio_id` | Planificado |
-| Information disclosure | Robo de la sesión en el teléfono | App | Sesión en `expo-secure-store`; el PIN nunca se guarda en el dispositivo | Planificado |
-| Denial of service | Registro masivo de cuentas | Supabase Auth | Rate limiting de Auth y confirmación de correo | Planificado |
-| Elevation of privilege | Un guardián activa a su propio protegido | `protegidos.estado` | Solo `personal_institucion` activo puede pasar a `ACTIVO` (RLS) | Planificado |
-| Elevation of privilege | Un usuario se asigna el rol admin o crea personal institucional | Edge Function `admin-personal`, `colegios` | Rol en `app_metadata` solo escribible por el servidor; la función verifica `rol = admin` antes de usar la API de administración | Planificado |
-| Information disclosure | El administrador consulta datos de menores | `protegidos` | Sin políticas RLS para `admin` sobre `protegidos` ni `consentimientos` | Planificado |
-| Repudiation | Un administrador niega haber creado o desactivado personal | `audit_log` | Toda acción del administrador se registra | Planificado |
+| Spoofing | Un tercero se registra como guardián de un menor ajeno | Alta de protegido | Validación de matrícula por `personal_institucion` del colegio (E1-03) | Verificado (pgTAP) |
+| Spoofing | Fuerza bruta sobre el PIN del protegido | Edge Function `auth-pin` | Argon2id + bloqueo de 15 min tras 5 fallos por menor + mensaje genérico. Falta el límite por IP (SEC-01) | Verificado (Deno), parcial |
+| Tampering | El cliente se asigna un rol superior | Supabase Auth | Rol en `app_metadata` (solo escribe el servidor) | Implementado |
+| Repudiation | El acudiente niega haber dado el consentimiento | `consentimientos` | Tabla append-only con versión, actor y timestamp de servidor | Verificado (pgTAP) |
+| Information disclosure | Lectura de protegidos de otro colegio o guardián | `protegidos` | RLS por guardián y por `personal_institucion.colegio_id` | Verificado (pgTAP) |
+| Information disclosure | Robo de la sesión en el teléfono | App | Sesión en `expo-secure-store`; el PIN nunca se guarda en el dispositivo | Verificado (Jest); falta probar en Android físico (R9) |
+| Denial of service | Registro masivo de cuentas | Supabase Auth | Rate limiting de Auth y confirmación de correo | Implementado; PENDIENTE: confirmar "Confirm email" en dev y staging |
+| Elevation of privilege | Un guardián activa a su propio protegido | `protegidos.estado` | Solo `personal_institucion` activo puede pasar a `ACTIVO` (RLS) | Verificado (pgTAP) |
+| Elevation of privilege | Un usuario se asigna el rol admin o crea personal institucional | Edge Function `admin-personal`, `colegios` | Rol en `app_metadata` solo escribible por el servidor; la función verifica `rol = admin` antes de usar la API de administración | Verificado (Deno) |
+| Spoofing | Alguien entra como un menor con el documento de otro | Edge Function `auth-pin` | Documento + PIN que solo conoce el menor; el acudiente lo entrega en persona; el PIN generado en el servidor excluye PIN débiles | Verificado (Deno) |
+| Elevation of privilege | El personal institucional conserva la contraseña temporal que conoce el administrador | `admin-personal` | Cambio de contraseña en el primer ingreso (SEC-03) | Planificado |
+| Information disclosure | El administrador consulta datos de menores | `protegidos` | Sin políticas RLS para `admin` sobre `protegidos` ni `consentimientos` | Verificado (pgTAP) |
+| Repudiation | Un administrador niega haber creado o desactivado personal | `audit_log` | Toda acción del administrador se registra | Verificado (Deno) |
 
 ## E2 — Red de apoyo (E2-01)
 
