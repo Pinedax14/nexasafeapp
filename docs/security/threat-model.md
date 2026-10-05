@@ -26,7 +26,7 @@ Estado: **Planificado** (control definido, sin construir) · **Implementado** ·
 | Tampering | El cliente se asigna un rol superior | Supabase Auth | Rol en `app_metadata` (solo escribe el servidor) | Implementado |
 | Repudiation | El acudiente niega haber dado el consentimiento | `consentimientos` | Tabla append-only con versión, actor y timestamp de servidor | Verificado (pgTAP) |
 | Information disclosure | Lectura de protegidos de otro colegio o guardián | `protegidos` | RLS por guardián y por `personal_institucion.colegio_id` | Verificado (pgTAP) |
-| Information disclosure | Robo de la sesión en el teléfono | App | Sesión en `expo-secure-store`; el PIN nunca se guarda en el dispositivo | Verificado (Jest); falta probar en Android físico (R9) |
+| Information disclosure | Robo de la sesión en el teléfono | App | Sesión en `expo-secure-store`; el PIN nunca se guarda en el dispositivo | Verificado (Jest) y probado en Android físico (05/10/2026) |
 | Denial of service | Registro masivo de cuentas | Supabase Auth | Rate limiting de Auth y confirmación de correo | Implementado; PENDIENTE: confirmar "Confirm email" en dev y staging |
 | Elevation of privilege | Un guardián activa a su propio protegido | `protegidos.estado` | Solo `personal_institucion` activo puede pasar a `ACTIVO` (RLS) | Verificado (pgTAP) |
 | Elevation of privilege | Un usuario se asigna el rol admin o crea personal institucional | Edge Function `admin-personal`, `colegios` | Rol en `app_metadata` solo escribible por el servidor; la función verifica `rol = admin` antes de usar la API de administración | Verificado (Deno) |
