@@ -18,18 +18,18 @@ Modelo de amenazas: ver [`threat-model.md`](../../security/threat-model.md), sec
 | E4-04 Indicador de acompañamiento | 2 | Borrador | 2 | E4-01 | Sí: avisa cuándo se comparte la ubicación (RF-15, RF-41) | PENDIENTE | No |
 | E2-01 Invitar contactos por enlace | 5 | Borrador | 5 | Columnas de invitación y rol del contacto (D8) | Sí: datos del contacto y acceso a alertas del menor | PENDIENTE | No |
 
-Ninguna historia cumple todavía la DoR: faltan las decisiones de la sección 2, los wireframes y la aprobación de los criterios.
+Ninguna historia cumple todavía la DoR: falta la decisión D9, los wireframes y la aprobación de los criterios en el planning.
 
-## 2. Decisiones pendientes (requieren aprobación del equipo)
+## 2. Decisiones (05/10/2026)
 
-| ID | Tema | Por qué hace falta | Propuesta |
+| ID | Tema | Por qué hace falta | Decisión |
 |---|---|---|---|
-| D8 | Invitación y cuenta del contacto de apoyo (E2-01) | El modelo del Diseño (cap. 6) solo trae `contactos_apoyo(id, guardian_id, alcance_visibilidad)`: no dice a qué menor se vincula el contacto, cómo se guarda el enlace ni con qué cuenta entra. Además, toda cuenta registrada desde la app nace como `guardian` y una cuenta tiene un solo rol | PENDIENTE: decisión del equipo |
-| D9 | Librería y proveedor del mapa (E3-01) | Ningún documento nombra la librería de mapa y no se agregan librerías sin aprobación | PENDIENTE: decisión del equipo |
-| D10 | Duración esperada y rango del corredor (E3-02, E3-03) | `rutas` solo trae `geometria` y `corredor_m`; la duración esperada no tiene columna | Columna `rutas.duracion_esperada_min` (entero, 5–120). Corredor entre 25 y 200 m, 50 m por defecto |
-| D11 | Mecanismo y cifrado de la caché de la ruta (E3-01) | El Cronograma pide definirlos en este refinement | `expo-secure-store` (Keystore de Android), partida en trozos como la sesión (E1-05); se reemplaza al sincronizar con el servidor y se borra al cerrar sesión |
-| D12 | Qué ruta usa el trayecto (E4-01) | El modelo permite varias rutas por menor (`protegidos 1:N rutas`) y E4-01 pide iniciar "con un toque" | PENDIENTE: decisión del equipo |
-| D13 | Cifrado de `rutas.geometria` (RNF-02) | RNF-02 pide cifrar la "ubicación histórica"; la geometría de la ruta debe quedar legible para PostGIS (corredor y geocerca) | La ruta es configuración y no ubicación histórica: sin cifrado por columna, protegida con RLS y auditoría. Las posiciones del trayecto (Sprint 03) se deciden en su refinement |
+| D8 | Invitación y cuenta del contacto de apoyo (E2-01) | El modelo del Diseño (cap. 6) solo trae `contactos_apoyo(id, guardian_id, alcance_visibilidad)`: no dice a qué menor se vincula el contacto, cómo se guarda el enlace ni con qué cuenta entra. Además, toda cuenta registrada desde la app nace como `guardian` y una cuenta tiene un solo rol | **Aprobada:** el contacto se registra desde el enlace con una cuenta nueva de rol `apoyo` (una cuenta, un rol). Quien ya es acudiente usa otro correo para ser contacto. La invitación se vincula a un menor, guarda el hash del token, vence y es de un solo uso; sin E2-02, el contacto ve solo alertas |
+| D9 | Librería y proveedor del mapa (E3-01) | Ningún documento nombra la librería de mapa y no se agregan librerías sin aprobación | PENDIENTE: el equipo evalúa el costo de Google Maps (react-native-maps) frente a OpenStreetMap en un WebView |
+| D10 | Duración esperada y rango del corredor (E3-02, E3-03) | `rutas` solo trae `geometria` y `corredor_m`; la duración esperada no tiene columna | **Aprobada:** columna `rutas.duracion_esperada_min` (entero, 5–120). Corredor entre 25 y 200 m, 50 m por defecto |
+| D11 | Mecanismo y cifrado de la caché de la ruta (E3-01) | El Cronograma pide definirlos en este refinement | **Aprobada:** `expo-secure-store` (Keystore de Android), partida en trozos como la sesión (E1-05); se reemplaza al sincronizar con el servidor y se borra al cerrar sesión |
+| D12 | Qué ruta usa el trayecto (E4-01) | El modelo permite varias rutas por menor (`protegidos 1:N rutas`) y E4-01 pide iniciar "con un toque" | **Aprobada:** hasta 2 rutas por menor, "Casa → colegio" y "Colegio → casa"; al iniciar, el menor elige una con un toque |
+| D13 | Cifrado de `rutas.geometria` (RNF-02) | RNF-02 pide cifrar la "ubicación histórica"; la geometría de la ruta debe quedar legible para PostGIS (corredor y geocerca) | **Aprobada:** la ruta es configuración y no ubicación histórica: sin cifrado por columna, protegida con RLS y auditoría. Las posiciones del trayecto (Sprint 03) se deciden en su refinement |
 
 ## 3. Criterios de aceptación (borrador para el planning)
 
