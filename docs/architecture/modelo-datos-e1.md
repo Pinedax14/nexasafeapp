@@ -96,8 +96,18 @@ El rol `admin` **no** tiene ninguna política sobre `protegidos`, `consentimient
 
 Los cambios sensibles pasan por **funciones de base de datos** que verifican el rol y escriben en `audit_log` en la misma transacción:
 
-- `registrar_protegido(nombre, documento, colegio_id, version_politica)` → crea el protegido en `PENDIENTE_VALIDACION` **y** su consentimiento `OTORGADO`, o nada si algo falla (E1-02 + E11-01).
+- `registrar_protegido(nombre, documento, colegio_id, foto_path, version_politica)` (firma desde E1-02; la foto debe estar ya subida en la carpeta del guardián y no usarse en otro menor) → crea el protegido en `PENDIENTE_VALIDACION` **y** su consentimiento `OTORGADO`, o nada si algo falla (E1-02 + E11-01).
 - `validar_protegido(protegido_id)` → solo personal activo del mismo colegio; pasa a `ACTIVO` y registra `VALIDAR` (E1-03).
+
+### Fotos de los menores (Storage, E1-02)
+
+Bucket privado `fotos-protegidos` (solo JPG/PNG, máximo 2 MB). Ruta de cada foto: `<guardian_id>/<archivo>`.
+
+| Rol | Subir | Ver |
+|---|---|---|
+| `guardian` | Solo en su carpeta | Solo su carpeta |
+| `institucion` | — | Fotos de los menores de su colegio, si está activo |
+| `admin` | — | — |
 
 Cada política tendrá su prueba en `supabase/tests/` (pgTAP, `supabase test db`), ejecutada en el CI (RNF-27).
 

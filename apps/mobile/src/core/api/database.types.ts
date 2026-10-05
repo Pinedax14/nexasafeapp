@@ -238,6 +238,7 @@ export type Database = {
         Args: {
           p_colegio_id: string;
           p_documento: string;
+          p_foto_path: string;
           p_nombre: string;
           p_version_politica: string;
         };

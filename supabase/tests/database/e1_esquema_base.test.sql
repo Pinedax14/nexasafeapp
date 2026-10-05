@@ -19,6 +19,10 @@ insert into auth.users (id, email, raw_user_meta_data, raw_app_meta_data, aud, r
   ('20000000-0000-0000-0000-000000000003', 'pi@example.com', '{}', '{"rol": "institucion"}', 'authenticated', 'authenticated'),
   ('30000000-0000-0000-0000-000000000001', 'ad@example.com', '{}', '{"rol": "admin"}', 'authenticated', 'authenticated');
 
+-- Foto del menor ya subida a la carpeta del guardián 1 (E1-02).
+insert into storage.objects (bucket_id, name) values
+  ('fotos-protegidos', '10000000-0000-0000-0000-000000000001/foto1.jpg');
+
 insert into public.personal_institucion (id, colegio_id, nombre, activo) values
   ('20000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Personal X', true),
   ('20000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000002', 'Personal Y', true),
@@ -53,7 +57,7 @@ select is(
 set local role anon;
 select throws_ok('select count(*) from public.protegidos', '42501', null, 'anon no lee protegidos');
 select throws_ok(
-  $$select public.registrar_protegido('Menor', '1', 'c0000000-0000-0000-0000-000000000001', '1.0')$$,
+  $$select public.registrar_protegido('Menor', '1', 'c0000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001/foto1.jpg', '1.0')$$,
   '42501', null, 'anon no registra protegidos');
 reset role;
 
@@ -64,11 +68,11 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub": "10000000-0000-0000-0000-000000000001", "role": "authenticated", "app_metadata": {"rol": "guardian"}}';
 
 select throws_ok(
-  $$select public.registrar_protegido('Menor Uno', '1001', 'c0000000-0000-0000-0000-000000000001', '0.9')$$,
+  $$select public.registrar_protegido('Menor Uno', '1001', 'c0000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001/foto1.jpg', '0.9')$$,
   'P0001', 'Debe aceptar la política de tratamiento vigente', 'sin aceptar la política vigente no hay alta');
 select ok(
   set_config('pruebas.protegido',
-    public.registrar_protegido('Menor Uno', '1001', 'c0000000-0000-0000-0000-000000000001', '1.0')::text,
+    public.registrar_protegido('Menor Uno', '1001', 'c0000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001/foto1.jpg', '1.0')::text,
     true) is not null,
   'el guardián registra un menor con la política vigente');
 select is(

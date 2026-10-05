@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { supabase } from '../core/api/supabaseClient';
+import { pickPhoto } from '../core/permissions/pickPhoto';
 import { colors } from '../core/theme/colors';
 import { SupabaseAuthRepository } from '../features/auth/data/repositories/SupabaseAuthRepository';
 import { User } from '../features/auth/domain/entities/User';
@@ -16,9 +17,15 @@ import { ManageSchools } from '../features/institution/domain/useCases/ManageSch
 import { ManageStaff } from '../features/institution/domain/useCases/ManageStaff';
 import { AdminSchoolsScreen } from '../features/institution/presentation/screens/AdminSchoolsScreen';
 import { SchoolStaffScreen } from '../features/institution/presentation/screens/SchoolStaffScreen';
+import { SupabaseProtegidoRepository } from '../features/profile/data/repositories/SupabaseProtegidoRepository';
+import { ListMyProtegidos } from '../features/profile/domain/useCases/ListMyProtegidos';
+import { RegisterProtegido } from '../features/profile/domain/useCases/RegisterProtegido';
+import { GuardianHomeScreen } from '../features/profile/presentation/screens/GuardianHomeScreen';
+import { RegisterProtegidoScreen } from '../features/profile/presentation/screens/RegisterProtegidoScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
 
 type AuthRoute = 'login' | 'register';
+type GuardianRoute = 'home' | 'registerProtegido';
 
 export function AppContent() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -26,12 +33,16 @@ export function AppContent() {
   const [authRoute, setAuthRoute] = useState<AuthRoute>('login');
   const [loggedUser, setLoggedUser] = useState<User | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
+  const [guardianRoute, setGuardianRoute] = useState<GuardianRoute>('home');
 
   // Raíz de composición: la única parte de la app que conoce la capa data.
   const useCases = useMemo(() => {
     const repository = new SupabaseAuthRepository(supabase.auth);
     const institutionAdmin = new SupabaseInstitutionAdminRepository(supabase);
+    const protegidos = new SupabaseProtegidoRepository(supabase);
     return {
+      listMyProtegidos: new ListMyProtegidos(protegidos),
+      registerProtegido: new RegisterProtegido(protegidos),
       authenticateUser: new AuthenticateUser(repository),
       registerGuardian: new RegisterGuardian(repository),
       restoreSession: new RestoreSession(repository),
@@ -68,6 +79,7 @@ export function AppContent() {
     await useCases.signOut.execute();
     setLoggedUser(null);
     setSelectedSchool(null);
+    setGuardianRoute('home');
     setAuthRoute('login');
   }, [useCases]);
 
@@ -104,6 +116,26 @@ export function AppContent() {
         manageSchools={useCases.manageSchools}
         userName={loggedUser.name}
         onOpenSchool={setSelectedSchool}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+
+  // E1-02: el acudiente ve sus menores y puede registrar uno nuevo.
+  if (loggedUser.role === 'guardian') {
+    return guardianRoute === 'registerProtegido' ? (
+      <RegisterProtegidoScreen
+        registerProtegido={useCases.registerProtegido}
+        guardianId={loggedUser.id}
+        pickPhoto={pickPhoto}
+        onRegistered={() => setGuardianRoute('home')}
+        onCancel={() => setGuardianRoute('home')}
+      />
+    ) : (
+      <GuardianHomeScreen
+        listMyProtegidos={useCases.listMyProtegidos}
+        userName={loggedUser.name}
+        onRegisterProtegido={() => setGuardianRoute('registerProtegido')}
         onSignOut={handleSignOut}
       />
     );
