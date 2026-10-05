@@ -45,4 +45,9 @@ export class AssignPin {
     }
     return this.repository.assignPin(protegidoId, pin);
   }
+
+  /** El guardián pide un PIN aleatorio en lugar de inventarlo. */
+  generate(protegidoId: string): Promise<ProfileResult<string>> {
+    return this.repository.generatePin(protegidoId);
+  }
 }

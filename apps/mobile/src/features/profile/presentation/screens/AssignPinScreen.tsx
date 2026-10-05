@@ -32,6 +32,22 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
         Si ya tenía uno, se reemplaza.
       </Text>
 
+      <Pressable
+        style={[local.secondaryButton, vm.isSaving && styles.buttonDisabled]}
+        onPress={vm.generate}
+        disabled={vm.isSaving}
+        accessibilityRole="button"
+      >
+        <Text style={local.secondaryButtonText}>Generar PIN aleatorio</Text>
+      </Pressable>
+      {!!vm.generatedPin && (
+        <Text style={local.generatedPin} accessibilityLabel="PIN generado">
+          {vm.generatedPin}
+        </Text>
+      )}
+
+      <Text style={local.or}>o escribe uno tú mismo</Text>
+
       <TextInput
         style={[styles.input, local.pin]}
         placeholder="PIN"
@@ -80,4 +96,22 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
 
 const local = StyleSheet.create({
   pin: { fontSize: 24, letterSpacing: 12, textAlign: 'center' },
+  secondaryButton: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: 10,
+    minHeight: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  secondaryButtonText: { color: colors.primary, fontSize: 16, fontWeight: '700' },
+  generatedPin: {
+    marginTop: 16,
+    fontSize: 40,
+    fontWeight: '700',
+    letterSpacing: 16,
+    textAlign: 'center',
+    color: colors.text,
+  },
+  or: { marginVertical: 16, textAlign: 'center', color: colors.textMuted },
 });

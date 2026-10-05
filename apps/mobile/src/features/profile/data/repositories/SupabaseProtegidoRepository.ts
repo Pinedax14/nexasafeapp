@@ -131,4 +131,13 @@ export class SupabaseProtegidoRepository implements ProtegidoRepository {
     if (error) return { ok: false, reason: await pinFailure(error) };
     return { ok: true, value: undefined };
   }
+
+  async generatePin(protegidoId: string): Promise<ProfileResult<string>> {
+    const { data, error } = await this.client.functions.invoke<{ pin?: string }>('auth-pin', {
+      body: { accion: 'asignar', protegido_id: protegidoId, generar: true },
+    });
+    if (error) return { ok: false, reason: await pinFailure(error) };
+    if (!data?.pin) return { ok: false, reason: 'UNKNOWN' };
+    return { ok: true, value: data.pin };
+  }
 }

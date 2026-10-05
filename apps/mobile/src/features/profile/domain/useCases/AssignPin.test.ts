@@ -9,6 +9,7 @@ function createRepository(): jest.Mocked<ProtegidoRepository> {
     uploadPhoto: jest.fn(),
     register: jest.fn(),
     assignPin: jest.fn().mockResolvedValue({ ok: true, value: undefined }),
+    generatePin: jest.fn(),
   };
 }
 
@@ -49,5 +50,17 @@ describe('AssignPin (E1-04, D5)', () => {
 
     expect(repository.assignPin).toHaveBeenCalledWith('p-1', '4826');
     expect(result).toEqual({ ok: true, value: undefined });
+  });
+});
+
+describe('AssignPin.generate (E1-04)', () => {
+  it('pide al servidor un PIN aleatorio para el menor', async () => {
+    const repository = createRepository();
+    repository.generatePin.mockResolvedValue({ ok: true, value: '4826' });
+
+    const result = await new AssignPin(repository).generate('p-1');
+
+    expect(repository.generatePin).toHaveBeenCalledWith('p-1');
+    expect(result).toEqual({ ok: true, value: '4826' });
   });
 });
