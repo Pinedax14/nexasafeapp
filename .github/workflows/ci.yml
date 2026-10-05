@@ -82,6 +82,30 @@ jobs:
       - name: Pruebas de políticas RLS (pgTAP)
         run: supabase test db
 
+  functions:
+    name: Edge Functions · lint, tipos y pruebas (Deno)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: supabase/functions
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Deno lint
+        run: deno lint
+
+      - name: Deno check
+        run: deno check */index.ts
+
+      - name: Pruebas con cobertura
+        run: |
+          deno test --coverage=coverage
+          deno coverage coverage --exclude='test\.ts$'
+
   mobile:
     name: Móvil · lint, tipos, pruebas y build
     runs-on: ubuntu-latest

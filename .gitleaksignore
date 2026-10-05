@@ -1,0 +1,12 @@
+# Falsos positivos revisados de Gitleaks (regla generic-api-key).
+# Commit e3849b2 (E1-06): contraseña de prueba 'temporal-123' en archivos de pruebas,
+# reemplazada por 'clave-temporal' en el commit siguiente. Revisado por el Security Champion (05/10/2026).
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/domain/useCases/ManageStaff.test.ts:generic-api-key:8
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/domain/useCases/ManageStaff.test.ts:generic-api-key:69
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/data/repositories/SupabaseInstitutionAdminRepository.test.ts:generic-api-key:109
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/data/repositories/SupabaseInstitutionAdminRepository.test.ts:generic-api-key:118
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/data/repositories/SupabaseInstitutionAdminRepository.test.ts:generic-api-key:142
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/data/repositories/SupabaseInstitutionAdminRepository.test.ts:generic-api-key:159
+e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/data/repositories/SupabaseInstitutionAdminRepository.test.ts:generic-api-key:177
+e3849b291b266f1969edf87a3ad5ebe58f913184:supabase/functions/admin-personal/handler.test.ts:generic-api-key:17
+e3849b291b266f1969edf87a3ad5ebe58f913184:supabase/functions/admin-personal/handler.test.ts:generic-api-key:86

@@ -140,6 +140,33 @@ Para revisar secretos antes de cada commit en tu equipo: `pip install pre-commit
 - Pruebas de políticas RLS: `supabase/tests/database/`; se ejecutan en el CI sobre una base efímera.
 - Las llaves **nunca** van en el código. El pipeline usa los secretos `SUPABASE_ACCESS_TOKEN`, `SUPABASE_STAGING_PROJECT_REF` y `SUPABASE_STAGING_DB_PASSWORD` del ambiente `staging` de GitHub.
 
+### Edge Functions
+
+Viven en [`supabase/functions/`](supabase/functions/) (Deno). El CI ejecuta lint, verificación de tipos y pruebas en cada PR, y `deploy-staging.yml` las despliega a staging al hacer merge en `main`.
+
+| Comando (desde `supabase/functions`) | Qué hace |
+|---|---|
+| `npx deno test` | Pruebas de las funciones |
+| `npx deno lint` | Lint |
+
+Desplegar una función en dev (desde la raíz): `npx supabase functions deploy <nombre> --use-api`.
+
+### Crear el primer administrador (una sola vez por ambiente)
+
+El rol `admin` no se puede obtener desde la app. Para crear el primero:
+
+1. Supabase → **Authentication → Users → Add user → Create new user**: correo, contraseña de al menos 8 caracteres y **Auto Confirm User** activado.
+2. Supabase → **SQL Editor**, reemplazando el correo:
+   ```sql
+   update auth.users
+   set raw_app_meta_data = raw_app_meta_data || '{"rol": "admin"}'
+   where email = 'admin@ejemplo.com';
+   delete from public.guardianes where email = 'admin@ejemplo.com';
+   ```
+3. Inicia sesión en la app con esa cuenta: verás la pantalla de **Administración**.
+
+El trigger de registro convierte toda cuenta nueva en guardián; el paso 2 la cambia a administrador y borra su fila de `guardianes`. Es la única operación de datos que se hace a mano.
+
 ## Cómo contribuir (GitHub Flow)
 
 `main` está protegida: nada entra sin PR aprobado y pipeline verde. **No se hace push directo a `main`.**
