@@ -550,12 +550,13 @@ tr[hidden]{display:none;}
             <tr data-p="MUST"><td class="id-cell">RF-41</td><td>El sistema no debe compartir la ubicación del protegido fuera de un trayecto o alerta activos.</td><td><span class="badge badge-epic">E11</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="MUST"><td class="id-cell">RF-42</td><td>El sistema debe permitir a un administrador crear colegios y registrar a su personal institucional desde la app.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-must">MUST</span></td></tr>
             <tr data-p="SHOULD"><td class="id-cell">RF-43</td><td>El sistema debería permitir al acudiente registrarse e iniciar sesión con su cuenta de Google.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-should">SHOULD</span></td></tr>
+            <tr data-p="COULD"><td class="id-cell">RF-44</td><td>El sistema podría permitir al usuario entrar con la huella de su celular, que desbloquea la sesión ya guardada en el dispositivo.</td><td><span class="badge badge-epic">E1</span></td><td><span class="badge badge-could">COULD</span></td></tr>
           </tbody>
         </table></div>
 
         <div class="callout">
           <b>Requisitos SHOULD y COULD fuera del semestre</b>
-          <p>Además de los WON'T, quedan para la fase 2 por capacidad los SHOULD/COULD RF-07, RF-19, RF-21, RF-25, RF-28, RF-31, RF-34, RF-36, RF-40 y RF-43 (ver Cronograma, capítulo 6). Los únicos requisitos comprometidos para el semestre son los MUST de esta tabla.</p>
+          <p>Además de los WON'T, quedan para la fase 2 por capacidad los SHOULD/COULD RF-07, RF-19, RF-21, RF-25, RF-28, RF-31, RF-34, RF-36, RF-40, RF-43 y RF-44 (ver Cronograma, capítulo 6). Los únicos requisitos comprometidos para el semestre son los MUST de esta tabla.</p>
         </div>
 
         <div class="callout">
@@ -725,7 +726,7 @@ tr[hidden]{display:none;}
           </ul>
         </div>
 
-        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, PIN verificado en el servidor (con escenario sin conexión en RF-22), caché de la ruta y gráfico interactivo en RF-09 y RF-29, rol administrador (RF-42) e inicio de sesión con Google como SHOULD fuera del semestre (RF-43) (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
+        <div class="doc-footer">Documento de Requisitos del Sistema — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2. Cambios frente a v1.0: priorización WON'T (fase 2) para los MUST fuera del roadmap, alcance separado en fase 1 y fase 2, PIN verificado en el servidor (con escenario sin conexión en RF-22), caché de la ruta y gráfico interactivo en RF-09 y RF-29, rol administrador (RF-42) e inicio de sesión con Google como SHOULD fuera del semestre (RF-43) e ingreso con la huella del celular como COULD fuera del semestre (RF-44) (detalle en GUIA_PROYECTO_NEXASAFE.md, sección 0).</div>
       </section>
 
       <!-- ============ DOC 2 — PLAN DE DESARROLLO ============ -->
@@ -1042,7 +1043,7 @@ tr[hidden]{display:none;}
           <div class="stat-tile"><b>6</b><span>Sprints (incl. Sprint 0 y cierre)</span></div>
           <div class="stat-tile"><b>68</b><span>Días calendario</span></div>
           <div class="stat-tile"><b>131</b><span>Pts. comprometidos (Sprints 0–4)</span></div>
-          <div class="stat-tile"><b>230</b><span>Pts. del backlog completo</span></div>
+          <div class="stat-tile"><b>233</b><span>Pts. del backlog completo</span></div>
         </div>
 
         <div class="gantt">
@@ -1226,7 +1227,7 @@ tr[hidden]{display:none;}
         </table></div>
         <div class="callout crit">
           <b>Brecha de capacidad frente al backlog completo</b>
-          <p>El backlog completo suma 230 puntos. Los 5 sprints planificados comprometen 131 puntos (18+29+26+26+32). La diferencia (99 puntos) se declara explícitamente como trabajo de la fase 2: E5 completa (23), E10 completa (16), E2-02 (5), E2-03 (3), E6-02 (5), E6-06 (8), E7-03 (3), E8-02 (5), E8-03 (8), E9-03 (5), E11-02 (5), E11-03 (5), E0-05 (3) y E1-07 (5, inicio de sesión con Google).</p>
+          <p>El backlog completo suma 233 puntos. Los 5 sprints planificados comprometen 131 puntos (18+29+26+26+32). La diferencia (102 puntos) se declara explícitamente como trabajo de la fase 2: E5 completa (23), E10 completa (16), E2-02 (5), E2-03 (3), E6-02 (5), E6-06 (8), E7-03 (3), E8-02 (5), E8-03 (8), E9-03 (5), E11-02 (5), E11-03 (5), E0-05 (3), E1-07 (5, inicio de sesión con Google) y E1-08 (3, ingreso con la huella del celular).</p>
         </div>
       </section>
 
@@ -1240,7 +1241,7 @@ tr[hidden]{display:none;}
             <tr><td class="id-cell">R1</td><td>La ubicación en segundo plano se detiene por optimización de batería del fabricante.</td><td><span class="badge badge-high">Alta</span></td><td><span class="badge badge-high">Alto</span></td><td>Investigación temprana en Sprint 2 para no comprometer la ubicación en vivo (E4-02, Sprint 3) ni el hito H4.</td></tr>
           </tbody>
         </table></div>
-        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, backlog recontado (220 pts; 230 con E1-06 y E1-07), caché (E3-01) y gráfico interactivo (E8-01) dentro de su estimación, y E1-06 (rol administrador, 5 pts) en el Sprint 1 (29 pts).</div>
+        <div class="doc-footer">Cronograma y Tareas del Proyecto — NexaSafe · v1.1 (3 oct 2026) · Ingeniería de Software I · Fundación Universitaria San Mateo · 2026-2. Elaborado a partir de PLAN_NEXASAFE.md v1.2, sección 8, con asignación de responsables por rol funcional. Cambios frente a v1.0: Sprint 4 de 32 pts (17–24 nov), cierre 25–28 nov, H3 y H4 redefinidos, Sprint Goals 2 y 3 alineados con sus historias, backlog recontado (220 pts; 233 con E1-06, E1-07 y E1-08), caché (E3-01) y gráfico interactivo (E8-01) dentro de su estimación, y E1-06 (rol administrador, 5 pts) en el Sprint 1 (29 pts).</div>
       </section>
 
       <!-- ============ DOC 4 — DISEÑO ARQUITECTÓNICO ============ -->

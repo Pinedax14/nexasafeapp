@@ -37,6 +37,7 @@ Al cruzar los 5 documentos v1.0 aparecían contradicciones. Quedaron corregidas 
 | 22 | Los aportes "gráficos interactivos" y "caché" de Programación para Dispositivos Móviles no tenían historia en los Sprints 0–4 | Se cubren dentro de historias existentes: caché local de la ruta en E3-01 y gráfico interactivo en E8-01, sin reestimar (riesgo R6) |
 | 23 | Ninguna historia permitía crear colegios ni personal institucional, y sin ellos E1-03 no se puede cumplir | Nueva historia E1-06 (rol administrador con pantallas en la app, 5 pts, MUST) y RF-42 en el Sprint 1, que sube a 29 pts; backlog 225 pts y capacidad 131 pts (decisión D3 del 03/10/2026) |
 | 24 | Se pidió permitir el inicio de sesión con Google, que ningún documento contemplaba (RF-01 solo pide correo y contraseña) | Nueva historia E1-07 y RF-43 como `Should`, fuera del roadmap: backlog 230 pts, trabajo futuro 99 pts. Se construye solo si sobra capacidad tras H3 (decisión del 05/10/2026) |
+| 25 | Se pidió, como valor agregado, entrar con la huella del celular (como en Nequi), que ningún documento contemplaba | Nueva historia E1-08 y RF-44 como `Could`, fuera del roadmap: backlog 233 pts, trabajo futuro 102 pts. La huella solo desbloquea la sesión guardada en el dispositivo; no reemplaza la contraseña ni la verificación del PIN en el servidor (decisión del 05/10/2026) |
 
 **Regla desde ahora:** si aparece una contradicción nueva, no se resuelve en silencio. Se explica, se propone una opción y se registra aquí como fila nueva cuando el equipo la apruebe.
 
@@ -327,11 +328,11 @@ Repite este ciclo en **todos** los sprints:
 
 ## 4. Fase 2 (fuera del semestre)
 
-Se deja documentado y no se construye (99 pts):
+Se deja documentado y no se construye (102 pts):
 
 - **E5:** detección automática de desvío (CU-03, flujo E2E 3).
 - **E10:** resiliencia offline completa.
-- **Historias sueltas:** E0-05, E1-07, E2-02, E2-03, E6-02, E6-06, E7-03, E8-02, E8-03, E9-03, E11-02 y E11-03.
+- **Historias sueltas:** E0-05, E1-07, E1-08, E2-02, E2-03, E6-02, E6-06, E7-03, E8-02, E8-03, E9-03, E11-02 y E11-03.
 - **Canales y funciones:** WhatsApp Cloud API (`notify-whatsapp`) y `escalate`.
 - **Pruebas:** pentest interno y prueba de campo de 1 km.
 

@@ -12,7 +12,7 @@ Eres el desarrollador principal y asistente Scrum del proyecto **NexaSafe**, de 
 
 Antes de hacer cualquier cosa, lee completos estos archivos (versión v1.1):
 
-1. `docs/entregables/ing-software-1/01-documento-requisitos-sistema.pdf` → **QUÉ** construir (RF-01 a RF-43, RNF-01 a RNF-28, CU-01 a CU-05, alcance por fase).
+1. `docs/entregables/ing-software-1/01-documento-requisitos-sistema.pdf` → **QUÉ** construir (RF-01 a RF-44, RNF-01 a RNF-28, CU-01 a CU-05, alcance por fase).
 2. `docs/entregables/ing-software-1/02-plan-desarrollo-software.pdf` → **CÓMO** trabajar (Scrum, ceremonias, DoR, DoD, DevSecOps, riesgos, métricas).
 3. `docs/entregables/ing-software-1/03-cronograma-tareas-proyecto.pdf` → **CUÁNDO y QUIÉN** (sprints, hitos H0–H6, historias por sprint, responsables).
 4. `docs/entregables/ing-software-1/04-diseno-arquitectonico.pdf` → **CON QUÉ y CÓMO se organiza** (stack, capas, flujos, modelo de datos, seguridad, estructura del repo).
@@ -30,7 +30,7 @@ Requisitos (01) > Diseño (04) > Plan (02) > Cronograma (03) > Informe (05) > Gu
 
 ### 1. Alcance
 - Construye **solo** las historias del sprint actual según el Cronograma (03).
-- **No construyas** nada de la fase 2: E5, E10, E0-05, E1-07 (Google), E2-02, E2-03, E6-02, E6-06, E7-03, E8-02, E8-03, E9-03, E11-02, E11-03, WhatsApp Cloud API (`notify-whatsapp`) ni `escalate`.
+- **No construyas** nada de la fase 2: E5, E10, E0-05, E1-07 (Google), E1-08 (huella), E2-02, E2-03, E6-02, E6-06, E7-03, E8-02, E8-03, E9-03, E11-02, E11-03, WhatsApp Cloud API (`notify-whatsapp`) ni `escalate`.
 - No agregues funcionalidades, librerías, pantallas ni tablas que no estén en los documentos. Si crees que algo falta, **pregunta**.
 
 ### 2. Stack y arquitectura (no negociable)
