@@ -7,11 +7,12 @@ import {
   LoginResult,
   RegisterFailureReason,
   RegisterResult,
+  SessionListener,
 } from '../../domain/repositories/AuthRepository';
 
 export type SupabaseAuthClient = Pick<
   SupabaseClient['auth'],
-  'signInWithPassword' | 'signUp' | 'signOut'
+  'signInWithPassword' | 'signUp' | 'signOut' | 'getSession' | 'onAuthStateChange'
 >;
 
 const ROLES: readonly Role[] = ['guardian', 'institucion', 'admin', 'protegido', 'apoyo'];
@@ -87,5 +88,18 @@ export class SupabaseAuthRepository implements AuthRepository {
 
   async signOut(): Promise<void> {
     await this.auth.signOut();
+  }
+
+  async getCurrentUser(): Promise<User | null> {
+    const { data, error } = await this.auth.getSession();
+    if (error || !data.session) return null;
+    return toDomainUser(data.session.user);
+  }
+
+  observeSession(listener: SessionListener): () => void {
+    const { data } = this.auth.onAuthStateChange((_event, session) => {
+      listener(session ? toDomainUser(session.user) : null);
+    });
+    return () => data.subscription.unsubscribe();
   }
 }

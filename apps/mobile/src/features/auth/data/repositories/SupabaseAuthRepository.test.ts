@@ -22,6 +22,8 @@ function createClient(): jest.Mocked<SupabaseAuthClient> {
     signInWithPassword: jest.fn(),
     signUp: jest.fn(),
     signOut: jest.fn().mockResolvedValue({ error: null }),
+    getSession: jest.fn(),
+    onAuthStateChange: jest.fn(),
   } as unknown as jest.Mocked<SupabaseAuthClient>;
 }
 
@@ -168,5 +170,80 @@ describe('SupabaseAuthRepository.signOut', () => {
     await new SupabaseAuthRepository(client).signOut();
 
     expect(client.signOut).toHaveBeenCalled();
+  });
+});
+
+describe('SupabaseAuthRepository.getCurrentUser (E1-05)', () => {
+  it('devuelve el usuario de la sesión guardada', async () => {
+    const client = createClient();
+    client.getSession.mockResolvedValue({
+      data: { session: { user: supabaseUser } },
+      error: null,
+    } as never);
+
+    const result = await new SupabaseAuthRepository(client).getCurrentUser();
+
+    expect(result).toEqual(toDomainUser(supabaseUser));
+  });
+
+  it('devuelve null si no hay sesión', async () => {
+    const client = createClient();
+    client.getSession.mockResolvedValue({ data: { session: null }, error: null } as never);
+
+    await expect(new SupabaseAuthRepository(client).getCurrentUser()).resolves.toBeNull();
+  });
+
+  it('devuelve null si la sesión no se pudo renovar', async () => {
+    const client = createClient();
+    client.getSession.mockResolvedValue({
+      data: { session: null },
+      error: authError({ code: 'refresh_token_not_found' }),
+    } as never);
+
+    await expect(new SupabaseAuthRepository(client).getCurrentUser()).resolves.toBeNull();
+  });
+});
+
+describe('SupabaseAuthRepository.observeSession (E1-05)', () => {
+  function captureCallback(client: jest.Mocked<SupabaseAuthClient>) {
+    const unsubscribe = jest.fn();
+    let callback: (event: string, session: unknown) => void = () => undefined;
+    client.onAuthStateChange.mockImplementation(((cb: typeof callback) => {
+      callback = cb;
+      return { data: { subscription: { unsubscribe } } };
+    }) as never);
+    return { unsubscribe, emit: (event: string, session: unknown) => callback(event, session) };
+  }
+
+  it('avisa el usuario cuando la sesión empieza', () => {
+    const client = createClient();
+    const { emit } = captureCallback(client);
+    const listener = jest.fn();
+
+    new SupabaseAuthRepository(client).observeSession(listener);
+    emit('SIGNED_IN', { user: supabaseUser });
+
+    expect(listener).toHaveBeenCalledWith(toDomainUser(supabaseUser));
+  });
+
+  it('avisa null cuando la sesión termina', () => {
+    const client = createClient();
+    const { emit } = captureCallback(client);
+    const listener = jest.fn();
+
+    new SupabaseAuthRepository(client).observeSession(listener);
+    emit('SIGNED_OUT', null);
+
+    expect(listener).toHaveBeenCalledWith(null);
+  });
+
+  it('deja de escuchar al llamar la función devuelta', () => {
+    const client = createClient();
+    const { unsubscribe } = captureCallback(client);
+
+    const stop = new SupabaseAuthRepository(client).observeSession(jest.fn());
+    stop();
+
+    expect(unsubscribe).toHaveBeenCalled();
   });
 });
