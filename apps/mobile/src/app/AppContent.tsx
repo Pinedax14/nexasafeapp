@@ -17,6 +17,11 @@ import { ManageSchools } from '../features/institution/domain/useCases/ManageSch
 import { ManageStaff } from '../features/institution/domain/useCases/ManageStaff';
 import { AdminSchoolsScreen } from '../features/institution/presentation/screens/AdminSchoolsScreen';
 import { SchoolStaffScreen } from '../features/institution/presentation/screens/SchoolStaffScreen';
+import { SupabaseEnrollmentRepository } from '../features/institution/data/repositories/SupabaseEnrollmentRepository';
+import { PendingEnrollment } from '../features/institution/domain/entities/EnrollmentReview';
+import { ValidateEnrollment } from '../features/institution/domain/useCases/ValidateEnrollment';
+import { EnrollmentReviewScreen } from '../features/institution/presentation/screens/EnrollmentReviewScreen';
+import { PendingEnrollmentsScreen } from '../features/institution/presentation/screens/PendingEnrollmentsScreen';
 import { SupabaseProtegidoRepository } from '../features/profile/data/repositories/SupabaseProtegidoRepository';
 import { ListMyProtegidos } from '../features/profile/domain/useCases/ListMyProtegidos';
 import { RegisterProtegido } from '../features/profile/domain/useCases/RegisterProtegido';
@@ -34,6 +39,7 @@ export function AppContent() {
   const [loggedUser, setLoggedUser] = useState<User | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
   const [guardianRoute, setGuardianRoute] = useState<GuardianRoute>('home');
+  const [reviewedEnrollment, setReviewedEnrollment] = useState<PendingEnrollment | null>(null);
 
   // Raíz de composición: la única parte de la app que conoce la capa data.
   const useCases = useMemo(() => {
@@ -49,6 +55,7 @@ export function AppContent() {
       signOut: new SignOut(repository),
       manageSchools: new ManageSchools(institutionAdmin),
       manageStaff: new ManageStaff(institutionAdmin),
+      validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
     };
   }, []);
 
@@ -80,6 +87,7 @@ export function AppContent() {
     setLoggedUser(null);
     setSelectedSchool(null);
     setGuardianRoute('home');
+    setReviewedEnrollment(null);
     setAuthRoute('login');
   }, [useCases]);
 
@@ -116,6 +124,24 @@ export function AppContent() {
         manageSchools={useCases.manageSchools}
         userName={loggedUser.name}
         onOpenSchool={setSelectedSchool}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+
+  // E1-03: el personal del colegio valida las matrículas pendientes.
+  if (loggedUser.role === 'institucion') {
+    return reviewedEnrollment ? (
+      <EnrollmentReviewScreen
+        validateEnrollment={useCases.validateEnrollment}
+        protegidoId={reviewedEnrollment.id}
+        onBack={() => setReviewedEnrollment(null)}
+      />
+    ) : (
+      <PendingEnrollmentsScreen
+        validateEnrollment={useCases.validateEnrollment}
+        userName={loggedUser.name}
+        onReview={setReviewedEnrollment}
         onSignOut={handleSignOut}
       />
     );

@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 01
 
 ### Agregado
+- E1-03 Validación por el colegio: el personal activo ve las matrículas pendientes de su colegio, revisa nombre, documento (descifrado) y foto (URL firmada de 2 minutos) y valida al menor, que pasa a ACTIVO. Cada lectura del detalle y cada validación quedan en `audit_log`.
 - E1-02 Alta del menor: pantalla "Mis menores" con su estado y formulario de registro (nombre, documento, colegio y foto); el menor queda en PENDIENTE_VALIDACION. Migración `e1_02_fotos_protegidos`: bucket privado `fotos-protegidos` con políticas por rol y `registrar_protegido` con foto en la misma transacción. 16 pruebas pgTAP nuevas.
 - E11-01 (pantalla): la política de tratamiento v1.0 se muestra en la app (RNF-21) y el registro exige aceptarla; el consentimiento se guarda con la versión, el acudiente y la fecha del servidor.
 - E1-06 Rol administrador: pantallas para crear colegios y registrar, activar o desactivar personal institucional; Edge Function `admin-personal` que verifica el rol `admin`, crea la cuenta con rol `institucion` y contraseña temporal, deshace el alta si falla, registra `CREAR_PERSONAL` en `audit_log` y limita a 10 altas cada 10 minutos. 19 pruebas Deno y job de CI para Edge Functions.
