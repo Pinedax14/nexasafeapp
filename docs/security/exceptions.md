@@ -20,4 +20,7 @@ Las tres siguen siendo herramientas de build o de pruebas que no viajan en el AP
 
 **Hallazgos Moderate sin excepción** (el gate solo bloquea High/Critical): `uuid` < 11.1.1, `xcode` y paquetes de configuración de Expo, dependencias de las herramientas de Expo. No viajan en el APK. Quedan en seguimiento como SEC-04.
 
-**Mitigación aplicada sin excepción:** `postcss` 8.4.49 → 8.5.28 mediante `overrides` en `apps/mobile/package.json` (GHSA-6g55-p6wh-862q, GHSA-r28c-9q8g-f849).
+**Mitigaciones aplicadas sin excepción** (mediante `overrides` en `apps/mobile/package.json`):
+
+- `postcss` 8.4.49 → 8.5.28 (GHSA-6g55-p6wh-862q, GHSA-r28c-9q8g-f849).
+- `shell-quote` 1.10.0 → 1.12.0 (GHSA-pqg4-j6r4-53mv, Critical, inyección de comandos en `quote()`), dependencia de `react-devtools-core` (herramienta de desarrollo de React Native). Detectado por el gate del CI el 08/10/2026.
