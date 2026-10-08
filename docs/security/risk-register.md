@@ -27,6 +27,7 @@ Fuente: Plan de Desarrollo v1.1, capítulo 8 (`PLAN_NEXASAFE.md` v1.2, sección 
 | 00 | R7 materializado: el trabajo del Sprint 00 lo ejecutó un integrante y los PR se integraron sin aprobación de par. Recalibrar la velocidad al cierre del Sprint 01. Nuevo control: Access Token de Supabase con permisos mínimos (solo staging, escritura en Migrations y Edge Functions) tras la exposición del token anterior. |
 | 01 | Decisión D3 (03/10/2026): nueva historia E1-06 (5 pts) en el Sprint 01, que sube a 29 pts con un solo integrante; aumenta la exposición de R6. |
 | 01 | Security Review (05/10/2026): R4 actualizado con los controles construidos; nuevos R9 (sin Android físico), R10 (llaves de Vault) y R11 (bloqueo del PIN como denegación de servicio). Excepciones EX-001 a EX-003 renovadas hasta el 31/10/2026. Hallazgos SEC-01 a SEC-04. |
+| 01 | 08/10/2026: el gate de SCA bloqueó un hallazgo Critical nuevo en `shell-quote` (GHSA-pqg4-j6r4-53mv); corregido con `overrides` a 1.12.0, sin excepción. |
 | 01 | 05/10/2026: R9 mitigado con la prueba del APK en un Android físico (hito H2). |
 
 ## Hallazgos de la Security Review del Sprint 01 (05/10/2026)
