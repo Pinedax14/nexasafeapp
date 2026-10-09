@@ -98,6 +98,60 @@ export type Database = {
           },
         ];
       };
+      contactos_apoyo: {
+        Row: {
+          aceptada_en: string | null;
+          alcance_visibilidad: Database['public']['Enums']['alcance_visibilidad'];
+          creado_en: string;
+          guardian_id: string;
+          id: string;
+          nombre: string | null;
+          protegido_id: string;
+          token_hash: string;
+          usuario_id: string | null;
+          vence_en: string;
+        };
+        Insert: {
+          aceptada_en?: string | null;
+          alcance_visibilidad?: Database['public']['Enums']['alcance_visibilidad'];
+          creado_en?: string;
+          guardian_id: string;
+          id?: string;
+          nombre?: string | null;
+          protegido_id: string;
+          token_hash: string;
+          usuario_id?: string | null;
+          vence_en?: string;
+        };
+        Update: {
+          aceptada_en?: string | null;
+          alcance_visibilidad?: Database['public']['Enums']['alcance_visibilidad'];
+          creado_en?: string;
+          guardian_id?: string;
+          id?: string;
+          nombre?: string | null;
+          protegido_id?: string;
+          token_hash?: string;
+          usuario_id?: string | null;
+          vence_en?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'contactos_apoyo_guardian_id_fkey';
+            columns: ['guardian_id'];
+            isOneToOne: false;
+            referencedRelation: 'guardianes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contactos_apoyo_protegido_id_fkey';
+            columns: ['protegido_id'];
+            isOneToOne: false;
+            referencedRelation: 'protegidos';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       guardianes: {
         Row: {
           creado_en: string;
@@ -230,11 +284,114 @@ export type Database = {
           },
         ];
       };
+      rutas: {
+        Row: {
+          actualizado_en: string;
+          corredor_m: number;
+          creado_en: string;
+          duracion_esperada_min: number;
+          geometria: unknown;
+          id: string;
+          protegido_id: string;
+          sentido: Database['public']['Enums']['sentido_ruta'];
+        };
+        Insert: {
+          actualizado_en?: string;
+          corredor_m?: number;
+          creado_en?: string;
+          duracion_esperada_min: number;
+          geometria: unknown;
+          id?: string;
+          protegido_id: string;
+          sentido: Database['public']['Enums']['sentido_ruta'];
+        };
+        Update: {
+          actualizado_en?: string;
+          corredor_m?: number;
+          creado_en?: string;
+          duracion_esperada_min?: number;
+          geometria?: unknown;
+          id?: string;
+          protegido_id?: string;
+          sentido?: Database['public']['Enums']['sentido_ruta'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'rutas_protegido_id_fkey';
+            columns: ['protegido_id'];
+            isOneToOne: false;
+            referencedRelation: 'protegidos';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      trayectos: {
+        Row: {
+          estado: Database['public']['Enums']['estado_trayecto'];
+          fin_en: string | null;
+          id: string;
+          inicio_en: string;
+          protegido_id: string;
+          ruta_id: string;
+        };
+        Insert: {
+          estado?: Database['public']['Enums']['estado_trayecto'];
+          fin_en?: string | null;
+          id?: string;
+          inicio_en?: string;
+          protegido_id: string;
+          ruta_id: string;
+        };
+        Update: {
+          estado?: Database['public']['Enums']['estado_trayecto'];
+          fin_en?: string | null;
+          id?: string;
+          inicio_en?: string;
+          protegido_id?: string;
+          ruta_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trayectos_protegido_id_fkey';
+            columns: ['protegido_id'];
+            isOneToOne: false;
+            referencedRelation: 'protegidos';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trayectos_ruta_id_fkey';
+            columns: ['ruta_id'];
+            isOneToOne: false;
+            referencedRelation: 'rutas';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      aceptar_invitacion: { Args: { p_token: string }; Returns: string };
+      crear_invitacion: {
+        Args: { p_protegido_id: string };
+        Returns: {
+          id: string;
+          token: string;
+          vence_en: string;
+        }[];
+      };
+      guardar_ruta: {
+        Args: {
+          p_corredor_m: number;
+          p_duracion_min: number;
+          p_geojson: Json;
+          p_protegido_id: string;
+          p_sentido: Database['public']['Enums']['sentido_ruta'];
+        };
+        Returns: string;
+      };
+      iniciar_trayecto: { Args: { p_ruta_id: string }; Returns: string };
       obtener_protegido: {
         Args: { p_protegido_id: string };
         Returns: {
@@ -246,7 +403,20 @@ export type Database = {
           nombre: string;
         }[];
       };
+      obtener_rutas: {
+        Args: { p_protegido_id: string };
+        Returns: {
+          actualizado_en: string;
+          corredor_m: number;
+          duracion_esperada_min: number;
+          geojson: Json;
+          id: string;
+          sentido: Database['public']['Enums']['sentido_ruta'];
+        }[];
+      };
       pin_huella_documento: { Args: { p_documento: string }; Returns: string };
+      pin_ip_bloqueada: { Args: { p_ip: string }; Returns: boolean };
+      pin_registrar_fallo_ip: { Args: { p_ip: string }; Returns: undefined };
       registrar_protegido: {
         Args: {
           p_colegio_id: string;
@@ -261,10 +431,20 @@ export type Database = {
         Args: { p_protegido_id: string };
         Returns: undefined;
       };
+      ver_invitacion: {
+        Args: { p_token: string };
+        Returns: {
+          guardian: string;
+          menor: string;
+        }[];
+      };
       version_politica_vigente: { Args: never; Returns: string };
     };
     Enums: {
+      alcance_visibilidad: 'SOLO_ALERTAS';
       estado_protegido: 'PENDIENTE_VALIDACION' | 'ACTIVO' | 'INACTIVO';
+      estado_trayecto: 'EN_CURSO' | 'CERRADO';
+      sentido_ruta: 'CASA_COLEGIO' | 'COLEGIO_CASA';
       tipo_consentimiento: 'OTORGADO' | 'REVOCADO';
     };
     CompositeTypes: {
@@ -387,7 +567,10 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      alcance_visibilidad: ['SOLO_ALERTAS'],
       estado_protegido: ['PENDIENTE_VALIDACION', 'ACTIVO', 'INACTIVO'],
+      estado_trayecto: ['EN_CURSO', 'CERRADO'],
+      sentido_ruta: ['CASA_COLEGIO', 'COLEGIO_CASA'],
       tipo_consentimiento: ['OTORGADO', 'REVOCADO'],
     },
   },

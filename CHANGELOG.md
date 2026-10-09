@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 02
 
 ### Agregado
+- Tipos de TypeScript regenerados con `rutas`, `trayectos`, `contactos_apoyo` y sus funciones (migración aplicada en dev el 09/10/2026).
 - Migración `sprint_02_rutas_trayectos_contactos`: PostGIS; tablas `rutas`, `trayectos` y `contactos_apoyo` con RLS; funciones `guardar_ruta` (D10, D12, D15), `obtener_rutas` (auditada), `iniciar_trayecto` (un solo trayecto `EN_CURSO`), `crear_invitacion` (token de un solo uso, 72 h, 10 por hora), `ver_invitacion` (D17) y `aceptar_invitacion`; el registro con invitación crea la cuenta con rol `apoyo` (D8). 46 pruebas pgTAP.
 - Propuesta del modelo de datos del Sprint 02 (`docs/architecture/modelo-datos-sprint-02.md`): `rutas`, `trayectos` y `contactos_apoyo` con PostGIS, funciones, políticas RLS y decisiones D14–D17 para aprobar.
 - Lista de pruebas manuales en Android físico del Sprint 01 (`docs/scrum/sprint-01/pruebas-android.md`), que reemplaza la E2E con Maestro mientras no se monte (decisión del 09/10/2026).
