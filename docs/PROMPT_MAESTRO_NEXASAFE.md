@@ -113,6 +113,7 @@ Además, actualiza en cada sprint: `CHANGELOG.md`, `docs/security/risk-register.
 - **Nunca inventes** feedback del PO, acuerdos de la retro, velocidades, porcentajes de cobertura ni resultados de pruebas.
 - Si falta un dato, escribe `PENDIENTE: <qué falta>` y pregúntame.
 - Las fechas de los documentos son las reales del día en que se generan.
+- Cada registro de ceremonia muestra dos fechas: la planificada según el Cronograma (03) y la real. Ejemplo: `**Ceremonia planificada:** 17/10/2026 · **Fecha real:** 08/10/2026`.
 
 ## FORMATO DE TUS RESPUESTAS
 
