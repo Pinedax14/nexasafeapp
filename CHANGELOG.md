@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 02
 
 ### Agregado
+- E3-01a, E3-02 y E3-03 Rutas del menor: el guardián abre "Rutas ›" en un menor activo, ve sus 2 rutas (ida y regreso, D12) y dibuja cada una tocando el mapa de OpenStreetMap (Leaflet empaquetado en un WebView, D9), con corredor de 25 a 200 m en pasos de 25 (D10), duración esperada de 5 a 120 min y los límites de D15 validados en la app y en el servidor. Dependencias nuevas: `react-native-webview` 13.15.0 y `leaflet` 1.9.4. 47 pruebas Jest nuevas.
 - Tipos de TypeScript regenerados con `rutas`, `trayectos`, `contactos_apoyo` y sus funciones (migración aplicada en dev el 09/10/2026).
 - Migración `sprint_02_rutas_trayectos_contactos`: PostGIS; tablas `rutas`, `trayectos` y `contactos_apoyo` con RLS; funciones `guardar_ruta` (D10, D12, D15), `obtener_rutas` (auditada), `iniciar_trayecto` (un solo trayecto `EN_CURSO`), `crear_invitacion` (token de un solo uso, 72 h, 10 por hora), `ver_invitacion` (D17) y `aceptar_invitacion`; el registro con invitación crea la cuenta con rol `apoyo` (D8). 46 pruebas pgTAP.
 - Propuesta del modelo de datos del Sprint 02 (`docs/architecture/modelo-datos-sprint-02.md`): `rutas`, `trayectos` y `contactos_apoyo` con PostGIS, funciones, políticas RLS y decisiones D14–D17 para aprobar.

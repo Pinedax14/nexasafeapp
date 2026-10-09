@@ -92,6 +92,9 @@ Desde `apps/mobile`. Son los mismos pasos que ejecuta el CI en cada PR ([`.githu
 | `npm run test:coverage` | Pruebas con cobertura; falla si `domain` + `data` bajan del 70 % |
 | `npm run build` | `expo export` para Android |
 | `npm run audit:gate` | `npm audit`: falla ante High/Critical sin excepción vigente en [`docs/security/exceptions.md`](docs/security/exceptions.md) |
+| `npm run map:leaflet` | Copia Leaflet de `node_modules` a `leafletBundle.generated.ts` (mapa sin CDN, D9). Hay que correrlo después de actualizar `leaflet`; una prueba falla si la copia no coincide |
+
+El mapa de las rutas (E3-01a) usa OpenStreetMap dentro de un WebView y **no funciona en el navegador**: se prueba en Android (APK de EAS o Expo Go).
 
 ### Controles de seguridad del pipeline
 

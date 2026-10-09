@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { Protegido } from '../../domain/entities/Protegido';
@@ -11,6 +11,7 @@ type GuardianHomeScreenProps = {
   userName: string;
   onRegisterProtegido: () => void;
   onAssignPin: (protegido: Protegido) => void;
+  onOpenRoutes: (protegido: Protegido) => void;
   onSignOut: () => void;
 };
 
@@ -19,6 +20,7 @@ export function GuardianHomeScreen({
   userName,
   onRegisterProtegido,
   onAssignPin,
+  onOpenRoutes,
   onSignOut,
 }: GuardianHomeScreenProps) {
   const vm = useGuardianHomeViewModel(listMyProtegidos);
@@ -46,13 +48,22 @@ export function GuardianHomeScreen({
               <Text style={styles.rowSubtitle}>{STATUS_LABELS[protegido.status]}</Text>
             </View>
             {protegido.status === 'ACTIVO' && (
-              <Pressable
-                onPress={() => onAssignPin(protegido)}
-                accessibilityRole="button"
-                accessibilityLabel={`Asignar PIN a ${protegido.name}`}
-              >
-                <Text style={styles.linkText}>PIN ›</Text>
-              </Pressable>
+              <View style={local.actions}>
+                <Pressable
+                  onPress={() => onOpenRoutes(protegido)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Rutas de ${protegido.name}`}
+                >
+                  <Text style={styles.linkText}>Rutas ›</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => onAssignPin(protegido)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Asignar PIN a ${protegido.name}`}
+                >
+                  <Text style={styles.linkText}>PIN ›</Text>
+                </Pressable>
+              </View>
             )}
           </View>
         ))
@@ -64,3 +75,7 @@ export function GuardianHomeScreen({
     </ScrollView>
   );
 }
+
+const local = StyleSheet.create({
+  actions: { flexDirection: 'row', gap: 16 },
+});
