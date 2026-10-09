@@ -1,6 +1,6 @@
 # Sprint 01 — Review
 
-**Fecha de la review:** 08/10/2026 (planificada para el 17/10/2026). Documento escrito el 09/10/2026.
+**Ceremonia planificada:** 17/10/2026 · **Fecha real:** 08/10/2026 (documento escrito el 09/10/2026)
 **Sprint Goal:** un acudiente puede registrarse, dar de alta a un menor y el colegio validarlo.
 **Sprint Goal cumplido:** Sí. Hito H2 (alta de usuario funcionando en un dispositivo real) cumplido el 05/10/2026 con el APK de prueba en un Android físico.
 
