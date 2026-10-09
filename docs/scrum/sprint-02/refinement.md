@@ -11,14 +11,14 @@ Modelo de amenazas: ver [`threat-model.md`](../../security/threat-model.md), sec
 
 | Historia | Pts | Gherkin | Estimada | Dependencias | Datos personales | Wireframe | ¿Lista? |
 |---|---|---|---|---|---|---|---|
-| E3-01 Ruta sobre mapa + caché local | 8 | Borrador (sección 3) | 8 (Cronograma). PENDIENTE: reestimar con la caché incluida (R6) | PostGIS; librería de mapa (D9); mecanismo de caché (D11) | Sí: la ruta revela casa y colegio | PENDIENTE | No |
-| E3-02 Corredor en metros | 3 | Borrador | 3 | E3-01; rango del corredor (D10) | Sí (configuración de la ruta) | PENDIENTE | No |
-| E3-03 Duración esperada | 3 | Borrador | 3 | E3-01; columna nueva (D10) | No | PENDIENTE | No |
-| E4-01 Iniciar trayecto con un toque | 5 | Borrador | 5 | E3-01; qué ruta se usa (D12) | Sí: inicio del acompañamiento | PENDIENTE | No |
-| E4-04 Indicador de acompañamiento | 2 | Borrador | 2 | E4-01 | Sí: avisa cuándo se comparte la ubicación (RF-15, RF-41) | PENDIENTE | No |
-| E2-01 Invitar contactos por enlace | 5 | Borrador | 5 | Columnas de invitación y rol del contacto (D8) | Sí: datos del contacto y acceso a alertas del menor | PENDIENTE | No |
+| E3-01 Ruta sobre mapa + caché local | 8 | Borrador (sección 3) | 8 (Cronograma). PENDIENTE: reestimar con la caché incluida (R6) | PostGIS; librería de mapa (D9); mecanismo de caché (D11) | Sí: la ruta revela casa y colegio | Borrador: W1, W2 ([wireframes](wireframes.md)) | No |
+| E3-02 Corredor en metros | 3 | Borrador | 3 | E3-01; rango del corredor (D10) | Sí (configuración de la ruta) | Borrador: W2 ([wireframes](wireframes.md)) | No |
+| E3-03 Duración esperada | 3 | Borrador | 3 | E3-01; columna nueva (D10) | No | Borrador: W2 ([wireframes](wireframes.md)) | No |
+| E4-01 Iniciar trayecto con un toque | 5 | Borrador | 5 | E3-01; qué ruta se usa (D12) | Sí: inicio del acompañamiento | Borrador: W3, W4 ([wireframes](wireframes.md)) | No |
+| E4-04 Indicador de acompañamiento | 2 | Borrador | 2 | E4-01 | Sí: avisa cuándo se comparte la ubicación (RF-15, RF-41) | Borrador: W4 ([wireframes](wireframes.md)) | No |
+| E2-01 Invitar contactos por enlace | 5 | Borrador | 5 | Columnas de invitación y rol del contacto (D8) | Sí: datos del contacto y acceso a alertas del menor | Borrador: W5, W6 ([wireframes](wireframes.md)) | No |
 
-Ninguna historia cumple todavía la DoR: faltan los wireframes y la aprobación de los criterios en el planning.
+Ninguna historia cumple todavía la DoR: faltan la aprobación de los criterios y de los wireframes en el planning.
 
 ## 2. Decisiones (05/10/2026)
 
@@ -109,6 +109,6 @@ Entonces ve un mensaje genérico y no queda vinculado
 ## 4. Otros pendientes del refinement
 
 - **R1 (ubicación en segundo plano en Xiaomi y Huawei):** la investigación está planeada para la primera semana del Sprint 02 (20–24/10). PENDIENTE: conseguir un equipo de esas marcas o documentar la prueba con el OPPO usado en el Sprint 01 (ColorOS también restringe procesos en segundo plano).
-- **Wireframes:** la DoR los exige para historias con interfaz. PENDIENTE: bocetos de E3-01/E3-02/E3-03 (pantalla de ruta), E4-01/E4-04 (inicio del protegido) y E2-01 (invitación).
+- **Wireframes:** bocetos W1–W6 en [`wireframes.md`](wireframes.md). PENDIENTE: aprobación en el planning. Incluyen la propuesta de que la invitación venza a las 72 horas.
 - **Estimación:** los puntos son los del Cronograma. PENDIENTE: confirmarlos o reestimarlos en equipo, en especial E3-01 con la caché (registro de riesgos, decisión del 03/10/2026). Si E3-01 supera 8 pts debe dividirse.
-- **Cambios de esquema** (PostGIS, `rutas`, `trayectos`, `contactos_apoyo` y lo que resulte de D8, D10 y D12): se presentan para aprobación antes de programar, como en el Sprint 01.
+- **Cambios de esquema** (PostGIS, `rutas`, `trayectos`, `contactos_apoyo` y lo que resulte de D8, D10 y D12): se presentan para aprobación antes de programar, como en el Sprint 01. Propuesta del 09/10/2026: [`modelo-datos-sprint-02.md`](../../architecture/modelo-datos-sprint-02.md), con las decisiones nuevas D14–D17.
