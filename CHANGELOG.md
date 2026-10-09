@@ -2,9 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
-## [Sin publicar] — Sprint 01
+## [0.1.0] — Sprint 01 — 09/10/2026
 
 ### Agregado
+- Retrospectiva y resumen del Sprint 01 (`docs/scrum/sprint-01/retro.md` y `resumen.md`) y resultados del Sprint 01 en el Informe de Pruebas.
+- Regla de registro: cada ceremonia muestra la fecha planificada y la real.
 - Review del Sprint 01 (`docs/scrum/sprint-01/review.md`), hecha con el PO el 08/10/2026: 7 historias aceptadas, velocidad 29 de 29 pts.
 - Refinement del Sprint 02 (`docs/scrum/sprint-02/refinement.md`): estado de la DoR de E3-01, E3-02, E3-03, E4-01, E4-04 y E2-01, criterios Gherkin en borrador y decisiones pendientes D8–D13; STRIDE de E2 y E3/E4 ampliado en `threat-model.md`.
 - E1-04 Botón "Generar PIN aleatorio": el acudiente puede pedir que el servidor (`auth-pin`, `generar: true`) elija un PIN con aleatoriedad criptográfica, sin PIN fáciles de adivinar; se guarda solo su hash y se muestra una sola vez para entregarlo al menor en persona. 3 pruebas Deno y 5 pruebas Jest nuevas.
