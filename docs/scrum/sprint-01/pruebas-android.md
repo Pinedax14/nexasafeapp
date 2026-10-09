@@ -4,7 +4,20 @@ Lista para verificar a mano las historias del Sprint 01 en un Android físico (c
 
 Lo que no se ve desde la app (políticas RLS, `audit_log`, consentimiento inmutable, almacenamiento en `expo-secure-store`) lo cubren las pruebas pgTAP, Deno y Jest del CI.
 
-## Datos de la sesión de prueba
+## Sesión del 05/10/2026 (cierre del Sprint 01)
+
+| Dato | Valor |
+|---|---|
+| Fecha | 05/10/2026 |
+| Quién probó | Juan Felipe Pineda Cardona |
+| Celular | OPPO prestado (versión de Android no registrada) |
+| Build de EAS | `773d8111` (perfil `preview`), ambiente dev |
+| Qué se probó | Flujo completo del Sprint 01: registro del acudiente, alta del menor, validación por el colegio e ingreso del menor con PIN |
+| Resultado | **Todo funcionó**, según el probador. Hito H2 cumplido |
+
+La sesión se hizo antes de escribir esta lista (09/10/2026), así que sus casos no se marcaron uno por uno. La lista queda para las próximas pruebas de regresión en Android.
+
+## Datos de la próxima sesión de prueba
 
 | Dato | Valor |
 |---|---|
