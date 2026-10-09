@@ -2,9 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
-## [Sin publicar] — Sprint 01
+## [Sin publicar] — Sprint 02
 
 ### Agregado
+- Lista de pruebas manuales en Android físico del Sprint 01 (`docs/scrum/sprint-01/pruebas-android.md`), que reemplaza la E2E con Maestro mientras no se monte (decisión del 09/10/2026).
+
+## [0.1.0] — Sprint 01 — 09/10/2026
+
+### Agregado
+- Retrospectiva y resumen del Sprint 01 (`docs/scrum/sprint-01/retro.md` y `resumen.md`) y resultados del Sprint 01 en el Informe de Pruebas.
+- Regla de registro: cada ceremonia muestra la fecha planificada y la real.
+- Review del Sprint 01 (`docs/scrum/sprint-01/review.md`), hecha con el PO el 08/10/2026: 7 historias aceptadas, velocidad 29 de 29 pts.
 - Refinement del Sprint 02 (`docs/scrum/sprint-02/refinement.md`): estado de la DoR de E3-01, E3-02, E3-03, E4-01, E4-04 y E2-01, criterios Gherkin en borrador y decisiones pendientes D8–D13; STRIDE de E2 y E3/E4 ampliado en `threat-model.md`.
 - E1-04 Botón "Generar PIN aleatorio": el acudiente puede pedir que el servidor (`auth-pin`, `generar: true`) elija un PIN con aleatoriedad criptográfica, sin PIN fáciles de adivinar; se guarda solo su hash y se muestra una sola vez para entregarlo al menor en persona. 3 pruebas Deno y 5 pruebas Jest nuevas.
 - E1-04 Ingreso del menor con documento y PIN de 4 dígitos: el acudiente asigna el PIN a un menor ya validado (D5) y el menor entra desde "Soy menor: entrar con documento y PIN". Edge Function `auth-pin` (acciones `asignar` e `ingresar`): hash Argon2id, verificación solo en el servidor, mensaje genérico ante documento o PIN incorrectos, bloqueo de 15 minutos tras 5 fallos (D7), sesión de Supabase con rol `protegido` y registro `ASIGNAR_PIN`, `INGRESO_PIN` e `INGRESO_PIN_FALLIDO` en `audit_log`. Migración `e1_04_ingreso_pin`: huella HMAC-SHA256 del documento (`documento_huella`, llave en Vault) para buscar al menor sin descifrar, columnas `usuario_id`, `pin_intentos_fallidos` y `pin_bloqueado_hasta`, y política para que el protegido lea solo su fila. 11 pruebas pgTAP y 19 pruebas Deno nuevas.
