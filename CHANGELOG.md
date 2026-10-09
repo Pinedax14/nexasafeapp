@@ -2,6 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 02
+
+### Agregado
+- Lista de pruebas manuales en Android físico del Sprint 01 (`docs/scrum/sprint-01/pruebas-android.md`), que reemplaza la E2E con Maestro mientras no se monte (decisión del 09/10/2026).
+
 ## [0.1.0] — Sprint 01 — 09/10/2026
 
 ### Agregado
