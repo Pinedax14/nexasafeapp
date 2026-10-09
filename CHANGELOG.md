@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 02
 
 ### Agregado
+- Planning del Sprint 02 (26 pts), adelantado al 09/10/2026: E3-01 dividida en E3-01a (5) y E3-01b (3), criterios Gherkin de las 7 historias.
 - Propuesta del modelo de datos del Sprint 02 (`docs/architecture/modelo-datos-sprint-02.md`): `rutas`, `trayectos` y `contactos_apoyo` con PostGIS, funciones, políticas RLS y decisiones D14–D17, aprobadas el 09/10/2026.
 - Lista de pruebas manuales en Android físico del Sprint 01 (`docs/scrum/sprint-01/pruebas-android.md`), que reemplaza la E2E con Maestro mientras no se monte (decisión del 09/10/2026).
 
