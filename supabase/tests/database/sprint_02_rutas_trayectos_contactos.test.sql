@@ -233,10 +233,13 @@ set local request.jwt.claims = '{"sub": "50000000-0000-0000-0000-000000000001", 
 select lives_ok(
   $$select public.aceptar_invitacion(current_setting('pruebas.token3'))$$,
   'un contacto con cuenta acepta otra invitación');
+reset role;
+
 select is(
   (select count(*)::int from public.audit_log where accion = 'ACEPTAR_INVITACION'),
   2, 'cada aceptación queda en audit_log');
 
+set local role authenticated;
 set local request.jwt.claims = '{"sub": "10000000-0000-0000-0000-000000000002", "role": "authenticated", "app_metadata": {"rol": "guardian"}}';
 do $$ begin for i in 1..8 loop perform public.crear_invitacion('a0000000-0000-0000-0000-000000000003'); end loop; end $$;
 select throws_ok(
