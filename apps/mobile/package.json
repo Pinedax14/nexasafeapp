@@ -17,23 +17,23 @@
     "start:dev-client": "expo start --dev-client"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.117.2",
+    "@supabase/supabase-js": "^2.117.3",
     "expo": "~54.0.35",
     "expo-dev-client": "~6.0.21",
     "expo-image-picker": "~17.0.11",
     "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-native": "0.81.5",
-    "react-native-web": "^0.21.0"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.87.1",
+    "react-native-web": "^0.21.3"
   },
   "private": true,
   "devDependencies": {
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "29.5.14",
-    "@types/react": "~19.1.10",
+    "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~10.0.0",
     "eslint-config-prettier": "^10.1.8",
