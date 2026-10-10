@@ -247,6 +247,8 @@ export type Database = {
         }[];
       };
       pin_huella_documento: { Args: { p_documento: string }; Returns: string };
+      pin_ip_bloqueada: { Args: { p_ip: string }; Returns: boolean };
+      pin_registrar_fallo_ip: { Args: { p_ip: string }; Returns: undefined };
       registrar_protegido: {
         Args: {
           p_colegio_id: string;
