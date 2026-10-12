@@ -16,7 +16,7 @@ import {
   ManageRoutes,
 } from '../../domain/useCases/ManageRoutes';
 import { RouteMap } from '../map/RouteMap';
-import { DIRECTION_LABELS } from '../routeMessages';
+import { DIRECTION_LABELS, ROUTE_READ_ONLY_NOTICE } from '../routeMessages';
 import { useRouteEditorViewModel } from '../viewModels/useRouteEditorViewModel';
 
 type RouteEditorScreenProps = {
@@ -24,20 +24,24 @@ type RouteEditorScreenProps = {
   protegidoId: string;
   direction: RouteDirection;
   route: Route | null;
+  /** E3-01b: sin conexión la ruta de la caché solo se puede ver. */
+  readOnly?: boolean;
   onSaved: () => void;
   onBack: () => void;
 };
 
-/** W2 · Editor de ruta: E3-01a (mapa), E3-02 (corredor) y E3-03 (duración). */
+/** W2 · Editor de ruta: E3-01a (mapa), E3-02 (corredor), E3-03 (duración) y E3-01b (lectura sin conexión). */
 export function RouteEditorScreen({
   manageRoutes,
   protegidoId,
   direction,
   route,
+  readOnly = false,
   onSaved,
   onBack,
 }: RouteEditorScreenProps) {
   const vm = useRouteEditorViewModel(manageRoutes, protegidoId, direction, route, onSaved);
+  const locked = readOnly || vm.isSaving;
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
@@ -49,19 +53,23 @@ export function RouteEditorScreen({
       <RouteMap
         points={vm.points}
         corridorMeters={vm.corridorMeters}
-        editable={!vm.isSaving}
+        editable={!locked}
         onAddPoint={vm.addPoint}
       />
-      <View style={local.hintRow}>
-        <Text style={local.hint}>Toca el mapa para agregar puntos.</Text>
-        <Pressable
-          onPress={vm.undo}
-          disabled={vm.points.length === 0 || vm.isSaving}
-          accessibilityRole="button"
-        >
-          <Text style={styles.linkText}>Deshacer</Text>
-        </Pressable>
-      </View>
+      {readOnly ? (
+        <Text style={styles.notice}>{ROUTE_READ_ONLY_NOTICE}</Text>
+      ) : (
+        <View style={local.hintRow}>
+          <Text style={local.hint}>Toca el mapa para agregar puntos.</Text>
+          <Pressable
+            onPress={vm.undo}
+            disabled={vm.points.length === 0 || vm.isSaving}
+            accessibilityRole="button"
+          >
+            <Text style={styles.linkText}>Deshacer</Text>
+          </Pressable>
+        </View>
+      )}
       {!!vm.fieldErrors.points && <Text style={styles.error}>{vm.fieldErrors.points}</Text>}
 
       <Text style={local.label}>Corredor: {vm.corridorMeters} m</Text>
@@ -69,7 +77,7 @@ export function RouteEditorScreen({
         <Pressable
           style={local.stepButton}
           onPress={vm.narrowCorridor}
-          disabled={vm.corridorMeters <= CORRIDOR_MIN_METERS}
+          disabled={locked || vm.corridorMeters <= CORRIDOR_MIN_METERS}
           accessibilityRole="button"
           accessibilityLabel="Reducir corredor"
         >
@@ -81,7 +89,7 @@ export function RouteEditorScreen({
         <Pressable
           style={local.stepButton}
           onPress={vm.widenCorridor}
-          disabled={vm.corridorMeters >= CORRIDOR_MAX_METERS}
+          disabled={locked || vm.corridorMeters >= CORRIDOR_MAX_METERS}
           accessibilityRole="button"
           accessibilityLabel="Ampliar corredor"
         >
@@ -99,23 +107,25 @@ export function RouteEditorScreen({
         onChangeText={vm.updateDuration}
         keyboardType="number-pad"
         maxLength={3}
-        editable={!vm.isSaving}
+        editable={!locked}
       />
       {!!vm.fieldErrors.duration && <Text style={styles.error}>{vm.fieldErrors.duration}</Text>}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
-      <Pressable
-        style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-        onPress={vm.save}
-        disabled={vm.isSaving}
-        accessibilityRole="button"
-      >
-        {vm.isSaving ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Guardar ruta</Text>
-        )}
-      </Pressable>
+      {!readOnly && (
+        <Pressable
+          style={[styles.button, vm.isSaving && styles.buttonDisabled]}
+          onPress={vm.save}
+          disabled={vm.isSaving}
+          accessibilityRole="button"
+        >
+          {vm.isSaving ? (
+            <ActivityIndicator color={colors.onPrimary} />
+          ) : (
+            <Text style={styles.buttonText}>Guardar ruta</Text>
+          )}
+        </Pressable>
+      )}
     </ScrollView>
   );
 }

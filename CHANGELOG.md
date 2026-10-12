@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 02
 
 ### Agregado
+- E3-01b Caché local de la ruta (D11): las rutas que llegan del servidor se guardan cifradas en el teléfono con `expo-secure-store` (en trozos, como la sesión); sin conexión, "Rutas" muestra la copia local con un aviso y el editor se abre en modo lectura; al cerrar sesión se borra. En el navegador no se guarda caché. 23 pruebas Jest nuevas.
 - Plantillas Excel del docente: `el product backlog y planificaicon del sprint.xlsx` con historias, Product Backlog (233 pts, 131 comprometidos, 47 terminados) y Sprint Backlog; y un `Ejecucion del Sprint 0X.xls` por sprint (`docs/scrum/sprint-00` a `sprint-04`) con sus historias de usuario y los minutos fijos de las ceremonias en el Timer, para que el equipo llene fechas, capacidad y burndown. Regla 8 del prompt maestro.
 
 ### Cambiado

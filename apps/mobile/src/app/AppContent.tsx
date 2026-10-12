@@ -35,6 +35,7 @@ import { AssignPinScreen } from '../features/profile/presentation/screens/Assign
 import { GuardianHomeScreen } from '../features/profile/presentation/screens/GuardianHomeScreen';
 import { ProtegidoHomeScreen } from '../features/profile/presentation/screens/ProtegidoHomeScreen';
 import { RegisterProtegidoScreen } from '../features/profile/presentation/screens/RegisterProtegidoScreen';
+import { createRouteCache } from '../features/routes/data/repositories/SecureStoreRouteCache';
 import { SupabaseRouteRepository } from '../features/routes/data/repositories/SupabaseRouteRepository';
 import { Route, RouteDirection } from '../features/routes/domain/entities/Route';
 import { ManageRoutes } from '../features/routes/domain/useCases/ManageRoutes';
@@ -58,6 +59,7 @@ export function AppContent() {
   const [editedRoute, setEditedRoute] = useState<{
     direction: RouteDirection;
     route: Route | null;
+    readOnly: boolean;
   } | null>(null);
 
   // Raíz de composición: la única parte de la app que conoce la capa data.
@@ -78,7 +80,7 @@ export function AppContent() {
       manageSchools: new ManageSchools(institutionAdmin),
       manageStaff: new ManageStaff(institutionAdmin),
       validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
-      manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase)),
+      manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase), createRouteCache()),
     };
   }, []);
 
@@ -107,6 +109,8 @@ export function AppContent() {
 
   const handleSignOut = useCallback(async () => {
     await useCases.signOut.execute();
+    // E3-01b: al cerrar sesión no quedan rutas en el teléfono.
+    await useCases.manageRoutes.clearCache();
     setLoggedUser(null);
     setSelectedSchool(null);
     setGuardianRoute('home');
@@ -210,6 +214,7 @@ export function AppContent() {
           protegidoId={routesProtegido.id}
           direction={editedRoute.direction}
           route={editedRoute.route}
+          readOnly={editedRoute.readOnly}
           onSaved={() => setEditedRoute(null)}
           onBack={() => setEditedRoute(null)}
         />
@@ -221,7 +226,9 @@ export function AppContent() {
           manageRoutes={useCases.manageRoutes}
           protegidoId={routesProtegido.id}
           protegidoName={routesProtegido.name}
-          onEditRoute={(direction, route) => setEditedRoute({ direction, route })}
+          onEditRoute={(direction, route, readOnly) =>
+            setEditedRoute({ direction, route, readOnly })
+          }
           onBack={() => setRoutesProtegido(null)}
         />
       );

@@ -7,6 +7,7 @@ export function useRoutesViewModel(manageRoutes: ManageRoutes, protegidoId: stri
   const [routes, setRoutes] = useState<Partial<Record<RouteDirection, Route>>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isOffline, setIsOffline] = useState(false);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -20,11 +21,12 @@ export function useRoutesViewModel(manageRoutes: ManageRoutes, protegidoId: stri
     const byDirection: Partial<Record<RouteDirection, Route>> = {};
     for (const route of result.value) byDirection[route.direction] = route;
     setRoutes(byDirection);
+    setIsOffline(result.fromCache);
   }, [manageRoutes, protegidoId]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  return { routes, isLoading, errorMessage, reload: load };
+  return { routes, isLoading, errorMessage, isOffline, reload: load };
 }
