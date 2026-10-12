@@ -8,6 +8,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 - Plantillas Excel del docente completadas con los datos del proyecto (`docs/scrum/`): historias y criterios de aceptación, Product Backlog (233 pts, 131 comprometidos, 47 terminados), Sprint Backlog de los Sprints 00, 01 y 02, burndown de los Sprints 00 y 01 en puntos, y capacidad y ceremonias del Sprint 02. Regla 8 del prompt maestro: mantenerlas al día en cada sprint.
 
 ### Cambiado
+- Ceremonias con tiempos fijos de la plantilla del docente: Sprint Planning 8 h (480 min), Sprint Review 4 h (240 min) y Retrospective 3 h (180 min); Daily 15 min. Actualizados el Plan, la Guía (fila 26 de la sección 0), la documentación interactiva, el PDF del Plan (02) y las plantillas Excel.
 - Dependabot ya no propone saltos "minor" de React, React Native ni las librerías de Expo: los fija la SDK 54 y solo cambian al actualizarla (el PR #41 subía `react-native` 0.81 → 0.87).
 
 ### Agregado
