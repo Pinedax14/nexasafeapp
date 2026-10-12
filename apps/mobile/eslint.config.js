@@ -14,6 +14,6 @@ module.exports = defineConfig([
     },
   },
   {
-    ignores: ['dist/*', 'coverage/*'],
+    ignores: ['dist/*', 'coverage/*', '**/*.generated.ts'],
   },
 ]);
