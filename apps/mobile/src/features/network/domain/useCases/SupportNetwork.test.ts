@@ -8,14 +8,14 @@ import {
   SupportNetwork,
 } from './SupportNetwork';
 
-const TOKEN = 'abcDEF123_-xyzABC456789';
+const CODIGO = 'codigo-de-prueba-0000001';
 
 function setup() {
   const repository: jest.Mocked<SupportNetworkRepository> = {
     listContacts: jest.fn().mockResolvedValue({ ok: true, value: [] }),
     createInvitation: jest
       .fn()
-      .mockResolvedValue({ ok: true, value: { id: 'i-1', token: TOKEN, expiresAt: 'x' } }),
+      .mockResolvedValue({ ok: true, value: { id: 'i-1', token: CODIGO, expiresAt: 'x' } }),
     previewInvitation: jest
       .fn()
       .mockResolvedValue({ ok: true, value: { childFirstName: 'Menor', guardianName: 'Ana' } }),
@@ -28,12 +28,12 @@ function setup() {
 
 describe('enlace y código de invitación (D14)', () => {
   it('arma el enlace propio de la app', () => {
-    expect(invitationLink(TOKEN)).toBe(`nexasafe://invitacion/${TOKEN}`);
+    expect(invitationLink(CODIGO)).toBe(`nexasafe://invitacion/${CODIGO}`);
   });
 
   it('acepta el enlace completo o solo el código', () => {
-    expect(extractToken(`  ${INVITATION_LINK_PREFIX}${TOKEN} `)).toBe(TOKEN);
-    expect(extractToken(TOKEN)).toBe(TOKEN);
+    expect(extractToken(`  ${INVITATION_LINK_PREFIX}${CODIGO} `)).toBe(CODIGO);
+    expect(extractToken(CODIGO)).toBe(CODIGO);
   });
 
   it.each([
@@ -47,10 +47,10 @@ describe('enlace y código de invitación (D14)', () => {
   });
 
   it('el mensaje para compartir trae el enlace, el código y el vencimiento', () => {
-    const message = invitationMessage({ id: 'i-1', token: TOKEN, expiresAt: 'x' }, 'Ana');
+    const message = invitationMessage({ id: 'i-1', token: CODIGO, expiresAt: 'x' }, 'Ana');
 
     expect(message).toContain('Ana te invita');
-    expect(message).toContain(invitationLink(TOKEN));
+    expect(message).toContain(invitationLink(CODIGO));
     expect(message).toContain('Tengo una invitación');
     expect(message).toContain('vence en 72 horas');
   });
@@ -98,13 +98,13 @@ describe('SupportNetwork (E2-01)', () => {
   it('muestra la invitación a partir del enlace', async () => {
     const { repository, network } = setup();
 
-    const result = await network.preview(invitationLink(TOKEN));
+    const result = await network.preview(invitationLink(CODIGO));
 
     expect(result).toEqual({
       ok: true,
-      value: { token: TOKEN, preview: { childFirstName: 'Menor', guardianName: 'Ana' } },
+      value: { token: CODIGO, preview: { childFirstName: 'Menor', guardianName: 'Ana' } },
     });
-    expect(repository.previewInvitation).toHaveBeenCalledWith(TOKEN);
+    expect(repository.previewInvitation).toHaveBeenCalledWith(CODIGO);
   });
 
   it('un código mal escrito es una invitación no válida, sin ir al servidor', async () => {
@@ -118,26 +118,26 @@ describe('SupportNetwork (E2-01)', () => {
     const { repository, network } = setup();
     repository.previewInvitation.mockResolvedValue({ ok: false, reason: 'INVALID_INVITATION' });
 
-    expect(await network.preview(TOKEN)).toEqual({ ok: false, reason: 'INVALID_INVITATION' });
+    expect(await network.preview(CODIGO)).toEqual({ ok: false, reason: 'INVALID_INVITATION' });
   });
 
   it('registra al contacto con su invitación', async () => {
     const { repository, network } = setup();
 
-    await network.register(' Ana Tía ', ' ANA@Example.com ', 'segura123', TOKEN);
+    await network.register(' Ana Tía ', ' ANA@Example.com ', 'segura123', CODIGO);
 
     expect(repository.registerWithInvitation).toHaveBeenCalledWith({
       name: 'Ana Tía',
       email: 'ana@example.com',
       password: 'segura123',
-      token: TOKEN,
+      token: CODIGO,
     });
   });
 
   it('valida los datos antes de registrar', async () => {
     const { repository, network } = setup();
 
-    const result = await network.register('', 'correo', '123', TOKEN);
+    const result = await network.register('', 'correo', '123', CODIGO);
 
     expect(result.ok).toBe(false);
     expect(result.ok === false && result.reason).toBe('INVALID_INPUT');

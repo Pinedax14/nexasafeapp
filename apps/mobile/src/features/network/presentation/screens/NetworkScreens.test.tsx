@@ -11,7 +11,7 @@ import { AcceptInvitationScreen } from './AcceptInvitationScreen';
 import { SupportHomeScreen } from './SupportHomeScreen';
 import { SupportNetworkScreen } from './SupportNetworkScreen';
 
-const TOKEN = 'abcDEF123_-xyzABC456789';
+const CODIGO = 'codigo-de-prueba-0000001';
 const now = () => new Date('2026-10-12T12:00:00Z');
 
 function repository(): jest.Mocked<SupportNetworkRepository> {
@@ -37,7 +37,7 @@ function repository(): jest.Mocked<SupportNetworkRepository> {
     }),
     createInvitation: jest.fn().mockResolvedValue({
       ok: true,
-      value: { id: 'i-1', token: TOKEN, expiresAt: '2026-10-15T12:00:00Z' },
+      value: { id: 'i-1', token: CODIGO, expiresAt: '2026-10-15T12:00:00Z' },
     }),
     previewInvitation: jest.fn().mockResolvedValue({
       ok: true,
@@ -80,7 +80,7 @@ describe('SupportNetworkScreen (W5, E2-01)', () => {
     await fireEvent.press(await screen.findByText('Invitar a un contacto'));
 
     expect(repo.createInvitation).toHaveBeenCalledWith('p-1');
-    expect(share).toHaveBeenCalledWith(expect.stringContaining(invitationLink(TOKEN)));
+    expect(share).toHaveBeenCalledWith(expect.stringContaining(invitationLink(CODIGO)));
     expect(repo.listContacts).toHaveBeenCalledTimes(2);
   });
 
@@ -135,14 +135,14 @@ describe('AcceptInvitationScreen (W6, E2-01)', () => {
       mustChangePassword: false,
     };
     repo.registerWithInvitation.mockResolvedValue({ ok: true, status: 'SIGNED_IN', user });
-    const { onSignedIn } = await setup(repo, TOKEN);
+    const { onSignedIn } = await setup(repo, CODIGO);
 
     await fireEvent.press(screen.getByText('Continuar'));
     expect(await screen.findByText('Te invitaron a la red de apoyo de Menor')).toBeTruthy();
     await fillForm();
 
     expect(repo.registerWithInvitation).toHaveBeenCalledWith(
-      expect.objectContaining({ token: TOKEN, email: 'ana@example.com' }),
+      expect.objectContaining({ token: CODIGO, email: 'ana@example.com' }),
     );
     expect(onSignedIn).toHaveBeenCalledWith(user);
   });
@@ -152,7 +152,7 @@ describe('AcceptInvitationScreen (W6, E2-01)', () => {
 
     await fireEvent.changeText(
       screen.getByLabelText('Código de invitación'),
-      invitationLink(TOKEN),
+      invitationLink(CODIGO),
     );
     await fireEvent.press(screen.getByText('Continuar'));
     await screen.findByText('Te invitaron a la red de apoyo de Menor');
@@ -164,7 +164,7 @@ describe('AcceptInvitationScreen (W6, E2-01)', () => {
   it('una invitación usada o vencida muestra el mensaje genérico', async () => {
     const repo = repository();
     repo.previewInvitation.mockResolvedValue({ ok: false, reason: 'INVALID_INVITATION' });
-    await setup(repo, TOKEN);
+    await setup(repo, CODIGO);
 
     await fireEvent.press(screen.getByText('Continuar'));
 
@@ -172,7 +172,7 @@ describe('AcceptInvitationScreen (W6, E2-01)', () => {
   });
 
   it('valida los datos de la cuenta', async () => {
-    const { repo } = await setup(repository(), TOKEN);
+    const { repo } = await setup(repository(), CODIGO);
 
     await fireEvent.press(screen.getByText('Continuar'));
     await screen.findByText('Crear cuenta y aceptar');
@@ -185,7 +185,7 @@ describe('AcceptInvitationScreen (W6, E2-01)', () => {
   it('si la invitación vence mientras llena el formulario, avisa', async () => {
     const repo = repository();
     repo.registerWithInvitation.mockResolvedValue({ ok: false, reason: 'INVALID_INVITATION' });
-    await setup(repo, TOKEN);
+    await setup(repo, CODIGO);
 
     await fireEvent.press(screen.getByText('Continuar'));
     await screen.findByText('Crear cuenta y aceptar');
