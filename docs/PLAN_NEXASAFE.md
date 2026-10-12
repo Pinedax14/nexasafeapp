@@ -143,12 +143,14 @@
 
 | Ceremonia | Duración | Frecuencia | Salida |
 |---|---|---|---|
-| **Sprint Planning** | 2 h | Inicio de sprint (lunes) | Sprint Goal + Sprint Backlog comprometido |
+| **Sprint Planning** | 8 h (480 min) | Inicio de sprint (lunes y martes, 4 h cada día) | Sprint Goal + Sprint Backlog comprometido |
 | **Daily Scrum** | 15 min | Diario (asíncrono por Discord si no hay presencialidad) | Impedimentos identificados |
 | **Refinement** | 1 h | Miércoles de la semana 1 | Historias del siguiente sprint estimadas y con DoR |
-| **Sprint Review** | 1 h | Fin de sprint (viernes) | Incremento demostrado y feedback del PO |
-| **Sprint Retrospective** | 45 min | Fin de sprint, después de la review | 1–2 acciones de mejora con responsable |
+| **Sprint Review** | 4 h (240 min) | Fin de sprint (viernes) | Incremento demostrado y feedback del PO |
+| **Sprint Retrospective** | 3 h (180 min) | Fin de sprint, después de la review | 1–2 acciones de mejora con responsable |
 | **Security Review** | 30 min | Fin de sprint, previa a la review | Hallazgos del pipeline triados y priorizados en backlog |
+
+> Los tiempos de Daily, Planning, Review y Retrospective son **fijos**: son los de la plantilla del docente (`docs/scrum/Ejecucion del Sprint.xls`) y no cambian entre sprints (decisión del 12 oct 2026). Refinement y Security Review no están en la plantilla y conservan los tiempos del plan.
 
 ### 4.3 Cadencia
 
@@ -757,4 +759,4 @@ Entonces <resultado esperado>
 |---|---|---|
 | 1.0 | — | Versión inicial |
 | 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
-| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01; rol administrador (E1-06, RF-42) en el Sprint 1 (29 pts), backlog 225 pts y capacidad 131 pts; E1-07 (Google, RF-43, `Should`) fuera del roadmap, backlog 230 pts (05/10/2026); E1-08 (huella del celular, RF-44, `Could`) fuera del roadmap, backlog 233 pts (05/10/2026). |
+| 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01; rol administrador (E1-06, RF-42) en el Sprint 1 (29 pts), backlog 225 pts y capacidad 131 pts; E1-07 (Google, RF-43, `Should`) fuera del roadmap, backlog 230 pts (05/10/2026); E1-08 (huella del celular, RF-44, `Could`) fuera del roadmap, backlog 233 pts (05/10/2026). Ceremonias con tiempos fijos de la plantilla del docente: Planning 8 h, Review 4 h y Retrospective 3 h (12/10/2026). |
