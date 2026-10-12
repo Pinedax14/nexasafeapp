@@ -22,6 +22,8 @@
 | Consentimiento (versión, fecha, actor) | Acudiente | No | `consentimientos`, append-only | Probar la autorización previa del representante legal (RF-38) |
 | Registro de accesos (actor, acción, fecha) | Acudiente / personal | No | `audit_log`, sin valores de columnas | Trazabilidad de todo acceso a datos del menor |
 | Nombre, cargo y correo del personal institucional | Personal del colegio | No | Supabase Auth y `personal_institucion` | Que el administrador (E1-06) habilite a quien valida matrículas |
+| Rutas casa–colegio del menor (Sprint 02) | Menor | Sí: revela dónde vive y estudia | `rutas` (sin cifrado por columna, D13), con RLS y lectura auditada | Acompañar el trayecto del menor (RF-09) |
+| Zonas del mapa consultadas (Sprint 02) | Acudiente | No | No se guardan: el servidor de teselas de OpenStreetMap recibe la zona y el zoom que se ven en pantalla, con la IP del teléfono (D9) | Mostrar el mapa para dibujar la ruta |
 
 **No se recolecta en este sprint:** ubicación, fecha de nacimiento, dirección ni teléfono (decisión D6). La ubicación empieza en el Sprint 02 y solo durante trayectos o alertas (RF-41).
 
@@ -56,6 +58,7 @@ Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─►
 | Repudio del consentimiento | Baja | Medio | `consentimientos` append-only con timestamp del servidor | Bajo |
 | Datos personales en logs o capturas del CI | Media | Alto | Regla Semgrep contra `console.*` en la app; `audit_log` sin valores | Bajo |
 | El administrador accede a datos de menores | Baja | Crítico | El rol `admin` no tiene políticas sobre `protegidos` ni `consentimientos`; sus acciones quedan en `audit_log` | Bajo |
+| Las teselas del mapa revelan a OpenStreetMap la zona de la casa y el colegio | Media | Medio | Solo se piden teselas al editar o ver la ruta; no se envían datos del menor ni coordenadas exactas, solo la zona visible; Leaflet empaquetado en la app, sin CDN (D9) | Bajo |
 | Toma de una cuenta de administrador | Baja | Crítico | Un solo administrador creado desde el panel; contraseña robusta; revisión de `audit_log` en cada Security Review | Medio |
 
 ## 5. Acciones pendientes
@@ -63,4 +66,5 @@ Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─►
 - [x] Aprobar las decisiones D1–D7 de `docs/architecture/modelo-datos-e1.md` (03/10/2026; D3 crea el rol administrador).
 - [ ] Verificar con pruebas de política que cada control de RLS de la sección 4 funciona (DoD del Sprint 01).
 - [ ] PENDIENTE: definir el canal de contacto para peticiones de habeas data (ver `politica-tratamiento.md`).
-- [ ] Actualizar esta evaluación en el Sprint 02 para incluir la ubicación.
+- [x] Declarar el servidor de teselas de OpenStreetMap y las rutas del menor (09/10/2026, E3-01a).
+- [ ] Actualizar esta evaluación en el Sprint 03 para incluir la ubicación en vivo (E4-02).

@@ -1,6 +1,6 @@
 # Modelo de datos — Sprint 02 (E2-01, E3-01, E3-02, E3-03, E4-01, E4-04)
 
-**Estado:** PROPUESTA del 09/10/2026. PENDIENTE: aprobación antes de escribir la migración.
+**Estado:** APROBADO el 09/10/2026, con las decisiones D14–D17. Siguiente paso: la migración.
 **Base:** Diseño Arquitectónico v1.1, capítulos 6 y 7; decisiones D8–D13 del refinement ([`sprint-02/refinement.md`](../scrum/sprint-02/refinement.md)); controles STRIDE de E2 y E3/E4 ([`threat-model.md`](../security/threat-model.md)); bocetos W1–W6 ([`sprint-02/wireframes.md`](../scrum/sprint-02/wireframes.md)).
 
 No se agregan tablas fuera del Diseño: las tres son `rutas`, `trayectos` y `contactos_apoyo`. Las columnas extra salen de las decisiones aprobadas o se proponen en la sección 5.
@@ -82,7 +82,7 @@ Estados que muestra la app (W5), calculados y sin columna propia: **Pendiente** 
 
 Sin políticas para `apoyo` en `rutas` ni `trayectos` (D8: solo alertas), ni para `institucion` y `admin` en ninguna de las tres tablas. Cada política lleva su prueba pgTAP (RNF-27), ejecutada en el CI.
 
-## 5. Decisiones nuevas para aprobar
+## 5. Decisiones nuevas (aprobadas el 09/10/2026)
 
 | # | Tema | Propuesta |
 |---|---|---|

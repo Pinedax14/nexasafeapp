@@ -35,6 +35,11 @@ import { AssignPinScreen } from '../features/profile/presentation/screens/Assign
 import { GuardianHomeScreen } from '../features/profile/presentation/screens/GuardianHomeScreen';
 import { ProtegidoHomeScreen } from '../features/profile/presentation/screens/ProtegidoHomeScreen';
 import { RegisterProtegidoScreen } from '../features/profile/presentation/screens/RegisterProtegidoScreen';
+import { SupabaseRouteRepository } from '../features/routes/data/repositories/SupabaseRouteRepository';
+import { Route, RouteDirection } from '../features/routes/domain/entities/Route';
+import { ManageRoutes } from '../features/routes/domain/useCases/ManageRoutes';
+import { RouteEditorScreen } from '../features/routes/presentation/screens/RouteEditorScreen';
+import { RoutesScreen } from '../features/routes/presentation/screens/RoutesScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
 
 type AuthRoute = 'login' | 'register' | 'pinLogin';
@@ -49,6 +54,11 @@ export function AppContent() {
   const [guardianRoute, setGuardianRoute] = useState<GuardianRoute>('home');
   const [reviewedEnrollment, setReviewedEnrollment] = useState<PendingEnrollment | null>(null);
   const [pinProtegido, setPinProtegido] = useState<Protegido | null>(null);
+  const [routesProtegido, setRoutesProtegido] = useState<Protegido | null>(null);
+  const [editedRoute, setEditedRoute] = useState<{
+    direction: RouteDirection;
+    route: Route | null;
+  } | null>(null);
 
   // Raíz de composición: la única parte de la app que conoce la capa data.
   const useCases = useMemo(() => {
@@ -68,6 +78,7 @@ export function AppContent() {
       manageSchools: new ManageSchools(institutionAdmin),
       manageStaff: new ManageStaff(institutionAdmin),
       validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
+      manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase)),
     };
   }, []);
 
@@ -101,6 +112,8 @@ export function AppContent() {
     setGuardianRoute('home');
     setReviewedEnrollment(null);
     setPinProtegido(null);
+    setRoutesProtegido(null);
+    setEditedRoute(null);
     setAuthRoute('login');
   }, [useCases]);
 
@@ -189,6 +202,30 @@ export function AppContent() {
 
   // E1-02: el acudiente ve sus menores y puede registrar uno nuevo.
   if (loggedUser.role === 'guardian') {
+    // E3-01a, E3-02, E3-03: rutas del menor (W1) y editor de cada ruta (W2).
+    if (routesProtegido && editedRoute) {
+      return (
+        <RouteEditorScreen
+          manageRoutes={useCases.manageRoutes}
+          protegidoId={routesProtegido.id}
+          direction={editedRoute.direction}
+          route={editedRoute.route}
+          onSaved={() => setEditedRoute(null)}
+          onBack={() => setEditedRoute(null)}
+        />
+      );
+    }
+    if (routesProtegido) {
+      return (
+        <RoutesScreen
+          manageRoutes={useCases.manageRoutes}
+          protegidoId={routesProtegido.id}
+          protegidoName={routesProtegido.name}
+          onEditRoute={(direction, route) => setEditedRoute({ direction, route })}
+          onBack={() => setRoutesProtegido(null)}
+        />
+      );
+    }
     if (pinProtegido) {
       return (
         <AssignPinScreen
@@ -212,6 +249,7 @@ export function AppContent() {
         userName={loggedUser.name}
         onRegisterProtegido={() => setGuardianRoute('registerProtegido')}
         onAssignPin={setPinProtegido}
+        onOpenRoutes={setRoutesProtegido}
         onSignOut={handleSignOut}
       />
     );
