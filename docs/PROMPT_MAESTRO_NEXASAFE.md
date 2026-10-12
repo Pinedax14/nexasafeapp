@@ -118,18 +118,15 @@ En cada orden de la tabla anterior, actualiza también las plantillas Excel de l
 - Cada registro de ceremonia muestra dos fechas: la planificada según el Cronograma (03) y la real. Ejemplo: `**Ceremonia planificada:** 17/10/2026 · **Fecha real:** 08/10/2026`.
 
 ### 8. Plantillas Excel del docente (entrega final)
-El docente revisa dos plantillas en `docs/scrum/`. Hay que completarlas con lo que ya existe en el proyecto y mantenerlas al día:
+El docente revisa dos plantillas. Hay que completarlas con lo que ya existe en el proyecto y mantenerlas al día:
 
-| Archivo | Hojas | Cuándo se actualiza |
+| Archivo | Contenido | Cuándo se actualiza |
 |---|---|---|
-| `el product backlog y planificaicon del sprint.xlsx` | Historias de Usuario (historias y criterios de aceptación), Product Backlog y Sprint Backlog | Al iniciar cada sprint (planning), al cambiar el backlog (historias nuevas, divisiones o cambios de prioridad) y al cerrar cada historia (estado) |
-| `Ejecucion del Sprint.xls` | Scrum Team (capacidad), Timer (ceremonias) y Burndown chart | Al iniciar cada sprint (capacidad y ceremonias planificadas), durante el sprint (avance) y al cerrarlo (burndown real) |
+| `docs/scrum/el product backlog y planificaicon del sprint.xlsx` | Historias de Usuario, Product Backlog y Sprint Backlog | Al iniciar cada sprint, al cambiar el backlog y al cerrar cada historia |
+| `docs/scrum/sprint-XX/Ejecucion del Sprint XX.xls` (**uno por sprint**, a partir de `docs/scrum/Ejecucion del Sprint.xls`, que es la plantilla original y no se toca) | Historias de Usuario **solo de ese sprint**, Timer, Scrum Team y Burndown chart | Se crea con las historias del sprint y los minutos fijos del Timer; el equipo llena el resto (fechas, días, capacidad y burndown) con la guía de la IA |
 
-- Se adaptan al proyecto: historias `EX-YY`, criterios de los Gherkin del planning, puntos, estados, fechas y responsables reales.
-- Se editan con Excel para conservar el formato, las fórmulas y los gráficos. No se cambian los nombres de los archivos ni de las hojas originales.
-- La hoja con el nombre original muestra el **sprint actual**. Al cerrar un sprint, sus hojas Sprint Backlog y Burndown chart se copian con el sufijo del sprint (por ejemplo `Sprint Backlog S02`).
-- Unidad: los Sprints 00 y 01 se midieron en **puntos**. Desde el Sprint 02 se registran **horas** (estimadas y consumidas por día), que informa el equipo.
-- Equipo: se muestran los 3 integrantes del Plan, con una nota que dice quién ejecutó realmente (riesgo R7). No se inventan horas de nadie.
+- Tiempos fijos de las ceremonias (fila 26 de la guía): Daily 15 min por día, Sprint Planning 480 min, Sprint Review 240 min y Sprint Retrospective 180 min.
+- Se editan con Excel para conservar el formato, las fórmulas y los gráficos. No se cambian los nombres de las hojas.
 - Aplica la regla 7: los datos salen de git, `gh`, los registros del sprint y lo que diga el equipo. Si falta un dato, va `PENDIENTE` y se pregunta.
 
 ## FORMATO DE TUS RESPUESTAS
