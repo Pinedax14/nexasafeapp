@@ -9,6 +9,7 @@ type AuthScreenProps = {
   onLoginSuccess: (user: User) => void;
   onGoToRegister: () => void;
   onGoToPinLogin: () => void;
+  onGoToInvitation?: () => void;
 };
 
 export function AuthScreen({
@@ -16,6 +17,7 @@ export function AuthScreen({
   onLoginSuccess,
   onGoToRegister,
   onGoToPinLogin,
+  onGoToInvitation,
 }: AuthScreenProps) {
   const vm = useAuthViewModel({ authenticateUser, onLoginSuccess });
 
@@ -80,6 +82,16 @@ export function AuthScreen({
       >
         <Text style={styles.linkText}>Soy menor: entrar con documento y PIN</Text>
       </Pressable>
+      {onGoToInvitation && (
+        <Pressable
+          onPress={onGoToInvitation}
+          disabled={vm.isLoading}
+          accessibilityRole="link"
+          style={styles.link}
+        >
+          <Text style={styles.linkText}>Tengo una invitación</Text>
+        </Pressable>
+      )}
     </View>
   );
 }

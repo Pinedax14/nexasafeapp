@@ -10,3 +10,8 @@ e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/da
 e3849b291b266f1969edf87a3ad5ebe58f913184:apps/mobile/src/features/institution/data/repositories/SupabaseInstitutionAdminRepository.test.ts:generic-api-key:177
 e3849b291b266f1969edf87a3ad5ebe58f913184:supabase/functions/admin-personal/handler.test.ts:generic-api-key:17
 e3849b291b266f1969edf87a3ad5ebe58f913184:supabase/functions/admin-personal/handler.test.ts:generic-api-key:86
+
+# Commit 45b32ab (E2-01): código de invitación de prueba 'abcDEF123_-xyzABC456789' en archivos de pruebas,
+# reemplazado por 'codigo-de-prueba-0000001' en el commit siguiente. Revisado por el Security Champion (12/10/2026).
+45b32abe03f8f5c9cc8c12002c9be3128b7f0a2e:apps/mobile/src/features/network/presentation/screens/NetworkScreens.test.tsx:generic-api-key:14
+45b32abe03f8f5c9cc8c12002c9be3128b7f0a2e:apps/mobile/src/features/network/domain/useCases/SupportNetwork.test.ts:generic-api-key:11
