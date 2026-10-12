@@ -4,6 +4,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 
 ## [Sin publicar] — Sprint 02
 
+### Cambiado
+- Dependabot ya no propone saltos "minor" de React, React Native ni las librerías de Expo: los fija la SDK 54 y solo cambian al actualizarla (el PR #41 subía `react-native` 0.81 → 0.87).
+
 ### Agregado
 - Migración `sprint_02_rutas_trayectos_contactos`: PostGIS; tablas `rutas`, `trayectos` y `contactos_apoyo` con RLS; funciones `guardar_ruta` (D10, D12, D15), `obtener_rutas` (auditada), `iniciar_trayecto` (un solo trayecto `EN_CURSO`), `crear_invitacion` (token de un solo uso, 72 h, 10 por hora), `ver_invitacion` (D17) y `aceptar_invitacion`; el registro con invitación crea la cuenta con rol `apoyo` (D8). 46 pruebas pgTAP.
 - Propuesta del modelo de datos del Sprint 02 (`docs/architecture/modelo-datos-sprint-02.md`): `rutas`, `trayectos` y `contactos_apoyo` con PostGIS, funciones, políticas RLS y decisiones D14–D17 para aprobar.
