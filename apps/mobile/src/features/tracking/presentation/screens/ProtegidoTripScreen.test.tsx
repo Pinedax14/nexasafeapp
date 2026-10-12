@@ -7,6 +7,7 @@ import { Trip } from '../../domain/entities/Trip';
 import { TripRepository } from '../../domain/repositories/TripRepository';
 import { TrackTrips } from '../../domain/useCases/TrackTrips';
 import { formatTime, NO_ROUTES_MESSAGE, TRIP_ERROR_MESSAGES, tripSince } from '../tripMessages';
+import { ACCOMPANIMENT_TEXT } from '../components/AccompanimentBanner';
 import { ProtegidoTripScreen } from './ProtegidoTripScreen';
 
 const route = {
@@ -127,6 +128,26 @@ describe('ProtegidoTripScreen (E4-01)', () => {
     await setup({ profile: { ok: true, value: [] } });
 
     expect(await screen.findByText(TRIP_ERROR_MESSAGES.UNKNOWN)).toBeTruthy();
+  });
+});
+
+describe('ProtegidoTripScreen · indicador de acompañamiento (E4-04)', () => {
+  it('al iniciar el trayecto aparece la banda "Te estamos acompañando"', async () => {
+    await setup({ trips: [[], [trip]] });
+
+    expect(await screen.findByLabelText('Iniciar trayecto Casa → colegio')).toBeTruthy();
+    expect(screen.queryByText(ACCOMPANIMENT_TEXT)).toBeNull();
+
+    await fireEvent.press(screen.getByLabelText('Iniciar trayecto Casa → colegio'));
+
+    expect(await screen.findByText(ACCOMPANIMENT_TEXT)).toBeTruthy();
+  });
+
+  it('sin trayecto en curso no hay banda', async () => {
+    await setup({ trips: [[]] });
+
+    expect(await screen.findByText('¿A dónde vas?')).toBeTruthy();
+    expect(screen.queryByText(ACCOMPANIMENT_TEXT)).toBeNull();
   });
 });
 
