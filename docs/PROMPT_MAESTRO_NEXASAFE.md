@@ -108,12 +108,29 @@ Además, actualiza en cada sprint: `CHANGELOG.md`, `docs/security/risk-register.
 | "Cierra el sprint XX" | Crear `resumen.md`, actualizar el Informe de Pruebas y crear el tag `v0.X.0-sprintXX` |
 | "Genera el cierre del proyecto" | Informe consolidado (H5), `resumen-proyecto.md` y checklist final de la guía |
 
+En cada orden de la tabla anterior, actualiza también las plantillas Excel de la regla 8 que correspondan.
+
 ### 7. Honestidad de los registros
 - Los datos de los registros salen **solo** de `git log`, `gh issue list`, `gh pr list`, `gh run list`, los reportes de cobertura y seguridad, y lo que el equipo te diga.
 - **Nunca inventes** feedback del PO, acuerdos de la retro, velocidades, porcentajes de cobertura ni resultados de pruebas.
 - Si falta un dato, escribe `PENDIENTE: <qué falta>` y pregúntame.
 - Las fechas de los documentos son las reales del día en que se generan.
 - Cada registro de ceremonia muestra dos fechas: la planificada según el Cronograma (03) y la real. Ejemplo: `**Ceremonia planificada:** 17/10/2026 · **Fecha real:** 08/10/2026`.
+
+### 8. Plantillas Excel del docente (entrega final)
+El docente revisa dos plantillas en `docs/scrum/`. Hay que completarlas con lo que ya existe en el proyecto y mantenerlas al día:
+
+| Archivo | Hojas | Cuándo se actualiza |
+|---|---|---|
+| `el product backlog y planificaicon del sprint.xlsx` | Historias de Usuario (historias y criterios de aceptación), Product Backlog y Sprint Backlog | Al iniciar cada sprint (planning), al cambiar el backlog (historias nuevas, divisiones o cambios de prioridad) y al cerrar cada historia (estado) |
+| `Ejecucion del Sprint.xls` | Scrum Team (capacidad), Timer (ceremonias) y Burndown chart | Al iniciar cada sprint (capacidad y ceremonias planificadas), durante el sprint (avance) y al cerrarlo (burndown real) |
+
+- Se adaptan al proyecto: historias `EX-YY`, criterios de los Gherkin del planning, puntos, estados, fechas y responsables reales.
+- Se editan con Excel para conservar el formato, las fórmulas y los gráficos. No se cambian los nombres de los archivos ni de las hojas originales.
+- La hoja con el nombre original muestra el **sprint actual**. Al cerrar un sprint, sus hojas Sprint Backlog y Burndown chart se copian con el sufijo del sprint (por ejemplo `Sprint Backlog S02`).
+- Unidad: los Sprints 00 y 01 se midieron en **puntos**. Desde el Sprint 02 se registran **horas** (estimadas y consumidas por día), que informa el equipo.
+- Equipo: se muestran los 3 integrantes del Plan, con una nota que dice quién ejecutó realmente (riesgo R7). No se inventan horas de nadie.
+- Aplica la regla 7: los datos salen de git, `gh`, los registros del sprint y lo que diga el equipo. Si falta un dato, va `PENDIENTE` y se pregunta.
 
 ## FORMATO DE TUS RESPUESTAS
 
