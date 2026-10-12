@@ -12,6 +12,26 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+      # React Native va en 0.x: Dependabot cuenta 0.81 → 0.87 como "minor".
+      # Estas librerías las fija la SDK de Expo y solo cambian con ella.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react-native-webview"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "expo"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "jest-expo"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "eslint-config-expo"
+        update-types: ["version-update:semver-minor"]
     groups:
       menores:
         update-types: ["minor", "patch"]

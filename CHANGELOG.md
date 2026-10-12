@@ -4,6 +4,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 
 ## [Sin publicar] — Sprint 02
 
+### Cambiado
+- Dependabot ya no propone saltos "minor" de React, React Native ni las librerías de Expo: los fija la SDK 54 y solo cambian al actualizarla (el PR #41 subía `react-native` 0.81 → 0.87).
+
 ### Agregado
 - E3-01a, E3-02 y E3-03 Rutas del menor: el guardián abre "Rutas ›" en un menor activo, ve sus 2 rutas (ida y regreso, D12) y dibuja cada una tocando el mapa de OpenStreetMap (Leaflet empaquetado en un WebView, D9), con corredor de 25 a 200 m en pasos de 25 (D10), duración esperada de 5 a 120 min y los límites de D15 validados en la app y en el servidor. Dependencias nuevas: `react-native-webview` 13.15.0 y `leaflet` 1.9.4. 47 pruebas Jest nuevas.
 - Tipos de TypeScript regenerados con `rutas`, `trayectos`, `contactos_apoyo` y sus funciones (migración aplicada en dev el 09/10/2026).
