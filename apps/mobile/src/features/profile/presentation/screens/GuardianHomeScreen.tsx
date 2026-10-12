@@ -15,6 +15,7 @@ type GuardianHomeScreenProps = {
   onRegisterProtegido: () => void;
   onAssignPin: (protegido: Protegido) => void;
   onOpenRoutes: (protegido: Protegido) => void;
+  onOpenNetwork?: (protegido: Protegido) => void;
   onSignOut: () => void;
 };
 
@@ -25,6 +26,7 @@ export function GuardianHomeScreen({
   onRegisterProtegido,
   onAssignPin,
   onOpenRoutes,
+  onOpenNetwork,
   onSignOut,
 }: GuardianHomeScreenProps) {
   const vm = useGuardianHomeViewModel(listMyProtegidos, trackTrips);
@@ -65,6 +67,15 @@ export function GuardianHomeScreen({
                 >
                   <Text style={styles.linkText}>Rutas ›</Text>
                 </Pressable>
+                {onOpenNetwork && (
+                  <Pressable
+                    onPress={() => onOpenNetwork(protegido)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Red de apoyo de ${protegido.name}`}
+                  >
+                    <Text style={styles.linkText}>Red ›</Text>
+                  </Pressable>
+                )}
                 <Pressable
                   onPress={() => onAssignPin(protegido)}
                   accessibilityRole="button"

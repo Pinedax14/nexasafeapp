@@ -41,14 +41,14 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026). Los controles marca
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
-| Spoofing | Reutilización o adivinación del enlace de invitación | Invitaciones | Token aleatorio de al menos 128 bits, guardado solo como hash, de un solo uso y con vencimiento (D8) | Planificado |
-| Spoofing | Un tercero que recibe el enlace reenviado lo acepta en lugar del contacto | Invitaciones | Aceptar exige iniciar sesión; el guardián ve quién aceptó cada invitación. La revocación (E2-03) es de la fase 2: riesgo residual hasta entonces | Planificado |
-| Tampering | Un contacto de apoyo modifica rutas, trayectos o datos del menor | `rutas`, `trayectos`, `protegidos` | El rol `apoyo` no tiene políticas de escritura (RLS) | Planificado |
-| Repudiation | El guardián niega haber invitado a un contacto, o el contacto niega haber aceptado | `audit_log` | Creación y aceptación de invitaciones registradas | Planificado |
-| Information disclosure | Enumeración de usuarios por el endpoint de invitación | Invitaciones | Respuestas genéricas + rate limiting | Planificado |
-| Information disclosure | El contacto de apoyo ve la rutina del menor | `rutas`, `trayectos` | Sin E2-02 (fase 2), el contacto ve solo alertas: mínimo privilegio por defecto (D8) | Planificado |
-| Denial of service | Creación masiva de invitaciones | Invitaciones | Límite de invitaciones por guardián y por hora | Planificado |
-| Elevation of privilege | Un contacto de apoyo accede a funciones de guardián | RBAC | Rol `apoyo` verificado en el servidor; pruebas de autorización en CI | Planificado |
+| Spoofing | Reutilización o adivinación del enlace de invitación | Invitaciones | Token aleatorio de al menos 128 bits, guardado solo como hash, de un solo uso y con vencimiento (D8) | Implementado (E2-01, 12/10/2026) |
+| Spoofing | Un tercero que recibe el enlace reenviado lo acepta en lugar del contacto | Invitaciones | Aceptar exige iniciar sesión; el guardián ve quién aceptó cada invitación. La revocación (E2-03) es de la fase 2: riesgo residual hasta entonces | Implementado (E2-01, 12/10/2026) |
+| Tampering | Un contacto de apoyo modifica rutas, trayectos o datos del menor | `rutas`, `trayectos`, `protegidos` | El rol `apoyo` no tiene políticas de escritura (RLS) | Implementado (E2-01, 12/10/2026) |
+| Repudiation | El guardián niega haber invitado a un contacto, o el contacto niega haber aceptado | `audit_log` | Creación y aceptación de invitaciones registradas | Implementado (E2-01, 12/10/2026) |
+| Information disclosure | Enumeración de usuarios por el endpoint de invitación | Invitaciones | Respuestas genéricas + rate limiting | Implementado (E2-01, 12/10/2026) |
+| Information disclosure | El contacto de apoyo ve la rutina del menor | `rutas`, `trayectos` | Sin E2-02 (fase 2), el contacto ve solo alertas: mínimo privilegio por defecto (D8) | Implementado (E2-01, 12/10/2026) |
+| Denial of service | Creación masiva de invitaciones | Invitaciones | Límite de invitaciones por guardián y por hora | Implementado (E2-01, 12/10/2026) |
+| Elevation of privilege | Un contacto de apoyo accede a funciones de guardián | RBAC | Rol `apoyo` verificado en el servidor; pruebas de autorización en CI | Implementado (E2-01, 12/10/2026) |
 
 ## E3/E4 — Rutas y trayecto acompañado
 

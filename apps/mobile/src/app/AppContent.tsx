@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { supabase } from '../core/api/supabaseClient';
 import { pickPhoto } from '../core/permissions/pickPhoto';
 import { colors } from '../core/theme/colors';
@@ -26,6 +26,11 @@ import { PendingEnrollment } from '../features/institution/domain/entities/Enrol
 import { ValidateEnrollment } from '../features/institution/domain/useCases/ValidateEnrollment';
 import { EnrollmentReviewScreen } from '../features/institution/presentation/screens/EnrollmentReviewScreen';
 import { PendingEnrollmentsScreen } from '../features/institution/presentation/screens/PendingEnrollmentsScreen';
+import { SupabaseSupportNetworkRepository } from '../features/network/data/repositories/SupabaseSupportNetworkRepository';
+import { extractToken, SupportNetwork } from '../features/network/domain/useCases/SupportNetwork';
+import { AcceptInvitationScreen } from '../features/network/presentation/screens/AcceptInvitationScreen';
+import { SupportHomeScreen } from '../features/network/presentation/screens/SupportHomeScreen';
+import { SupportNetworkScreen } from '../features/network/presentation/screens/SupportNetworkScreen';
 import { SupabaseProtegidoRepository } from '../features/profile/data/repositories/SupabaseProtegidoRepository';
 import { Protegido } from '../features/profile/domain/entities/Protegido';
 import { AssignPin } from '../features/profile/domain/useCases/AssignPin';
@@ -45,7 +50,7 @@ import { SupabaseTripRepository } from '../features/tracking/data/repositories/S
 import { TrackTrips } from '../features/tracking/domain/useCases/TrackTrips';
 import { ProtegidoTripScreen } from '../features/tracking/presentation/screens/ProtegidoTripScreen';
 
-type AuthRoute = 'login' | 'register' | 'pinLogin';
+type AuthRoute = 'login' | 'register' | 'pinLogin' | 'invitation';
 type GuardianRoute = 'home' | 'registerProtegido';
 
 export function AppContent() {
@@ -58,6 +63,8 @@ export function AppContent() {
   const [reviewedEnrollment, setReviewedEnrollment] = useState<PendingEnrollment | null>(null);
   const [pinProtegido, setPinProtegido] = useState<Protegido | null>(null);
   const [routesProtegido, setRoutesProtegido] = useState<Protegido | null>(null);
+  const [networkProtegido, setNetworkProtegido] = useState<Protegido | null>(null);
+  const [invitationCode, setInvitationCode] = useState('');
   const [editedRoute, setEditedRoute] = useState<{
     direction: RouteDirection;
     route: Route | null;
@@ -84,6 +91,7 @@ export function AppContent() {
       validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
       manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase), createRouteCache()),
       trackTrips: new TrackTrips(new SupabaseTripRepository(supabase)),
+      supportNetwork: new SupportNetwork(new SupabaseSupportNetworkRepository(supabase)),
     };
   }, []);
 
@@ -105,6 +113,19 @@ export function AppContent() {
     };
   }, [useCases]);
 
+  // E2-01 (D14): el enlace nexasafe://invitacion/<token> abre la pantalla de la invitación.
+  useEffect(() => {
+    const openInvitation = (url: string | null) => {
+      const token = url ? extractToken(url) : null;
+      if (!token) return;
+      setInvitationCode(token);
+      setAuthRoute('invitation');
+    };
+    Linking.getInitialURL().then(openInvitation);
+    const subscription = Linking.addEventListener('url', ({ url }) => openInvitation(url));
+    return () => subscription.remove();
+  }, []);
+
   const handleSplashFinish = useCallback(() => setIsSplashVisible(false), []);
   const handleSignedIn = useCallback((user: User) => setLoggedUser(user), []);
   const goToLogin = useCallback(() => setAuthRoute('login'), []);
@@ -121,6 +142,8 @@ export function AppContent() {
     setPinProtegido(null);
     setRoutesProtegido(null);
     setEditedRoute(null);
+    setNetworkProtegido(null);
+    setInvitationCode('');
     setAuthRoute('login');
   }, [useCases]);
 
@@ -129,6 +152,16 @@ export function AppContent() {
   }
 
   if (!loggedUser) {
+    if (authRoute === 'invitation') {
+      return (
+        <AcceptInvitationScreen
+          supportNetwork={useCases.supportNetwork}
+          initialCode={invitationCode}
+          onSignedIn={handleSignedIn}
+          onBack={goToLogin}
+        />
+      );
+    }
     if (authRoute === 'pinLogin') {
       return (
         <PinLoginScreen
@@ -150,6 +183,7 @@ export function AppContent() {
         onLoginSuccess={handleSignedIn}
         onGoToRegister={goToRegister}
         onGoToPinLogin={() => setAuthRoute('pinLogin')}
+        onGoToInvitation={() => setAuthRoute('invitation')}
       />
     );
   }
@@ -177,6 +211,11 @@ export function AppContent() {
         onSignOut={handleSignOut}
       />
     );
+  }
+
+  // E2-01: el contacto de apoyo verá las alertas del menor (Sprint 03).
+  if (loggedUser.role === 'apoyo') {
+    return <SupportHomeScreen userName={loggedUser.name} onSignOut={handleSignOut} />;
   }
 
   // E1-06: el administrador solo ve la gestión de colegios y personal.
@@ -217,6 +256,19 @@ export function AppContent() {
 
   // E1-02: el acudiente ve sus menores y puede registrar uno nuevo.
   if (loggedUser.role === 'guardian') {
+    // E2-01: red de apoyo del menor (W5).
+    if (networkProtegido) {
+      return (
+        <SupportNetworkScreen
+          supportNetwork={useCases.supportNetwork}
+          protegidoId={networkProtegido.id}
+          protegidoName={networkProtegido.name}
+          guardianName={loggedUser.name}
+          share={(message) => Share.share({ message })}
+          onBack={() => setNetworkProtegido(null)}
+        />
+      );
+    }
     // E3-01a, E3-02, E3-03: rutas del menor (W1) y editor de cada ruta (W2).
     if (routesProtegido && editedRoute) {
       return (
@@ -269,6 +321,7 @@ export function AppContent() {
         onRegisterProtegido={() => setGuardianRoute('registerProtegido')}
         onAssignPin={setPinProtegido}
         onOpenRoutes={setRoutesProtegido}
+        onOpenNetwork={setNetworkProtegido}
         onSignOut={handleSignOut}
       />
     );
