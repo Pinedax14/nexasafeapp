@@ -56,7 +56,7 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
-| Spoofing | Alguien inicia un trayecto haciéndose pasar por el menor | `trayectos` (E4-01) | Solo una sesión con rol `protegido` inicia su propio trayecto; RLS por `protegidos.usuario_id` | Planificado |
+| Spoofing | Alguien inicia un trayecto haciéndose pasar por el menor | `trayectos` (E4-01) | Solo una sesión con rol `protegido` inicia su propio trayecto; RLS por `protegidos.usuario_id` | Implementado (E4-01, 12/10/2026) |
 | Tampering | GPS falso para simular la llegada | Geocerca (E4-03) | Validación de plausibilidad en el servidor; detección de mock location en release | Planificado |
 | Tampering | Un tercero o el propio menor cambia la ruta o el corredor | `rutas` (E3-01, E3-02) | Solo el guardián del menor escribe en `rutas`; cambios auditados | Planificado |
 | Tampering | El cliente fuerza un estado inválido del trayecto | `trayectos.estado` | Cambios de estado solo por funciones con transiciones permitidas (`EN_CURSO` → `CERRADO` en la fase 1) | Planificado |
@@ -67,7 +67,7 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E
 | Information disclosure | El proveedor del mapa recibe las coordenadas que se ven en pantalla | Componente de mapa (E3-01) | OpenStreetMap (D9): sin cuenta ni llave; Leaflet empaquetado en la app; declarar en la PIA que el servidor de teselas recibe las zonas consultadas | Planificado |
 | Information disclosure | Ubicación recolectada fuera de un trayecto | App | Captura solo con trayecto `EN_CURSO` o alerta activa; el indicador de E4-04 es visible siempre que se comparte | Planificado |
 | Denial of service | Rutas enormes o inválidas que degradan la base de datos | `rutas.geometria` | Validación en el servidor: geometría válida (`ST_IsValid`), número de puntos y longitud máximos | Planificado |
-| Denial of service | Varios trayectos `EN_CURSO` a la vez para el mismo menor | `trayectos` | Índice único parcial: un solo trayecto `EN_CURSO` por menor | Planificado |
+| Denial of service | Varios trayectos `EN_CURSO` a la vez para el mismo menor | `trayectos` | Índice único parcial: un solo trayecto `EN_CURSO` por menor | Implementado (E4-01, 12/10/2026) |
 | Elevation of privilege | El menor o un contacto de apoyo edita la configuración de su propia vigilancia | `rutas` | Sin políticas de escritura para `protegido` ni `apoyo` | Planificado |
 
 ## E6/E7 — Alerta de pánico y respuesta
