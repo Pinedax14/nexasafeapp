@@ -42,6 +42,14 @@ Incremento disponible en `main` (PR #21 a #31):
 - **PR aprobado por un compañero:** no se cumplió. `main` sigue con 0 aprobaciones obligatorias por disponibilidad del equipo; los controles automáticos sí fueron obligatorios en todos los PR.
 - **Fechas:** el sprint estaba planificado del 06/10 al 17/10. Las historias se integraron entre el 03/10 y el 05/10, y la review se hizo el 08/10.
 
+## Participación del equipo
+
+Informada por Juan Felipe Pineda Cardona el 12/10/2026 (también en `Ejecucion del Sprint 01.xls`, hoja Scrum Team):
+
+- **Juan Felipe Pineda Cardona:** desarrollo de las 7 historias (todos los commits y PR del sprint).
+- **David Alejandro del Prado Camargo:** documentación del sprint, 2 h por día, y las ceremonias.
+- **Ingrith Yuliana García Galvis:** asistencia a las ceremonias.
+
 ## Trabajo no planificado (sin estimación en puntos)
 
 - E1-04 resultó más grande de lo estimado (3 pts): Edge Function `auth-pin`, migración de la huella del documento, pantalla del acudiente para asignar el PIN y botón de PIN aleatorio generado en el servidor (PR #29).
