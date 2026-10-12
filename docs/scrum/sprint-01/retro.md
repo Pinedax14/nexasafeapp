@@ -13,7 +13,7 @@
 - E1-04 se estimó en 3 pts y fue mucho más grande: Edge Function, migración, pantalla del acudiente y PIN aleatorio.
 - Sin Android propio, casi todas las pruebas se hicieron en el navegador y hubo que conseguir un celular prestado.
 - No se hizo la prueba E2E con Maestro.
-- Ningún compañero revisó los PR: el desarrollo lo hizo un solo integrante; David apoyó con documentación e Ingrith asistió a las ceremonias.
+- Ningún compañero revisó los PR: el desarrollo lo hizo un solo integrante; David e Ingrith apoyaron con documentación y en las ceremonias.
 - Hubo bloqueos externos: el correo gratuito de Supabase no envía a personal externo y Google Cloud rechazó la tarjeta.
 - El trabajo se concentró en muy pocos días (03–05/10) y el ritmo no fue constante.
 

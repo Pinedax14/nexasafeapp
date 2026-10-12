@@ -48,7 +48,7 @@ Informada por Juan Felipe Pineda Cardona el 12/10/2026 (también en `Ejecucion d
 
 - **Juan Felipe Pineda Cardona:** desarrollo de las 7 historias (todos los commits y PR del sprint).
 - **David Alejandro del Prado Camargo:** documentación del sprint, 2 h por día, y las ceremonias.
-- **Ingrith Yuliana García Galvis:** asistencia a las ceremonias.
+- **Ingrith Yuliana García Galvis:** documentación del sprint, 2 h por día, y las ceremonias.
 
 ## Trabajo no planificado (sin estimación en puntos)
 
