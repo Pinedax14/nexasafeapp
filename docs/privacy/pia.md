@@ -24,6 +24,7 @@
 | Nombre, cargo y correo del personal institucional | Personal del colegio | No | Supabase Auth y `personal_institucion` | Que el administrador (E1-06) habilite a quien valida matrículas |
 | Rutas casa–colegio del menor (Sprint 02) | Menor | Sí: revela dónde vive y estudia | `rutas` (sin cifrado por columna, D13), con RLS y lectura auditada; copia cifrada en el teléfono con `expo-secure-store` que se borra al cerrar sesión (E3-01b, D11) | Acompañar el trayecto del menor (RF-09) |
 | Zonas del mapa consultadas (Sprint 02) | Acudiente | No | No se guardan: el servidor de teselas de OpenStreetMap recibe la zona y el zoom que se ven en pantalla, con la IP del teléfono (D9) | Mostrar el mapa para dibujar la ruta |
+| Inicio de cada trayecto (Sprint 02) | Menor | Sí: revela cuándo sale de casa o del colegio | `trayectos` (`inicio_en` con hora del servidor, ruta y estado), con RLS: solo el menor y su guardián; auditado con `INICIAR_TRAYECTO` | Acompañar el trayecto (RF-12). Sin ubicación: la posición en vivo llega con E4-02 (Sprint 03) |
 
 **No se recolecta en este sprint:** ubicación, fecha de nacimiento, dirección ni teléfono (decisión D6). La ubicación empieza en el Sprint 02 y solo durante trayectos o alertas (RF-41).
 

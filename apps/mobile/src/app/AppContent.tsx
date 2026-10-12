@@ -33,7 +33,6 @@ import { ListMyProtegidos } from '../features/profile/domain/useCases/ListMyProt
 import { RegisterProtegido } from '../features/profile/domain/useCases/RegisterProtegido';
 import { AssignPinScreen } from '../features/profile/presentation/screens/AssignPinScreen';
 import { GuardianHomeScreen } from '../features/profile/presentation/screens/GuardianHomeScreen';
-import { ProtegidoHomeScreen } from '../features/profile/presentation/screens/ProtegidoHomeScreen';
 import { RegisterProtegidoScreen } from '../features/profile/presentation/screens/RegisterProtegidoScreen';
 import { createRouteCache } from '../features/routes/data/repositories/SecureStoreRouteCache';
 import { SupabaseRouteRepository } from '../features/routes/data/repositories/SupabaseRouteRepository';
@@ -42,6 +41,9 @@ import { ManageRoutes } from '../features/routes/domain/useCases/ManageRoutes';
 import { RouteEditorScreen } from '../features/routes/presentation/screens/RouteEditorScreen';
 import { RoutesScreen } from '../features/routes/presentation/screens/RoutesScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
+import { SupabaseTripRepository } from '../features/tracking/data/repositories/SupabaseTripRepository';
+import { TrackTrips } from '../features/tracking/domain/useCases/TrackTrips';
+import { ProtegidoTripScreen } from '../features/tracking/presentation/screens/ProtegidoTripScreen';
 
 type AuthRoute = 'login' | 'register' | 'pinLogin';
 type GuardianRoute = 'home' | 'registerProtegido';
@@ -81,6 +83,7 @@ export function AppContent() {
       manageStaff: new ManageStaff(institutionAdmin),
       validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
       manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase), createRouteCache()),
+      trackTrips: new TrackTrips(new SupabaseTripRepository(supabase)),
     };
   }, []);
 
@@ -163,9 +166,17 @@ export function AppContent() {
     );
   }
 
-  // E1-04: el protegido entra con documento y PIN.
+  // E1-04 y E4-01: el protegido entra con documento y PIN, y desde aquí inicia su trayecto.
   if (loggedUser.role === 'protegido') {
-    return <ProtegidoHomeScreen userName={loggedUser.name} onSignOut={handleSignOut} />;
+    return (
+      <ProtegidoTripScreen
+        listMyProtegidos={useCases.listMyProtegidos}
+        manageRoutes={useCases.manageRoutes}
+        trackTrips={useCases.trackTrips}
+        userName={loggedUser.name}
+        onSignOut={handleSignOut}
+      />
+    );
   }
 
   // E1-06: el administrador solo ve la gestión de colegios y personal.
@@ -253,6 +264,7 @@ export function AppContent() {
     ) : (
       <GuardianHomeScreen
         listMyProtegidos={useCases.listMyProtegidos}
+        trackTrips={useCases.trackTrips}
         userName={loggedUser.name}
         onRegisterProtegido={() => setGuardianRoute('registerProtegido')}
         onAssignPin={setPinProtegido}
