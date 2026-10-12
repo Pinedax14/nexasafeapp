@@ -160,4 +160,14 @@ Entonces no obtengo ningún dato
 
 ## Tablero
 
-PENDIENTE: crear los issues con las etiquetas `sprint:02`, `epic:E2` / `epic:E3` / `epic:E4` y `security` (requiere GitHub CLI: `winget install GitHub.cli` y `gh auth login`).
+Issues creados el 12/10/2026 con las etiquetas `sprint:02`, `epic:E2` / `epic:E3` / `epic:E4` y `security` (las historias que tocan datos de menores):
+
+| Historia | Issue |
+|---|---|
+| E3-01a | #45 |
+| E3-01b | #46 |
+| E3-02 | #47 |
+| E3-03 | #48 |
+| E4-01 | #49 |
+| E4-04 | #50 |
+| E2-01 | #51 |
