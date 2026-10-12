@@ -4,7 +4,7 @@ import { RouteRepository, RouteResult } from '../../domain/repositories/RouteRep
 import { ManageRoutes } from '../../domain/useCases/ManageRoutes';
 import { MAP_BASE_URL, MAP_WEB_FALLBACK } from '../map/RouteMap';
 import { OSM_COPYRIGHT_URL } from '../map/mapHtml';
-import { ROUTE_ERROR_MESSAGES } from '../routeMessages';
+import { ROUTE_ERROR_MESSAGES, ROUTE_READ_ONLY_NOTICE } from '../routeMessages';
 import { RouteEditorScreen } from './RouteEditorScreen';
 
 const mockInjectJavaScript = jest.fn();
@@ -33,7 +33,11 @@ const route = {
 };
 
 async function setup(
-  options: { saveResult?: RouteResult<string>; initialRoute?: typeof route | null } = {},
+  options: {
+    saveResult?: RouteResult<string>;
+    initialRoute?: typeof route | null;
+    readOnly?: boolean;
+  } = {},
 ) {
   const repository: jest.Mocked<RouteRepository> = {
     list: jest.fn(),
@@ -46,6 +50,7 @@ async function setup(
       protegidoId="p-1"
       direction="CASA_COLEGIO"
       route={options.initialRoute ?? null}
+      readOnly={options.readOnly}
       onSaved={onSaved}
       onBack={jest.fn()}
     />,
@@ -169,5 +174,24 @@ describe('RouteEditorScreen (E3-01a, E3-02, E3-03)', () => {
 
     expect(screen.getByText(MAP_WEB_FALLBACK)).toBeTruthy();
     jest.restoreAllMocks();
+  });
+});
+
+describe('RouteEditorScreen en modo lectura (E3-01b)', () => {
+  it('sin conexión muestra la ruta de la caché sin permitir cambios', async () => {
+    const { repository } = await setup({ initialRoute: route, readOnly: true });
+
+    expect(screen.getByText(ROUTE_READ_ONLY_NOTICE)).toBeTruthy();
+    expect(screen.queryByText('Guardar ruta')).toBeNull();
+    expect(screen.queryByText('Deshacer')).toBeNull();
+    expect(screen.getByLabelText('Duración esperada en minutos').props.editable).toBe(false);
+
+    await fireEvent.press(screen.getByLabelText('Ampliar corredor'));
+    await sendFromMap({ type: 'ready' });
+    await tapMap(4.62, -74.06);
+
+    expect(screen.getByText('Corredor: 50 m')).toBeTruthy();
+    expect(mockInjectJavaScript.mock.calls.at(-1)?.[0]).toContain('"editable":false');
+    expect(repository.save).not.toHaveBeenCalled();
   });
 });

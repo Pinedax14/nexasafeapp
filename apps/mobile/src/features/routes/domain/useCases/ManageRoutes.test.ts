@@ -1,4 +1,5 @@
 import { RouteDraft } from '../entities/Route';
+import { RouteCache } from '../repositories/RouteCache';
 import { RouteRepository } from '../repositories/RouteRepository';
 import {
   isInsideColombia,
@@ -138,5 +139,93 @@ describe('ManageRoutes', () => {
       },
     });
     expect(repository.save).not.toHaveBeenCalled();
+  });
+});
+
+const route = {
+  id: 'r-1',
+  direction: 'CASA_COLEGIO' as const,
+  points: bogota,
+  corridorMeters: 50,
+  expectedMinutes: 25,
+  updatedAt: '2026-10-12T15:00:00Z',
+};
+
+function setupWithCache(
+  listResult: Awaited<ReturnType<RouteRepository['list']>>,
+  cached: unknown = null,
+) {
+  const repository: jest.Mocked<RouteRepository> = {
+    list: jest.fn().mockResolvedValue(listResult),
+    save: jest.fn(),
+  };
+  const cache: jest.Mocked<RouteCache> = {
+    load: jest.fn().mockResolvedValue(cached),
+    save: jest.fn().mockResolvedValue(undefined),
+    clear: jest.fn().mockResolvedValue(undefined),
+  };
+  return { repository, cache, manageRoutes: new ManageRoutes(repository, cache) };
+}
+
+describe('ManageRoutes · caché local (E3-01b, D11)', () => {
+  it('guarda en el teléfono las rutas que llegan del servidor', async () => {
+    const { cache, manageRoutes } = setupWithCache({ ok: true, value: [route] });
+
+    const result = await manageRoutes.list('p-1');
+
+    expect(result).toEqual({ ok: true, value: [route], fromCache: false });
+    expect(cache.save).toHaveBeenCalledWith('p-1', [route]);
+  });
+
+  it('sin conexión muestra las rutas guardadas en el teléfono', async () => {
+    const { manageRoutes } = setupWithCache({ ok: false, reason: 'NETWORK' }, [route]);
+
+    expect(await manageRoutes.list('p-1')).toEqual({ ok: true, value: [route], fromCache: true });
+  });
+
+  it('sin conexión y sin caché informa la falta de conexión', async () => {
+    const { manageRoutes } = setupWithCache({ ok: false, reason: 'NETWORK' }, null);
+
+    expect(await manageRoutes.list('p-1')).toEqual({ ok: false, reason: 'NETWORK' });
+  });
+
+  it('un error de permisos no usa la caché', async () => {
+    const { cache, manageRoutes } = setupWithCache({ ok: false, reason: 'FORBIDDEN' }, [route]);
+
+    expect(await manageRoutes.list('p-1')).toEqual({ ok: false, reason: 'FORBIDDEN' });
+    expect(cache.load).not.toHaveBeenCalled();
+  });
+
+  it('si la caché falla al guardar, igual entrega las rutas del servidor', async () => {
+    const { cache, manageRoutes } = setupWithCache({ ok: true, value: [route] });
+    cache.save.mockRejectedValue(new Error('Keystore no disponible'));
+
+    expect(await manageRoutes.list('p-1')).toEqual({ ok: true, value: [route], fromCache: false });
+  });
+
+  it('si la caché falla al leer, informa la falta de conexión', async () => {
+    const { cache, manageRoutes } = setupWithCache({ ok: false, reason: 'NETWORK' });
+    cache.load.mockRejectedValue(new Error('Keystore no disponible'));
+
+    expect(await manageRoutes.list('p-1')).toEqual({ ok: false, reason: 'NETWORK' });
+  });
+
+  it('borra la caché al cerrar sesión', async () => {
+    const { cache, manageRoutes } = setupWithCache({ ok: true, value: [] });
+
+    await manageRoutes.clearCache();
+
+    expect(cache.clear).toHaveBeenCalled();
+  });
+
+  it('sin caché configurada (navegador) funciona igual', async () => {
+    const repository: jest.Mocked<RouteRepository> = {
+      list: jest.fn().mockResolvedValue({ ok: false, reason: 'NETWORK' }),
+      save: jest.fn(),
+    };
+    const manageRoutes = new ManageRoutes(repository);
+
+    expect(await manageRoutes.list('p-1')).toEqual({ ok: false, reason: 'NETWORK' });
+    await expect(manageRoutes.clearCache()).resolves.toBeUndefined();
   });
 });

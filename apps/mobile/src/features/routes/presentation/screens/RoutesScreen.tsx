@@ -3,14 +3,14 @@ import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { Route, ROUTE_DIRECTIONS, RouteDirection } from '../../domain/entities/Route';
 import { ManageRoutes } from '../../domain/useCases/ManageRoutes';
-import { DIRECTION_LABELS, ROUTE_NOT_DEFINED } from '../routeMessages';
+import { DIRECTION_LABELS, ROUTE_NOT_DEFINED, ROUTES_OFFLINE_NOTICE } from '../routeMessages';
 import { useRoutesViewModel } from '../viewModels/useRoutesViewModel';
 
 type RoutesScreenProps = {
   manageRoutes: ManageRoutes;
   protegidoId: string;
   protegidoName: string;
-  onEditRoute: (direction: RouteDirection, route: Route | null) => void;
+  onEditRoute: (direction: RouteDirection, route: Route | null, readOnly: boolean) => void;
   onBack: () => void;
 };
 
@@ -36,6 +36,7 @@ export function RoutesScreen({
       <Text style={styles.subtitle}>Hasta 2 rutas: ida y regreso.</Text>
 
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
+      {vm.isOffline && <Text style={styles.notice}>{ROUTES_OFFLINE_NOTICE}</Text>}
       {vm.isLoading ? (
         <ActivityIndicator color={colors.primary} />
       ) : (
@@ -45,7 +46,8 @@ export function RoutesScreen({
             <Pressable
               key={direction}
               style={styles.row}
-              onPress={() => onEditRoute(direction, route)}
+              onPress={() => onEditRoute(direction, route, vm.isOffline)}
+              disabled={vm.isOffline && !route}
               accessibilityRole="button"
               accessibilityLabel={`Ruta ${DIRECTION_LABELS[direction]}`}
             >
