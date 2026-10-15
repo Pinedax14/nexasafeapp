@@ -1,5 +1,6 @@
 import { GeoPoint, Route, RouteDraft } from '../entities/Route';
-import { RouteRepository, RouteResult } from '../repositories/RouteRepository';
+import { RouteCache } from '../repositories/RouteCache';
+import { RouteFailureReason, RouteRepository, RouteResult } from '../repositories/RouteRepository';
 
 /** D10: rango del corredor y de la duración esperada. */
 export const CORRIDOR_MIN_METERS = 25;
@@ -19,6 +20,10 @@ const EARTH_RADIUS_METERS = 6371008.8;
 
 export type RouteField = 'points' | 'corridor' | 'duration';
 export type RouteErrors = Partial<Record<RouteField, string>>;
+
+/** fromCache: el servidor no respondió por falta de conexión y se muestra la copia local (E3-01b). */
+export type ListRoutesResult =
+  { ok: true; value: Route[]; fromCache: boolean } | { ok: false; reason: RouteFailureReason };
 
 export type SaveRouteResult =
   RouteResult<string> | { ok: false; reason: 'INVALID_INPUT'; errors: RouteErrors };
@@ -86,12 +91,41 @@ export function stepCorridor(current: number, direction: 1 | -1): number {
   return Math.min(CORRIDOR_MAX_METERS, Math.max(CORRIDOR_MIN_METERS, next));
 }
 
-/** E3-01a, E3-02, E3-03: el guardián define las rutas de su menor. */
-export class ManageRoutes {
-  constructor(private readonly repository: RouteRepository) {}
+/** Sin caché (por ejemplo en el navegador): nunca hay copia local. */
+const NO_CACHE: RouteCache = {
+  load: async () => null,
+  save: async () => undefined,
+  clear: async () => undefined,
+};
 
-  list(protegidoId: string): Promise<RouteResult<Route[]>> {
-    return this.repository.list(protegidoId);
+/** E3-01a, E3-02, E3-03 y E3-01b: el guardián define las rutas de su menor. */
+export class ManageRoutes {
+  constructor(
+    private readonly repository: RouteRepository,
+    private readonly cache: RouteCache = NO_CACHE,
+  ) {}
+
+  /** Lee del servidor y guarda la copia local; sin conexión, devuelve la copia local (D11). */
+  async list(protegidoId: string): Promise<ListRoutesResult> {
+    const result = await this.repository.list(protegidoId);
+    if (result.ok) {
+      try {
+        await this.cache.save(protegidoId, result.value);
+      } catch {
+        // La caché es una ayuda: si falla, la lista del servidor se muestra igual.
+      }
+      return { ok: true, value: result.value, fromCache: false };
+    }
+    if (result.reason === 'NETWORK') {
+      const cached = await this.cache.load(protegidoId).catch(() => null);
+      if (cached) return { ok: true, value: cached, fromCache: true };
+    }
+    return result;
+  }
+
+  /** Al cerrar sesión no queda ninguna ruta en el teléfono. */
+  clearCache(): Promise<void> {
+    return this.cache.clear();
   }
 
   async save(protegidoId: string, draft: RouteDraft): Promise<SaveRouteResult> {

@@ -15,3 +15,9 @@ export const DIRECTION_LABELS: Record<RouteDirection, string> = {
 };
 
 export const ROUTE_NOT_DEFINED = 'Sin definir';
+
+/** E3-01b: sin conexión se muestran las rutas guardadas en el teléfono, solo para ver. */
+export const ROUTES_OFFLINE_NOTICE =
+  'Sin conexión: estas son las rutas guardadas en el teléfono. Solo puedes verlas.';
+
+export const ROUTE_READ_ONLY_NOTICE = 'Modo lectura: sin conexión no se pueden guardar cambios.';

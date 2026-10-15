@@ -38,6 +38,7 @@ Al cruzar los 5 documentos v1.0 aparecían contradicciones. Quedaron corregidas 
 | 23 | Ninguna historia permitía crear colegios ni personal institucional, y sin ellos E1-03 no se puede cumplir | Nueva historia E1-06 (rol administrador con pantallas en la app, 5 pts, MUST) y RF-42 en el Sprint 1, que sube a 29 pts; backlog 225 pts y capacidad 131 pts (decisión D3 del 03/10/2026) |
 | 24 | Se pidió permitir el inicio de sesión con Google, que ningún documento contemplaba (RF-01 solo pide correo y contraseña) | Nueva historia E1-07 y RF-43 como `Should`, fuera del roadmap: backlog 230 pts, trabajo futuro 99 pts. Se construye solo si sobra capacidad tras H3 (decisión del 05/10/2026) |
 | 25 | Se pidió, como valor agregado, entrar con la huella del celular (como en Nequi), que ningún documento contemplaba | Nueva historia E1-08 y RF-44 como `Could`, fuera del roadmap: backlog 233 pts, trabajo futuro 102 pts. La huella solo desbloquea la sesión guardada en el dispositivo; no reemplaza la contraseña ni la verificación del PIN en el servidor (decisión del 05/10/2026) |
+| 26 | El Plan fijaba Planning 2 h, Review 1 h y Retrospective 45 min, pero la plantilla del docente (`Ejecucion del Sprint.xls`) usa Planning 8 h, Review 4 h y Retrospective 3 h, y el docente pide tiempos fijos | Se adoptan los de la plantilla en todos los documentos, sin cambios entre sprints: Daily 15 min, Planning 480 min, Review 240 min y Retrospective 180 min. Refinement (60 min) y Security Review (30 min) siguen como en el Plan (12/10/2026) |
 
 **Regla desde ahora:** si aparece una contradicción nueva, no se resuelve en silencio. Se explica, se propone una opción y se registra aquí como fila nueva cuando el equipo la apruebe.
 
@@ -111,9 +112,9 @@ nexasafeapp/
 
 ## 2. Rutina fija de cada sprint
 
-Repite este ciclo en **todos** los sprints:
+Repite este ciclo en **todos** los sprints. Los tiempos de Daily, Planning, Review y Retrospective son fijos (plantilla del docente, fila 26 de la sección 0):
 
-1. **Sprint Planning (lunes, 2 h)**
+1. **Sprint Planning (lunes y martes, 8 h: 4 h cada día)**
    - Elegir historias del backlog que cumplan la Definition of Ready.
    - Redactar el Sprint Goal en una frase.
    - Crear `docs/scrum/sprint-XX/planning.md`.
@@ -128,11 +129,11 @@ Repite este ciclo en **todos** los sprints:
    - Abrir un PR, conseguir revisión de un compañero y un pipeline verde, y hacer merge.
 5. **Security Review (viernes, 30 min, antes de la review)**
    - El Security Champion revisa los hallazgos del pipeline y actualiza `risk-register.md`.
-6. **Sprint Review (viernes, 1 h)**
+6. **Sprint Review (viernes, 4 h)**
    - Demo en un **Android físico**.
    - El PO acepta o rechaza cada historia.
    - Crear `review.md`.
-7. **Retrospective (45 min después de la review)**
+7. **Retrospective (3 h después de la review)**
    - Definir 1–2 acciones de mejora con responsable.
    - Crear `retro.md`.
 8. **Actualizar el Informe de Pruebas** con cobertura, hallazgos y bugs del sprint.

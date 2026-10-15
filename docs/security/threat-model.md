@@ -41,14 +41,14 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026). Los controles marca
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
-| Spoofing | Reutilización o adivinación del enlace de invitación | Invitaciones | Token aleatorio de al menos 128 bits, guardado solo como hash, de un solo uso y con vencimiento (D8) | Planificado |
-| Spoofing | Un tercero que recibe el enlace reenviado lo acepta en lugar del contacto | Invitaciones | Aceptar exige iniciar sesión; el guardián ve quién aceptó cada invitación. La revocación (E2-03) es de la fase 2: riesgo residual hasta entonces | Planificado |
-| Tampering | Un contacto de apoyo modifica rutas, trayectos o datos del menor | `rutas`, `trayectos`, `protegidos` | El rol `apoyo` no tiene políticas de escritura (RLS) | Planificado |
-| Repudiation | El guardián niega haber invitado a un contacto, o el contacto niega haber aceptado | `audit_log` | Creación y aceptación de invitaciones registradas | Planificado |
-| Information disclosure | Enumeración de usuarios por el endpoint de invitación | Invitaciones | Respuestas genéricas + rate limiting | Planificado |
-| Information disclosure | El contacto de apoyo ve la rutina del menor | `rutas`, `trayectos` | Sin E2-02 (fase 2), el contacto ve solo alertas: mínimo privilegio por defecto (D8) | Planificado |
-| Denial of service | Creación masiva de invitaciones | Invitaciones | Límite de invitaciones por guardián y por hora | Planificado |
-| Elevation of privilege | Un contacto de apoyo accede a funciones de guardián | RBAC | Rol `apoyo` verificado en el servidor; pruebas de autorización en CI | Planificado |
+| Spoofing | Reutilización o adivinación del enlace de invitación | Invitaciones | Token aleatorio de al menos 128 bits, guardado solo como hash, de un solo uso y con vencimiento (D8) | Implementado (E2-01, 12/10/2026) |
+| Spoofing | Un tercero que recibe el enlace reenviado lo acepta en lugar del contacto | Invitaciones | Aceptar exige iniciar sesión; el guardián ve quién aceptó cada invitación. La revocación (E2-03) es de la fase 2: riesgo residual hasta entonces | Implementado (E2-01, 12/10/2026) |
+| Tampering | Un contacto de apoyo modifica rutas, trayectos o datos del menor | `rutas`, `trayectos`, `protegidos` | El rol `apoyo` no tiene políticas de escritura (RLS) | Implementado (E2-01, 12/10/2026) |
+| Repudiation | El guardián niega haber invitado a un contacto, o el contacto niega haber aceptado | `audit_log` | Creación y aceptación de invitaciones registradas | Implementado (E2-01, 12/10/2026) |
+| Information disclosure | Enumeración de usuarios por el endpoint de invitación | Invitaciones | Respuestas genéricas + rate limiting | Implementado (E2-01, 12/10/2026) |
+| Information disclosure | El contacto de apoyo ve la rutina del menor | `rutas`, `trayectos` | Sin E2-02 (fase 2), el contacto ve solo alertas: mínimo privilegio por defecto (D8) | Implementado (E2-01, 12/10/2026) |
+| Denial of service | Creación masiva de invitaciones | Invitaciones | Límite de invitaciones por guardián y por hora | Implementado (E2-01, 12/10/2026) |
+| Elevation of privilege | Un contacto de apoyo accede a funciones de guardián | RBAC | Rol `apoyo` verificado en el servidor; pruebas de autorización en CI | Implementado (E2-01, 12/10/2026) |
 
 ## E3/E4 — Rutas y trayecto acompañado
 
@@ -56,18 +56,18 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
-| Spoofing | Alguien inicia un trayecto haciéndose pasar por el menor | `trayectos` (E4-01) | Solo una sesión con rol `protegido` inicia su propio trayecto; RLS por `protegidos.usuario_id` | Planificado |
+| Spoofing | Alguien inicia un trayecto haciéndose pasar por el menor | `trayectos` (E4-01) | Solo una sesión con rol `protegido` inicia su propio trayecto; RLS por `protegidos.usuario_id` | Implementado (E4-01, 12/10/2026) |
 | Tampering | GPS falso para simular la llegada | Geocerca (E4-03) | Validación de plausibilidad en el servidor; detección de mock location en release | Planificado |
 | Tampering | Un tercero o el propio menor cambia la ruta o el corredor | `rutas` (E3-01, E3-02) | Solo el guardián del menor escribe en `rutas`; cambios auditados | Planificado |
 | Tampering | El cliente fuerza un estado inválido del trayecto | `trayectos.estado` | Cambios de estado solo por funciones con transiciones permitidas (`EN_CURSO` → `CERRADO` en la fase 1) | Planificado |
-| Tampering | Alteración de la ruta guardada en el teléfono | Caché local (E3-01) | La caché solo sirve para mostrar la ruta; el servidor es la fuente de verdad y la reemplaza al sincronizar | Planificado |
+| Tampering | Alteración de la ruta guardada en el teléfono | Caché local (E3-01) | La caché solo sirve para mostrar la ruta; el servidor es la fuente de verdad y la reemplaza al sincronizar | Implementado (E3-01b, 12/10/2026) |
 | Repudiation | Disputa sobre cuándo empezó un trayecto o quién cambió la ruta | `trayectos`, `audit_log` | `inicio_en` con hora del servidor; cambios de ruta en `audit_log` | Planificado |
 | Information disclosure | Fuga del histórico de rutas (rutina del menor) | `rutas`, `trayectos` | RLS estricto; ubicación solo durante trayecto o alerta (E11-04) | Planificado |
-| Information disclosure | La ruta revela la casa y el colegio del menor | `rutas`, caché local | Solo el guardián (y el menor, para su trayecto) leen la ruta; el rol `apoyo` no. Caché cifrada en el dispositivo y borrada al cerrar sesión (D11) | Planificado |
+| Information disclosure | La ruta revela la casa y el colegio del menor | `rutas`, caché local | Solo el guardián (y el menor, para su trayecto) leen la ruta; el rol `apoyo` no. Caché cifrada en el dispositivo y borrada al cerrar sesión (D11) | Implementado (E3-01b, 12/10/2026) |
 | Information disclosure | El proveedor del mapa recibe las coordenadas que se ven en pantalla | Componente de mapa (E3-01) | OpenStreetMap (D9): sin cuenta ni llave; Leaflet empaquetado en la app; declarar en la PIA que el servidor de teselas recibe las zonas consultadas | Planificado |
-| Information disclosure | Ubicación recolectada fuera de un trayecto | App | Captura solo con trayecto `EN_CURSO` o alerta activa; el indicador de E4-04 es visible siempre que se comparte | Planificado |
+| Information disclosure | Ubicación recolectada fuera de un trayecto | App | Captura solo con trayecto `EN_CURSO` o alerta activa; el indicador de E4-04 es visible siempre que se comparte | Parcial (E4-04, 12/10/2026): banda visible con trayecto `EN_CURSO`; la app aún no captura ubicación (E4-02, Sprint 03) |
 | Denial of service | Rutas enormes o inválidas que degradan la base de datos | `rutas.geometria` | Validación en el servidor: geometría válida (`ST_IsValid`), número de puntos y longitud máximos | Planificado |
-| Denial of service | Varios trayectos `EN_CURSO` a la vez para el mismo menor | `trayectos` | Índice único parcial: un solo trayecto `EN_CURSO` por menor | Planificado |
+| Denial of service | Varios trayectos `EN_CURSO` a la vez para el mismo menor | `trayectos` | Índice único parcial: un solo trayecto `EN_CURSO` por menor | Implementado (E4-01, 12/10/2026) |
 | Elevation of privilege | El menor o un contacto de apoyo edita la configuración de su propia vigilancia | `rutas` | Sin políticas de escritura para `protegido` ni `apoyo` | Planificado |
 
 ## E6/E7 — Alerta de pánico y respuesta

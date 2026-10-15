@@ -96,6 +96,8 @@ Desde `apps/mobile`. Son los mismos pasos que ejecuta el CI en cada PR ([`.githu
 
 El mapa de las rutas (E3-01a) usa OpenStreetMap dentro de un WebView y **no funciona en el navegador**: se prueba en Android (APK de EAS o Expo Go).
 
+Las invitaciones a la red de apoyo (E2-01) usan el enlace `nexasafe://invitacion/<código>`, que solo abre la app instalada desde un APK de EAS. En Expo Go o en el navegador se usa "Tengo una invitación" en el ingreso y se pega el código.
+
 ### Controles de seguridad del pipeline
 
 Cada PR ejecuta, además, estos controles bloqueantes:

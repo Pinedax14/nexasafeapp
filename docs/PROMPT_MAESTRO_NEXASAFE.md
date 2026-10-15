@@ -108,12 +108,26 @@ Además, actualiza en cada sprint: `CHANGELOG.md`, `docs/security/risk-register.
 | "Cierra el sprint XX" | Crear `resumen.md`, actualizar el Informe de Pruebas y crear el tag `v0.X.0-sprintXX` |
 | "Genera el cierre del proyecto" | Informe consolidado (H5), `resumen-proyecto.md` y checklist final de la guía |
 
+En cada orden de la tabla anterior, actualiza también las plantillas Excel de la regla 8 que correspondan.
+
 ### 7. Honestidad de los registros
 - Los datos de los registros salen **solo** de `git log`, `gh issue list`, `gh pr list`, `gh run list`, los reportes de cobertura y seguridad, y lo que el equipo te diga.
 - **Nunca inventes** feedback del PO, acuerdos de la retro, velocidades, porcentajes de cobertura ni resultados de pruebas.
 - Si falta un dato, escribe `PENDIENTE: <qué falta>` y pregúntame.
 - Las fechas de los documentos son las reales del día en que se generan.
 - Cada registro de ceremonia muestra dos fechas: la planificada según el Cronograma (03) y la real. Ejemplo: `**Ceremonia planificada:** 17/10/2026 · **Fecha real:** 08/10/2026`.
+
+### 8. Plantillas Excel del docente (entrega final)
+El docente revisa dos plantillas. Hay que completarlas con lo que ya existe en el proyecto y mantenerlas al día:
+
+| Archivo | Contenido | Cuándo se actualiza |
+|---|---|---|
+| `docs/scrum/el product backlog y planificaicon del sprint.xlsx` | Historias de Usuario, Product Backlog y Sprint Backlog | Al iniciar cada sprint, al cambiar el backlog y al cerrar cada historia |
+| `docs/scrum/sprint-XX/Ejecucion del Sprint XX.xls` (**uno por sprint**, a partir de `docs/scrum/Ejecucion del Sprint.xls`, que es la plantilla original y no se toca) | Historias de Usuario **solo de ese sprint**, Timer, Scrum Team y Burndown chart | Se crea con las historias del sprint y los minutos fijos del Timer; el equipo llena el resto (fechas, días, capacidad y burndown) con la guía de la IA |
+
+- Tiempos fijos de las ceremonias (fila 26 de la guía): Daily 15 min por día, Sprint Planning 480 min, Sprint Review 240 min y Sprint Retrospective 180 min.
+- Se editan con Excel para conservar el formato, las fórmulas y los gráficos. No se cambian los nombres de las hojas.
+- Aplica la regla 7: los datos salen de git, `gh`, los registros del sprint y lo que diga el equipo. Si falta un dato, va `PENDIENTE` y se pregunta.
 
 ## FORMATO DE TUS RESPUESTAS
 
