@@ -20,3 +20,15 @@ export function formatTime(iso: string): string {
 }
 
 export const tripSince = (iso: string) => `En curso desde las ${formatTime(iso)}`;
+
+/** W7 · Trayecto en vivo del guardián (E4-02, E4-03). */
+export const NO_LIVE_POSITION = 'Esperando la primera posición del menor…';
+export const lastPositionText = (seconds: number) => `Última posición: hace ${seconds} s`;
+export const arrivedAtText = (iso: string) => `Llegó a las ${formatTime(iso)}`;
+
+/** W8 · Permiso de ubicación del menor (D18). */
+export const LOCATION_PERMISSION_TITLE = 'Para acompañarte necesitamos tu ubicación';
+export const LOCATION_PERMISSION_TEXT =
+  'Solo la compartimos mientras vas en un trayecto o pides ayuda. En la siguiente pantalla elige "Permitir todo el tiempo".';
+export const LOCATION_PERMISSION_DENIED =
+  'Sin permiso de ubicación tu acudiente no puede acompañarte.';
