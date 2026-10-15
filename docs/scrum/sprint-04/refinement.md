@@ -19,9 +19,11 @@ Modelo de amenazas: ver [`threat-model.md`](../../security/threat-model.md), sec
 | E6-04 Modo discreto (RF-23, RNF-16) | 5 | Borrador | E6-01; diseño de la pantalla (D30) | No | Borrador: W10 | No |
 | E11-04 Sin ubicación fuera de trayecto o alerta (RF-41) | 3 | Borrador | E9-02 (el cierre detiene la captura) | Sí | No aplica | No |
 
-## 2. Decisiones propuestas (PENDIENTE: aprobación del equipo)
+Decisiones D25–D31 y wireframes W10–W13 aprobados por el equipo el 15/10/2026. Las historias cumplen la DoR, salvo E7-01, que depende del proyecto de Firebase (requisito externo).
 
-| ID | Tema | Por qué hace falta | Propuesta |
+## 2. Decisiones (aprobadas el 15/10/2026)
+
+| ID | Tema | Por qué hace falta | Decisión |
 |---|---|---|---|
 | D25 | Notificación push (E7-01, RNF-09) | El Plan fija Expo Push, pero no dice quién la dispara ni cómo se espera la ventana de 10 s. En Android, Expo Push entrega por Firebase Cloud Messaging (FCM) | Librería `expo-notifications` (SDK 54). Tabla técnica **`dispositivos_push`** (`usuario_id`, `token`, `actualizado_en`), escrita solo por la función `registrar_dispositivo`. Un **trigger** en `alertas` llama con `pg_net` a la Edge Function **`notify-push`** (nombrada en el Plan), autenticada con un secreto compartido guardado en Vault y en los secretos de la función; la función espera a que venza `cancelable_hasta`, comprueba que la alerta siga `ENVIADA` y envía el push a: el guardián, los contactos de apoyo que aceptaron (D8) y el personal activo del colegio. Así el aviso no depende del teléfono del menor. Canal de Android de importancia máxima con sonido; Android no deja saltar el modo "No molestar" sin un permiso especial, así que "aunque esté en silencio" se cumple con el volumen de notificaciones, no con No molestar. **Requisito externo:** crear un proyecto gratuito de Firebase (plan Spark, sin tarjeta) y subir su credencial de FCM a EAS; sin eso el push no llega en Android |
 | D26 | Alcance del puesto de control (E8-01) | `alertas` y `posiciones` hoy solo las ven el menor y su guardián | Política RLS de lectura de `alertas` para el **personal activo del colegio del menor** (`institucion`) y para los **contactos de apoyo** que aceptaron (D8). `obtener_ultima_posicion` se amplía: el personal del colegio y el contacto de apoyo ven la posición **solo de una alerta activa**, nunca la del trayecto (RF-41). Gráfico con `react-native-gifted-charts` (ya en el Plan): alertas de los últimos 14 días por día y por clasificación de cierre (D29), con la función agregada `resumen_alertas_colegio` (sin datos personales) |

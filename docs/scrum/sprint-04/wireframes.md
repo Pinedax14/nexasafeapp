@@ -1,7 +1,7 @@
 # Sprint 04 — Wireframes
 
 **Fecha:** 15/10/2026 · Bocetos de baja fidelidad para la Definition of Ready (refinement del Sprint 04).
-**Estado:** PENDIENTE: aprobación del equipo.
+**Estado:** aprobados por el equipo el 15/10/2026.
 
 Siguen el estilo de los sprints anteriores (`formStyles`) y el mapa de OpenStreetMap (D9).
 
