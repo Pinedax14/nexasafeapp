@@ -40,6 +40,7 @@ type Calls = {
   audits: Array<[string | null, string, string]>;
   verifiedAgainst: Array<string | null>;
   ipFailures: string[];
+  cancelled: Array<[string, string, string]>;
 };
 
 function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
@@ -50,6 +51,7 @@ function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
     audits: [],
     verifiedAgainst: [],
     ipFailures: [],
+    cancelled: [],
   };
   return {
     ...calls,
@@ -78,6 +80,12 @@ function fakeDeps(overrides: Partial<AuthPinDeps> = {}): AuthPinDeps & Calls {
       return Promise.resolve();
     },
     createSession: () => Promise.resolve({ access_token: 'at', refresh_token: 'rt' }),
+    findProtegidoByUser: (usuarioId) =>
+      Promise.resolve(usuarioId === candidate.usuarioId ? candidate : null),
+    cancelAlert: (alertaId, protegidoId, actorId) => {
+      calls.cancelled.push([alertaId, protegidoId, actorId]);
+      return Promise.resolve(true);
+    },
     audit: (actor, id, accion) => {
       calls.audits.push([actor, id, accion]);
       return Promise.resolve();
@@ -373,4 +381,106 @@ Deno.test('el bloqueo de una IP no afecta a otra', async () => {
   const response = await createHandler(deps)(postFrom('198.51.100.2', loginBody));
 
   assertEquals(response.status, 200);
+});
+
+// ---------------------------------------------------------------------------
+// Cancelar la alerta con el PIN (E6-03, D23)
+// ---------------------------------------------------------------------------
+
+const ALERTA_ID = 'e0000000-0000-0000-0000-000000000001';
+const cancelBody = { accion: 'cancelar_alerta', alerta_id: ALERTA_ID, pin: '1234' };
+const asProtegido = () =>
+  Promise.resolve({ id: candidate.usuarioId, rol: 'protegido' as string | null });
+
+Deno.test('el menor cancela su alerta con el PIN correcto', async () => {
+  const deps = fakeDeps({ getCaller: asProtegido });
+  const response = await createHandler(deps)(post(cancelBody));
+
+  assertEquals(response.status, 200);
+  assertEquals(await response.json(), { ok: true });
+  assertEquals(deps.cancelled, [[ALERTA_ID, PROTEGIDO_ID, candidate.usuarioId]]);
+  assertEquals(deps.successes, [PROTEGIDO_ID]);
+});
+
+Deno.test('con un PIN incorrecto la alerta no se cancela y cuenta como fallo', async () => {
+  const deps = fakeDeps({ getCaller: asProtegido });
+  const response = await createHandler(deps)(post({ ...cancelBody, pin: '9876' }));
+
+  assertEquals(response.status, 401);
+  assertEquals(await response.json(), { error: 'INVALID_PIN' });
+  assertEquals(deps.cancelled, []);
+  assertEquals(deps.failures, [[PROTEGIDO_ID, 1, null]]);
+  assertEquals(deps.audits, [[null, PROTEGIDO_ID, 'CANCELAR_ALERTA_PIN_FALLIDO']]);
+});
+
+Deno.test('el quinto PIN incorrecto al cancelar bloquea al menor', async () => {
+  const deps = fakeDeps({
+    getCaller: asProtegido,
+    findProtegidoByUser: () =>
+      Promise.resolve({ ...candidate, intentosFallidos: MAX_FAILED_ATTEMPTS - 1 }),
+  });
+  const response = await createHandler(deps)(post({ ...cancelBody, pin: '9876' }));
+
+  assertEquals(response.status, 429);
+  assertEquals(deps.failures, [
+    [PROTEGIDO_ID, 0, new Date(NOW.getTime() + LOCK_DURATION_MS).toISOString()],
+  ]);
+});
+
+Deno.test('un menor bloqueado no puede cancelar ni con el PIN correcto', async () => {
+  const deps = fakeDeps({
+    getCaller: asProtegido,
+    findProtegidoByUser: () =>
+      Promise.resolve({ ...candidate, bloqueadoHasta: '2026-10-05T12:10:00Z' }),
+  });
+  const response = await createHandler(deps)(post(cancelBody));
+
+  assertEquals(response.status, 429);
+  assertEquals(deps.verifiedAgainst, []);
+  assertEquals(deps.cancelled, []);
+});
+
+Deno.test('pasada la ventana de 10 s la alerta ya no se cancela', async () => {
+  const deps = fakeDeps({ getCaller: asProtegido, cancelAlert: () => Promise.resolve(false) });
+  const response = await createHandler(deps)(post(cancelBody));
+
+  assertEquals(response.status, 409);
+  assertEquals(await response.json(), { error: 'NOT_CANCELLABLE' });
+});
+
+Deno.test('si la base de datos falla al cancelar responde error', async () => {
+  const deps = fakeDeps({ getCaller: asProtegido, cancelAlert: () => Promise.resolve(null) });
+  const response = await createHandler(deps)(post(cancelBody));
+
+  assertEquals(response.status, 500);
+});
+
+Deno.test('solo el menor puede cancelar su alerta', async () => {
+  const deps = fakeDeps();
+  const response = await createHandler(deps)(post(cancelBody));
+
+  assertEquals(response.status, 403);
+  assertEquals(deps.cancelled, []);
+});
+
+Deno.test('cancelar exige sesión', async () => {
+  const deps = fakeDeps({ getCaller: () => Promise.resolve(null) });
+  const response = await createHandler(deps)(post(cancelBody, null));
+
+  assertEquals(response.status, 401);
+});
+
+Deno.test('cancelar rechaza un identificador o un PIN con otro formato', async () => {
+  const handler = createHandler(fakeDeps({ getCaller: asProtegido }));
+
+  assertEquals((await handler(post({ ...cancelBody, alerta_id: 'x' }))).status, 400);
+  assertEquals((await handler(post({ ...cancelBody, pin: '12' }))).status, 400);
+});
+
+Deno.test('una sesión de protegido sin menor vinculado no cancela', async () => {
+  const deps = fakeDeps({ getCaller: () => Promise.resolve({ id: 'otro', rol: 'protegido' }) });
+  const response = await createHandler(deps)(post(cancelBody));
+
+  assertEquals(response.status, 404);
+  assertEquals(deps.cancelled, []);
 });
