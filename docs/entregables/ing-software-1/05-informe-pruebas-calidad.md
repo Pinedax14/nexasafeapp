@@ -44,3 +44,25 @@ Complementa al documento oficial [`05-informe-pruebas-calidad.pdf`](05-informe-p
 **Acciones para el siguiente sprint:**
 - Montar Maestro y automatizar el flujo E2E 1 antes de las historias de E3 y E4.
 - Probar en un Android físico las historias de mapa y GPS (riesgo R1 y R9).
+
+## Resultados Sprint 02 (15/10/2026)
+
+| Elemento | Resultado |
+|---|---|
+| Cobertura unitaria (`domain` + `data` + `core/storage`) | 99,59 % líneas, 97,67 % ramas (umbral de la DoD: 70 %) |
+| Pruebas unitarias | 320 pasan / 320 total (37 suites Jest) |
+| Pruebas de políticas RLS (RNF-27) | 123 aserciones pgTAP en 5 archivos (46 nuevas para `rutas`, `trayectos` y `contactos_apoyo`), ejecutadas por el CI sobre una base de datos efímera |
+| Pruebas de Edge Functions | Sin cambios: `admin-personal` y `auth-pin`, ejecutadas por el CI |
+| Flujos E2E ejecutados | Ninguno. La prueba manual en Android físico ([`pruebas-android.md`](../../scrum/sprint-02/pruebas-android.md)) quedó pendiente porque no hay un Android disponible; el mapa (WebView + Leaflet) no funciona en el navegador y solo está cubierto por pruebas automáticas |
+| SAST (Semgrep / CodeQL) | Semgrep sin High/Critical en los PR integrados. CodeQL: 49 runs en verde, 0 alertas abiertas |
+| SCA (`npm audit --audit-level=high`) | 4 advisories High cubiertos por EX-001 a EX-003 (vencen el 31/10/2026); 0 Critical; 16 Moderate en herramientas de build y pruebas (SEC-04) |
+| Secretos (Gitleaks) | Limpio en todos los PR integrados; 0 alertas de secret scanning |
+| Pipeline CI en `main` | 13 runs en verde, 1 en rojo por un fallo de infraestructura (límite de peticiones de GitHub al descargar la CLI de Supabase) |
+| Bugs abiertos / cerrados | 0 / 0 |
+
+**Defectos relevantes:** ninguno en el código. La Security Review (15/10/2026) registró SEC-05 (alertas de Dependabot desactivadas) y SEC-06 (enlace de invitación con esquema propio `nexasafe://`), ambos Low.
+
+**Acciones para el siguiente sprint:**
+- Correr la lista de pruebas en Android del Sprint 02 en un Android fijo o en un emulador antes de E4-02.
+- Investigar R1 (ubicación en segundo plano) antes de construir E4-02.
+- Renovar o corregir EX-001 a EX-003 antes del 31/10/2026.
