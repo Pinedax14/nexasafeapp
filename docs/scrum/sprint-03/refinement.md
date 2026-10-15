@@ -17,11 +17,11 @@ Modelo de amenazas: ver [`threat-model.md`](../../security/threat-model.md), sec
 | E6-03 Cancelar con PIN en 10 s (RF-22) | 3 | Borrador | E6-01; verificación del PIN (D23) | Sí | Borrador: W9 | No |
 | E6-05 Ubicación cada 5–10 s en la alerta (RF-24) | 5 | Borrador | E4-02, E6-01; frecuencia (D18) | Sí | Borrador: W9 | No |
 
-Ninguna historia cumple todavía la DoR: faltan la aprobación de las decisiones D18–D24 y de los wireframes.
+Decisiones D18–D24 y wireframes W7–W9 aprobados por el equipo el 15/10/2026. Las historias cumplen la DoR, salvo la investigación de R1, que queda pendiente hasta tener el celular prestado (R9).
 
-## 2. Decisiones propuestas (PENDIENTE: aprobación del equipo)
+## 2. Decisiones (aprobadas el 15/10/2026)
 
-| ID | Tema | Por qué hace falta | Propuesta |
+| ID | Tema | Por qué hace falta | Decisión |
 |---|---|---|---|
 | D18 | Captura de la ubicación (E4-02, E6-05) | El Plan nombra `expo-location` y `expo-task-manager` en el stack, pero no fija frecuencia ni cómo seguir en segundo plano | `expo-location` + `expo-task-manager` (versiones de Expo SDK 54) con **servicio en primer plano** de Android y su notificación fija "NexaSafe te está acompañando". Frecuencia: **cada 15 s o 20 m** en el trayecto (RNF-11, batería < 8 %/h) y **cada 5 s** durante una alerta (RF-24). Permisos nuevos: ubicación precisa, ubicación en segundo plano y servicio en primer plano de ubicación. La captura arranca solo con un trayecto `EN_CURSO` o una alerta activa y se detiene al cerrarse (RF-41) |
 | D19 | Dónde se guardan las posiciones (E4-02, RNF-02) | El modelo del Diseño (cap. 6) no tiene tabla de posiciones y RNF-02 pide cifrar por columna la "ubicación histórica" | Tabla técnica nueva **`posiciones`** (`id`, `protegido_id`, `trayecto_id` o `alerta_id`, `ubicacion_cifrada`, `precision_m`, `capturada_en`, `recibida_en`). Latitud y longitud **cifradas** con `pgcrypto` y una llave de Vault, como el documento del menor (E1-02). Solo se escriben con la función `registrar_posicion`, que exige trayecto `EN_CURSO` o alerta activa del propio menor; nadie tiene `SELECT` directo |

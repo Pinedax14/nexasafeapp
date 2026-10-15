@@ -1,7 +1,7 @@
 # Sprint 03 — Wireframes
 
 **Fecha:** 15/10/2026 · Bocetos de baja fidelidad para la Definition of Ready (refinement del Sprint 03).
-**Estado:** PENDIENTE: aprobación del equipo.
+**Estado:** aprobados por el equipo el 15/10/2026.
 
 Siguen el estilo de las pantallas de los Sprints 01 y 02 (`formStyles`) y el mapa de OpenStreetMap del Sprint 02 (D9).
 

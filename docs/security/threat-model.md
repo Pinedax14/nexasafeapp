@@ -52,7 +52,7 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026). Los controles marca
 
 ## E3/E4 — Rutas y trayecto acompañado
 
-STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E3-03, E4-01 y E4-04, y en el refinement del Sprint 03 (15/10/2026) para E4-02 y E4-03 (decisiones D18–D21 propuestas en [`docs/scrum/sprint-03/refinement.md`](../scrum/sprint-03/refinement.md)).
+STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E3-03, E4-01 y E4-04, y en el refinement del Sprint 03 (15/10/2026) para E4-02 y E4-03 (decisiones D18–D21 aprobadas el 15/10/2026 en [`docs/scrum/sprint-03/refinement.md`](../scrum/sprint-03/refinement.md)).
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
