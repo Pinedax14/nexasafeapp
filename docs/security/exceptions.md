@@ -24,3 +24,5 @@ Las tres siguen siendo herramientas de build o de pruebas que no viajan en el AP
 
 - `postcss` 8.4.49 → 8.5.28 (GHSA-6g55-p6wh-862q, GHSA-r28c-9q8g-f849).
 - `shell-quote` 1.10.0 → 1.12.0 (GHSA-pqg4-j6r4-53mv, Critical, inyección de comandos en `quote()`), dependencia de `react-devtools-core` (herramienta de desarrollo de React Native). Detectado por el gate del CI el 08/10/2026.
+
+**Revisión del Sprint 02 (15/10/2026):** `npm view` confirma que sigue sin existir una corrección compatible con Expo SDK 54: `node-forge` y `braces` siguen sin versión nueva (1.4.0 y 3.0.3), y `image-size` solo tiene la 2.0.4, que cambia la API que usa `metro`. Las tres siguen siendo herramientas de build o de pruebas que no viajan en el APK. Se mantienen hasta el **31/10/2026**: antes de esa fecha hay que renovarlas o el CI fallará.
