@@ -5,6 +5,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). U
 ## [Sin publicar] — Sprint 02
 
 ### Agregado
+- Retrospectiva del Sprint 02 (`docs/scrum/sprint-02/retro.md`), 15/10/2026: seguimiento de las acciones del Sprint 01 y 6 acciones para el Sprint 03 (Android fijo, R1 antes de E4-02, fusionar PR al día, revisión de pares, una sola fuente de fechas y excepciones antes del 31/10).
 - Review del Sprint 02 (`docs/scrum/sprint-02/review.md`), feedback del PO informado el 15/10/2026: 7 historias aceptadas, velocidad 26 de 26 pts, con la prueba en Android físico pendiente.
 - Security Review del Sprint 02 (15/10/2026): 0 hallazgos High/Critical sin excepción; hallazgos SEC-05 y SEC-06 (Low, issues #62 y #63) y SEC-04 actualizado (#61); R9 materializado; STRIDE de E3/E4 actualizado con los controles construidos; excepciones EX-001 a EX-003 revisadas (vencen el 31/10/2026).
 - Lista de pruebas manuales en Android del Sprint 02 (`docs/scrum/sprint-02/pruebas-android.md`), con la prueba pendiente, y burndown del Sprint 02 con las 7 historias integradas.
