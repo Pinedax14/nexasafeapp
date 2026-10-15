@@ -474,7 +474,11 @@ export type Database = {
     Functions: {
       aceptar_invitacion: { Args: { p_token: string }; Returns: string };
       cancelar_alerta_verificada: {
-        Args: { p_actor_id: string; p_alerta_id: string; p_protegido_id: string };
+        Args: {
+          p_actor_id: string;
+          p_alerta_id: string;
+          p_protegido_id: string;
+        };
         Returns: boolean;
       };
       crear_invitacion: {
@@ -516,17 +520,6 @@ export type Database = {
           nombre: string;
         }[];
       };
-      obtener_ultima_posicion: {
-        Args: { p_protegido_id: string };
-        Returns: {
-          alerta_id: string;
-          lat: number;
-          lng: number;
-          precision_m: number;
-          recibida_en: string;
-          trayecto_id: string;
-        }[];
-      };
       obtener_rutas: {
         Args: { p_protegido_id: string };
         Returns: {
@@ -536,6 +529,17 @@ export type Database = {
           geojson: Json;
           id: string;
           sentido: Database['public']['Enums']['sentido_ruta'];
+        }[];
+      };
+      obtener_ultima_posicion: {
+        Args: { p_protegido_id: string };
+        Returns: {
+          alerta_id: string;
+          lat: number;
+          lng: number;
+          precision_m: number;
+          recibida_en: string;
+          trayecto_id: string;
         }[];
       };
       pin_huella_documento: { Args: { p_documento: string }; Returns: string };
