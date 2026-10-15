@@ -24,7 +24,7 @@ Issues con las etiquetas `sprint:03`, `epic:E4` / `epic:E6` y `security`.
 - [x] STRIDE de E4-02, E4-03 y E6 en [`threat-model.md`](../../security/threat-model.md).
 - [ ] Migración con RLS y prueba pgTAP de cada política.
 - [ ] Autorización de canales privados de Realtime en dev y staging (la llave de cifrado de posiciones la crea la migración en Vault, como la del documento).
-- [ ] PIA: captura de ubicación en segundo plano y tabla `posiciones`.
+- [x] PIA: captura de ubicación en segundo plano, tabla `posiciones` y alertas (15/10/2026).
 
 ## Criterios de aceptación (Gherkin)
 
