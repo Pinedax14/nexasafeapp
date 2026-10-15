@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
@@ -8,9 +9,15 @@ import { usePanicViewModel } from '../../../alerts/presentation/viewModels/usePa
 import { ListMyProtegidos } from '../../../profile/domain/useCases/ListMyProtegidos';
 import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';
 import { DIRECTION_LABELS } from '../../../routes/presentation/routeMessages';
+import { ShareLocation } from '../../domain/useCases/ShareLocation';
 import { TrackTrips } from '../../domain/useCases/TrackTrips';
 import { AccompanimentBanner } from '../components/AccompanimentBanner';
-import { NO_ROUTES_MESSAGE, tripSince } from '../tripMessages';
+import {
+  LOCATION_PERMISSION_TEXT,
+  LOCATION_PERMISSION_TITLE,
+  NO_ROUTES_MESSAGE,
+  tripSince,
+} from '../tripMessages';
 import { useProtegidoTripViewModel } from '../viewModels/useProtegidoTripViewModel';
 
 type ProtegidoTripScreenProps = {
@@ -18,6 +25,7 @@ type ProtegidoTripScreenProps = {
   manageRoutes: ManageRoutes;
   trackTrips: TrackTrips;
   panicAlerts: PanicAlerts;
+  shareLocation: ShareLocation;
   userName: string;
   onSignOut: () => void;
 };
@@ -25,17 +33,35 @@ type ProtegidoTripScreenProps = {
 /**
  * W3 · Inicio del menor y W4 · Trayecto en curso (E4-01) con la banda de acompañamiento (E4-04).
  * W9 · Botón de pánico siempre visible, con o sin trayecto (E6-01, E6-03).
+ * La ubicación se comparte solo con trayecto o alerta activos (E4-02, E6-05, RF-41).
  */
 export function ProtegidoTripScreen({
   listMyProtegidos,
   manageRoutes,
   trackTrips,
   panicAlerts,
+  shareLocation,
   userName,
   onSignOut,
 }: ProtegidoTripScreenProps) {
-  const vm = useProtegidoTripViewModel(listMyProtegidos, manageRoutes, trackTrips);
+  const vm = useProtegidoTripViewModel(listMyProtegidos, manageRoutes, trackTrips, shareLocation);
   const panic = usePanicViewModel(panicAlerts);
+  const tripActive = vm.trip?.status === 'EN_CURSO';
+  const alertActive = !!panic.alert;
+  const { isLoading, reload } = vm;
+
+  useEffect(() => {
+    if (!isLoading) shareLocation.sync(tripActive, alertActive);
+  }, [alertActive, isLoading, shareLocation, tripActive]);
+
+  // E4-03: cuando el servidor cierra el trayecto al llegar, la pantalla se actualiza.
+  useEffect(
+    () =>
+      shareLocation.onReport((report) => {
+        if (report.tripClosed) reload();
+      }),
+    [reload, shareLocation],
+  );
   const tripRoute = vm.trip ? vm.routes.find((route) => route.id === vm.trip?.routeId) : undefined;
 
   return (
@@ -56,6 +82,20 @@ export function ProtegidoTripScreen({
         )}
         {!!panic.errorMessage && <Text style={styles.error}>{panic.errorMessage}</Text>}
         {!!panic.notice && <Text style={local.notice}>{panic.notice}</Text>}
+
+        {vm.needsPermission && (
+          <View style={local.permissionCard}>
+            <Text style={styles.sectionTitle}>{LOCATION_PERMISSION_TITLE}</Text>
+            <Text style={local.tripText}>{LOCATION_PERMISSION_TEXT}</Text>
+            <Pressable
+              style={styles.button}
+              onPress={vm.confirmPermission}
+              accessibilityRole="button"
+            >
+              <Text style={styles.buttonText}>Continuar</Text>
+            </Pressable>
+          </View>
+        )}
 
         {vm.isLoading ? (
           <ActivityIndicator color={colors.primary} />
@@ -120,4 +160,11 @@ const local = StyleSheet.create({
   },
   tripText: { fontSize: 16, color: colors.text, marginBottom: 4 },
   notice: { fontSize: 16, color: colors.success, marginBottom: 8 },
+  permissionCard: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 16,
+  },
 });

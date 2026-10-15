@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { TripRepository } from '../../../tracking/domain/repositories/TripRepository';
 import { TrackTrips } from '../../../tracking/domain/useCases/TrackTrips';
 import { tripSince } from '../../../tracking/presentation/tripMessages';
@@ -8,7 +8,7 @@ import { GuardianHomeScreen } from './GuardianHomeScreen';
 
 const startedAt = '2026-10-12T11:42:00Z';
 
-async function setup(withTrips: boolean) {
+async function setup(withTrips: boolean, onOpenLive?: jest.Mock) {
   const profiles: jest.Mocked<ProtegidoRepository> = {
     listMine: jest.fn().mockResolvedValue({
       ok: true,
@@ -39,6 +39,7 @@ async function setup(withTrips: boolean) {
       onRegisterProtegido={jest.fn()}
       onAssignPin={jest.fn()}
       onOpenRoutes={jest.fn()}
+      onOpenLive={onOpenLive}
       onSignOut={jest.fn()}
     />,
   );
@@ -58,5 +59,24 @@ describe('GuardianHomeScreen · trayecto en curso (E4-01)', () => {
 
     expect(await screen.findByText('Menor Uno')).toBeTruthy();
     expect(screen.queryByText(/En trayecto/)).toBeNull();
+  });
+});
+
+describe('GuardianHomeScreen · trayecto en vivo (E4-02)', () => {
+  it('"Ver en vivo" aparece solo en el menor con trayecto y abre su trayecto', async () => {
+    const onOpenLive = jest.fn();
+    await setup(true, onOpenLive);
+
+    await fireEvent.press(await screen.findByLabelText('Ver en vivo a Menor Uno'));
+
+    expect(screen.queryByLabelText('Ver en vivo a Menor Dos')).toBeNull();
+    expect(onOpenLive).toHaveBeenCalledWith(expect.objectContaining({ id: 'p-1' }));
+  });
+
+  it('sin la acción no muestra el enlace', async () => {
+    await setup(true);
+
+    expect(await screen.findByText(/En trayecto/)).toBeTruthy();
+    expect(screen.queryByText('Ver en vivo ›')).toBeNull();
   });
 });

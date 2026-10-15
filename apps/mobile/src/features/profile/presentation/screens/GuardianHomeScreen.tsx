@@ -16,6 +16,7 @@ type GuardianHomeScreenProps = {
   onAssignPin: (protegido: Protegido) => void;
   onOpenRoutes: (protegido: Protegido) => void;
   onOpenNetwork?: (protegido: Protegido) => void;
+  onOpenLive?: (protegido: Protegido) => void;
   onSignOut: () => void;
 };
 
@@ -27,6 +28,7 @@ export function GuardianHomeScreen({
   onAssignPin,
   onOpenRoutes,
   onOpenNetwork,
+  onOpenLive,
   onSignOut,
 }: GuardianHomeScreenProps) {
   const vm = useGuardianHomeViewModel(listMyProtegidos, trackTrips);
@@ -56,6 +58,15 @@ export function GuardianHomeScreen({
                 <Text style={local.trip}>
                   En trayecto · {tripSince(vm.activeTrips[protegido.id].startedAt).toLowerCase()}
                 </Text>
+              )}
+              {!!vm.activeTrips[protegido.id] && onOpenLive && (
+                <Pressable
+                  onPress={() => onOpenLive(protegido)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver en vivo a ${protegido.name}`}
+                >
+                  <Text style={styles.linkText}>Ver en vivo ›</Text>
+                </Pressable>
               )}
             </View>
             {protegido.status === 'ACTIVO' && (
