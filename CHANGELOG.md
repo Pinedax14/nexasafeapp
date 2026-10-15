@@ -2,6 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 03
+
+### Agregado
+- E6-01 y E6-03 Botón de pánico (W9, RF-20, RF-22): en el inicio del menor, con o sin trayecto, un botón "AYUDA" que se dispara al mantenerlo presionado 3 s (`disparar_alerta`); muestra la cuenta regresiva de 10 s para cancelarla con el PIN (acción `cancelar_alerta` de `auth-pin`) y, pasada la ventana, "Tu alerta está activa". Al abrir la app recupera la alerta activa. Nueva feature `alerts`; tipos de Supabase con `alertas`, `posiciones` y sus funciones. 41 pruebas Jest nuevas.
+
 ## [0.2.0] — Sprint 02 — 15/10/2026
 
 ### Agregado

@@ -1,4 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { Alert } from '../../../alerts/domain/entities/Alert';
+import { AlertRepository } from '../../../alerts/domain/repositories/AlertRepository';
+import { PanicAlerts } from '../../../alerts/domain/useCases/PanicAlerts';
+import {
+  ALERT_ACTIVE_MESSAGE,
+  ALERT_CANCELLED_MESSAGE,
+  ALERT_ERROR_MESSAGES,
+  ALERT_SENT_TITLE,
+} from '../../../alerts/presentation/alertMessages';
 import { ProtegidoRepository } from '../../../profile/domain/repositories/ProtegidoRepository';
 import { ListMyProtegidos } from '../../../profile/domain/useCases/ListMyProtegidos';
 import { RouteRepository } from '../../../routes/domain/repositories/RouteRepository';
@@ -35,6 +44,14 @@ type Options = {
   trips?: Trip[][];
   start?: Awaited<ReturnType<TripRepository['start']>>;
   profile?: Awaited<ReturnType<ProtegidoRepository['listMine']>>;
+  alerts?: Partial<jest.Mocked<AlertRepository>>;
+};
+
+const sentAlert: Alert = {
+  id: 'al-1',
+  status: 'ENVIADA',
+  createdAt: '2026-10-15T12:00:00Z',
+  cancellableUntil: '2026-10-15T12:00:10Z',
 };
 
 async function setup(options: Options = {}) {
@@ -63,17 +80,24 @@ async function setup(options: Options = {}) {
   };
   sequence.forEach((value) => trips.listActive.mockResolvedValueOnce({ ok: true, value }));
   trips.listActive.mockResolvedValue({ ok: true, value: sequence[sequence.length - 1] });
+  const alerts: jest.Mocked<AlertRepository> = {
+    trigger: jest.fn().mockResolvedValue({ ok: true, value: sentAlert }),
+    cancel: jest.fn().mockResolvedValue({ ok: true, value: undefined }),
+    active: jest.fn().mockResolvedValue({ ok: true, value: null }),
+    ...options.alerts,
+  };
 
   await render(
     <ProtegidoTripScreen
       listMyProtegidos={new ListMyProtegidos(profiles)}
       manageRoutes={new ManageRoutes(routes)}
       trackTrips={new TrackTrips(trips)}
+      panicAlerts={new PanicAlerts(alerts)}
       userName="Menor"
       onSignOut={jest.fn()}
     />,
   );
-  return { trips, routes };
+  return { trips, routes, alerts };
 }
 
 describe('ProtegidoTripScreen (E4-01)', () => {
@@ -148,6 +172,116 @@ describe('ProtegidoTripScreen · indicador de acompañamiento (E4-04)', () => {
 
     expect(await screen.findByText('¿A dónde vas?')).toBeTruthy();
     expect(screen.queryByText(ACCOMPANIMENT_TEXT)).toBeNull();
+  });
+});
+
+describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  async function hold(ms: number) {
+    const button = await screen.findByLabelText('Botón de ayuda');
+    await fireEvent(button, 'pressIn');
+    await act(async () => {
+      jest.advanceTimersByTime(ms);
+    });
+    await fireEvent(button, 'pressOut');
+  }
+
+  it('mantener presionado 3 s dispara la alerta y muestra la cuenta regresiva', async () => {
+    const { alerts } = await setup();
+
+    await hold(3000);
+
+    expect(alerts.trigger).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(ALERT_SENT_TITLE)).toBeTruthy();
+    expect(screen.getByLabelText('10 segundos para cancelar')).toBeTruthy();
+    expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
+  });
+
+  it('soltar antes de 3 s no dispara nada', async () => {
+    const { alerts } = await setup();
+
+    await hold(2000);
+
+    expect(alerts.trigger).not.toHaveBeenCalled();
+    expect(screen.queryByText(ALERT_SENT_TITLE)).toBeNull();
+  });
+
+  it('el botón está también durante un trayecto', async () => {
+    await setup({ trips: [[trip]] });
+
+    expect(await screen.findByText(tripSince(trip.startedAt))).toBeTruthy();
+    expect(screen.getByLabelText('Botón de ayuda')).toBeTruthy();
+  });
+
+  it('con el PIN correcto dentro de la ventana la alerta se cancela', async () => {
+    const { alerts } = await setup();
+    await hold(3000);
+
+    await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '1234');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    expect(alerts.cancel).toHaveBeenCalledWith('al-1', '1234');
+    expect(await screen.findByText(ALERT_CANCELLED_MESSAGE)).toBeTruthy();
+    expect(screen.getByLabelText('Botón de ayuda')).toBeTruthy();
+  });
+
+  it('un PIN incorrecto deja la alerta activa', async () => {
+    await setup({
+      alerts: { cancel: jest.fn().mockResolvedValue({ ok: false, reason: 'INVALID_PIN' }) },
+    });
+    await hold(3000);
+
+    await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '9999');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.INVALID_PIN)).toBeTruthy();
+    expect(screen.getByText(ALERT_SENT_TITLE)).toBeTruthy();
+  });
+
+  it('pasados 10 s ya no se puede cancelar', async () => {
+    await setup();
+    await hold(3000);
+
+    await act(async () => {
+      jest.advanceTimersByTime(11000);
+    });
+
+    expect(await screen.findByText(ALERT_ACTIVE_MESSAGE)).toBeTruthy();
+    expect(screen.queryByLabelText('PIN para cancelar')).toBeNull();
+  });
+
+  it('si el servidor dice que la ventana venció, se muestra la alerta activa', async () => {
+    await setup({
+      alerts: { cancel: jest.fn().mockResolvedValue({ ok: false, reason: 'NOT_CANCELLABLE' }) },
+    });
+    await hold(3000);
+
+    await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '1234');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.NOT_CANCELLABLE)).toBeTruthy();
+    expect(screen.getByText(ALERT_ACTIVE_MESSAGE)).toBeTruthy();
+  });
+
+  it('muestra el error si no pudo disparar', async () => {
+    await setup({
+      alerts: { trigger: jest.fn().mockResolvedValue({ ok: false, reason: 'RATE_LIMITED' }) },
+    });
+
+    await hold(3000);
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.RATE_LIMITED)).toBeTruthy();
+  });
+
+  it('al abrir la app recupera la alerta activa', async () => {
+    await setup({
+      alerts: { active: jest.fn().mockResolvedValue({ ok: true, value: sentAlert }) },
+    });
+
+    expect(await screen.findByText(ALERT_SENT_TITLE)).toBeTruthy();
+    expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
   });
 });
 

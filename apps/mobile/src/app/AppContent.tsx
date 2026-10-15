@@ -46,6 +46,8 @@ import { ManageRoutes } from '../features/routes/domain/useCases/ManageRoutes';
 import { RouteEditorScreen } from '../features/routes/presentation/screens/RouteEditorScreen';
 import { RoutesScreen } from '../features/routes/presentation/screens/RoutesScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
+import { SupabaseAlertRepository } from '../features/alerts/data/repositories/SupabaseAlertRepository';
+import { PanicAlerts } from '../features/alerts/domain/useCases/PanicAlerts';
 import { SupabaseTripRepository } from '../features/tracking/data/repositories/SupabaseTripRepository';
 import { TrackTrips } from '../features/tracking/domain/useCases/TrackTrips';
 import { ProtegidoTripScreen } from '../features/tracking/presentation/screens/ProtegidoTripScreen';
@@ -91,6 +93,7 @@ export function AppContent() {
       validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
       manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase), createRouteCache()),
       trackTrips: new TrackTrips(new SupabaseTripRepository(supabase)),
+      panicAlerts: new PanicAlerts(new SupabaseAlertRepository(supabase)),
       supportNetwork: new SupportNetwork(new SupabaseSupportNetworkRepository(supabase)),
     };
   }, []);
@@ -207,6 +210,7 @@ export function AppContent() {
         listMyProtegidos={useCases.listMyProtegidos}
         manageRoutes={useCases.manageRoutes}
         trackTrips={useCases.trackTrips}
+        panicAlerts={useCases.panicAlerts}
         userName={loggedUser.name}
         onSignOut={handleSignOut}
       />

@@ -1,6 +1,10 @@
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { PanicAlerts } from '../../../alerts/domain/useCases/PanicAlerts';
+import { AlertPanel } from '../../../alerts/presentation/components/AlertPanel';
+import { PanicButton } from '../../../alerts/presentation/components/PanicButton';
+import { usePanicViewModel } from '../../../alerts/presentation/viewModels/usePanicViewModel';
 import { ListMyProtegidos } from '../../../profile/domain/useCases/ListMyProtegidos';
 import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';
 import { DIRECTION_LABELS } from '../../../routes/presentation/routeMessages';
@@ -13,19 +17,25 @@ type ProtegidoTripScreenProps = {
   listMyProtegidos: ListMyProtegidos;
   manageRoutes: ManageRoutes;
   trackTrips: TrackTrips;
+  panicAlerts: PanicAlerts;
   userName: string;
   onSignOut: () => void;
 };
 
-/** W3 · Inicio del menor y W4 · Trayecto en curso (E4-01) con la banda de acompañamiento (E4-04). */
+/**
+ * W3 · Inicio del menor y W4 · Trayecto en curso (E4-01) con la banda de acompañamiento (E4-04).
+ * W9 · Botón de pánico siempre visible, con o sin trayecto (E6-01, E6-03).
+ */
 export function ProtegidoTripScreen({
   listMyProtegidos,
   manageRoutes,
   trackTrips,
+  panicAlerts,
   userName,
   onSignOut,
 }: ProtegidoTripScreenProps) {
   const vm = useProtegidoTripViewModel(listMyProtegidos, manageRoutes, trackTrips);
+  const panic = usePanicViewModel(panicAlerts);
   const tripRoute = vm.trip ? vm.routes.find((route) => route.id === vm.trip?.routeId) : undefined;
 
   return (
@@ -33,6 +43,19 @@ export function ProtegidoTripScreen({
       <AccompanimentBanner trip={vm.trip} />
       <ScrollView contentContainerStyle={styles.screen}>
         <Text style={styles.title}>Hola, {userName} 👋</Text>
+
+        {panic.alert && (
+          <AlertPanel
+            secondsLeft={panic.secondsLeft}
+            canCancel={panic.canCancel}
+            pin={panic.pin}
+            onChangePin={panic.setPin}
+            onCancel={panic.cancel}
+            isCancelling={panic.isCancelling}
+          />
+        )}
+        {!!panic.errorMessage && <Text style={styles.error}>{panic.errorMessage}</Text>}
+        {!!panic.notice && <Text style={local.notice}>{panic.notice}</Text>}
 
         {vm.isLoading ? (
           <ActivityIndicator color={colors.primary} />
@@ -67,6 +90,8 @@ export function ProtegidoTripScreen({
 
         {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
+        {!panic.alert && <PanicButton onTrigger={panic.trigger} disabled={panic.isSending} />}
+
         <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
           <Text style={styles.linkText}>Cerrar sesión</Text>
         </Pressable>
@@ -94,4 +119,5 @@ const local = StyleSheet.create({
     marginBottom: 16,
   },
   tripText: { fontSize: 16, color: colors.text, marginBottom: 4 },
+  notice: { fontSize: 16, color: colors.success, marginBottom: 8 },
 });
