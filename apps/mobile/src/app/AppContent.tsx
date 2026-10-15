@@ -51,6 +51,8 @@ import { PanicAlerts } from '../features/alerts/domain/useCases/PanicAlerts';
 import { SupabaseAlertResponseRepository } from '../features/alerts/data/repositories/SupabaseAlertResponseRepository';
 import { AlertSummary } from '../features/alerts/domain/entities/AlertSummary';
 import { RespondToAlerts } from '../features/alerts/domain/useCases/RespondToAlerts';
+import { ExpoPushNotifier } from '../features/alerts/data/push/ExpoPushNotifier';
+import { AlertNotifications } from '../features/alerts/domain/useCases/AlertNotifications';
 import { AlertDetailScreen } from '../features/alerts/presentation/screens/AlertDetailScreen';
 import { ControlRoomScreen } from '../features/alerts/presentation/screens/ControlRoomScreen';
 import { SupabaseTripRepository } from '../features/tracking/data/repositories/SupabaseTripRepository';
@@ -108,6 +110,7 @@ export function AppContent() {
       panicAlerts: new PanicAlerts(new SupabaseAlertRepository(supabase)),
       watchLive: new WatchLive(new SupabasePositionRepository(supabase)),
       respondToAlerts: new RespondToAlerts(new SupabaseAlertResponseRepository(supabase)),
+      alertNotifications: new AlertNotifications(new ExpoPushNotifier(supabase)),
       supportNetwork: new SupportNetwork(new SupabaseSupportNetworkRepository(supabase)),
     };
   }, []);
@@ -130,6 +133,20 @@ export function AppContent() {
     };
   }, [useCases]);
 
+  // E7-01 (D25): quien atiende alertas registra su teléfono para el push, y al tocar la
+  // notificación se abre la alerta. E11-04: fuera de la sesión del menor no se captura ubicación.
+  const role = loggedUser?.role;
+  useEffect(() => {
+    if (!role) return;
+    if (role !== 'protegido') shareLocation.sync(false, false);
+    useCases.alertNotifications.enableFor(role);
+    return useCases.alertNotifications.onAlertOpened(async (alertId) => {
+      const result = await useCases.respondToAlerts.list(false);
+      const alert = result.ok ? result.value.find((item) => item.id === alertId) : undefined;
+      if (alert) setOpenedAlert(alert);
+    });
+  }, [role, useCases]);
+
   // E2-01 (D14): el enlace nexasafe://invitacion/<token> abre la pantalla de la invitación.
   useEffect(() => {
     const openInvitation = (url: string | null) => {
@@ -149,6 +166,8 @@ export function AppContent() {
   const goToRegister = useCallback(() => setAuthRoute('register'), []);
 
   const handleSignOut = useCallback(async () => {
+    // D25: el teléfono deja de recibir avisos de esta cuenta.
+    await useCases.alertNotifications.disable();
     await useCases.signOut.execute();
     // E3-01b: al cerrar sesión no quedan rutas en el teléfono.
     await useCases.manageRoutes.clearCache();
