@@ -46,8 +46,14 @@ import { ManageRoutes } from '../features/routes/domain/useCases/ManageRoutes';
 import { RouteEditorScreen } from '../features/routes/presentation/screens/RouteEditorScreen';
 import { RoutesScreen } from '../features/routes/presentation/screens/RoutesScreen';
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
+import { SupabaseAlertRepository } from '../features/alerts/data/repositories/SupabaseAlertRepository';
+import { PanicAlerts } from '../features/alerts/domain/useCases/PanicAlerts';
 import { SupabaseTripRepository } from '../features/tracking/data/repositories/SupabaseTripRepository';
 import { TrackTrips } from '../features/tracking/domain/useCases/TrackTrips';
+import { WatchLive } from '../features/tracking/domain/useCases/WatchLive';
+import { SupabasePositionRepository } from '../features/tracking/data/repositories/SupabasePositionRepository';
+import { GuardianLiveScreen } from '../features/tracking/presentation/screens/GuardianLiveScreen';
+import { shareLocation } from './locationSharing';
 import { ProtegidoTripScreen } from '../features/tracking/presentation/screens/ProtegidoTripScreen';
 
 type AuthRoute = 'login' | 'register' | 'pinLogin' | 'invitation';
@@ -64,6 +70,7 @@ export function AppContent() {
   const [pinProtegido, setPinProtegido] = useState<Protegido | null>(null);
   const [routesProtegido, setRoutesProtegido] = useState<Protegido | null>(null);
   const [networkProtegido, setNetworkProtegido] = useState<Protegido | null>(null);
+  const [liveProtegido, setLiveProtegido] = useState<Protegido | null>(null);
   const [invitationCode, setInvitationCode] = useState('');
   const [editedRoute, setEditedRoute] = useState<{
     direction: RouteDirection;
@@ -91,6 +98,8 @@ export function AppContent() {
       validateEnrollment: new ValidateEnrollment(new SupabaseEnrollmentRepository(supabase)),
       manageRoutes: new ManageRoutes(new SupabaseRouteRepository(supabase), createRouteCache()),
       trackTrips: new TrackTrips(new SupabaseTripRepository(supabase)),
+      panicAlerts: new PanicAlerts(new SupabaseAlertRepository(supabase)),
+      watchLive: new WatchLive(new SupabasePositionRepository(supabase)),
       supportNetwork: new SupportNetwork(new SupabaseSupportNetworkRepository(supabase)),
     };
   }, []);
@@ -135,6 +144,8 @@ export function AppContent() {
     await useCases.signOut.execute();
     // E3-01b: al cerrar sesión no quedan rutas en el teléfono.
     await useCases.manageRoutes.clearCache();
+    // RF-41: al cerrar sesión el teléfono deja de capturar ubicación.
+    await shareLocation.sync(false, false);
     setLoggedUser(null);
     setSelectedSchool(null);
     setGuardianRoute('home');
@@ -143,6 +154,7 @@ export function AppContent() {
     setRoutesProtegido(null);
     setEditedRoute(null);
     setNetworkProtegido(null);
+    setLiveProtegido(null);
     setInvitationCode('');
     setAuthRoute('login');
   }, [useCases]);
@@ -207,6 +219,8 @@ export function AppContent() {
         listMyProtegidos={useCases.listMyProtegidos}
         manageRoutes={useCases.manageRoutes}
         trackTrips={useCases.trackTrips}
+        panicAlerts={useCases.panicAlerts}
+        shareLocation={shareLocation}
         userName={loggedUser.name}
         onSignOut={handleSignOut}
       />
@@ -256,6 +270,19 @@ export function AppContent() {
 
   // E1-02: el acudiente ve sus menores y puede registrar uno nuevo.
   if (loggedUser.role === 'guardian') {
+    // E4-02: trayecto en vivo del menor (W7).
+    if (liveProtegido) {
+      return (
+        <GuardianLiveScreen
+          watchLive={useCases.watchLive}
+          trackTrips={useCases.trackTrips}
+          manageRoutes={useCases.manageRoutes}
+          protegidoId={liveProtegido.id}
+          protegidoName={liveProtegido.name}
+          onBack={() => setLiveProtegido(null)}
+        />
+      );
+    }
     // E2-01: red de apoyo del menor (W5).
     if (networkProtegido) {
       return (
@@ -322,6 +349,7 @@ export function AppContent() {
         onAssignPin={setPinProtegido}
         onOpenRoutes={setRoutesProtegido}
         onOpenNetwork={setNetworkProtegido}
+        onOpenLive={setLiveProtegido}
         onSignOut={handleSignOut}
       />
     );

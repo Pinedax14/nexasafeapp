@@ -8,6 +8,51 @@ export type Database = {
   };
   public: {
     Tables: {
+      alertas: {
+        Row: {
+          cancelable_hasta: string;
+          creada_en: string;
+          estado: Database['public']['Enums']['estado_alerta'];
+          id: string;
+          protegido_id: string;
+          tipo: Database['public']['Enums']['tipo_alerta'];
+          trayecto_id: string | null;
+        };
+        Insert: {
+          cancelable_hasta?: string;
+          creada_en?: string;
+          estado?: Database['public']['Enums']['estado_alerta'];
+          id?: string;
+          protegido_id: string;
+          tipo?: Database['public']['Enums']['tipo_alerta'];
+          trayecto_id?: string | null;
+        };
+        Update: {
+          cancelable_hasta?: string;
+          creada_en?: string;
+          estado?: Database['public']['Enums']['estado_alerta'];
+          id?: string;
+          protegido_id?: string;
+          tipo?: Database['public']['Enums']['tipo_alerta'];
+          trayecto_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'alertas_protegido_id_fkey';
+            columns: ['protegido_id'];
+            isOneToOne: false;
+            referencedRelation: 'protegidos';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'alertas_trayecto_id_fkey';
+            columns: ['trayecto_id'];
+            isOneToOne: false;
+            referencedRelation: 'trayectos';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       audit_log: {
         Row: {
           accion: string;
@@ -208,6 +253,61 @@ export type Database = {
           },
         ];
       };
+      posiciones: {
+        Row: {
+          alerta_id: string | null;
+          capturada_en: string;
+          id: number;
+          precision_m: number;
+          protegido_id: string;
+          recibida_en: string;
+          trayecto_id: string | null;
+          ubicacion_cifrada: string;
+        };
+        Insert: {
+          alerta_id?: string | null;
+          capturada_en: string;
+          id?: never;
+          precision_m: number;
+          protegido_id: string;
+          recibida_en?: string;
+          trayecto_id?: string | null;
+          ubicacion_cifrada: string;
+        };
+        Update: {
+          alerta_id?: string | null;
+          capturada_en?: string;
+          id?: never;
+          precision_m?: number;
+          protegido_id?: string;
+          recibida_en?: string;
+          trayecto_id?: string | null;
+          ubicacion_cifrada?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'posiciones_alerta_id_fkey';
+            columns: ['alerta_id'];
+            isOneToOne: false;
+            referencedRelation: 'alertas';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posiciones_protegido_id_fkey';
+            columns: ['protegido_id'];
+            isOneToOne: false;
+            referencedRelation: 'protegidos';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posiciones_trayecto_id_fkey';
+            columns: ['trayecto_id'];
+            isOneToOne: false;
+            referencedRelation: 'trayectos';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       protegidos: {
         Row: {
           colegio_id: string;
@@ -373,12 +473,25 @@ export type Database = {
     };
     Functions: {
       aceptar_invitacion: { Args: { p_token: string }; Returns: string };
+      cancelar_alerta_verificada: {
+        Args: { p_actor_id: string; p_alerta_id: string; p_protegido_id: string };
+        Returns: boolean;
+      };
       crear_invitacion: {
         Args: { p_protegido_id: string };
         Returns: {
           id: string;
           token: string;
           vence_en: string;
+        }[];
+      };
+      disparar_alerta: {
+        Args: never;
+        Returns: {
+          cancelable_hasta: string;
+          creada_en: string;
+          estado: Database['public']['Enums']['estado_alerta'];
+          id: string;
         }[];
       };
       guardar_ruta: {
@@ -403,6 +516,17 @@ export type Database = {
           nombre: string;
         }[];
       };
+      obtener_ultima_posicion: {
+        Args: { p_protegido_id: string };
+        Returns: {
+          alerta_id: string;
+          lat: number;
+          lng: number;
+          precision_m: number;
+          recibida_en: string;
+          trayecto_id: string;
+        }[];
+      };
       obtener_rutas: {
         Args: { p_protegido_id: string };
         Returns: {
@@ -417,6 +541,20 @@ export type Database = {
       pin_huella_documento: { Args: { p_documento: string }; Returns: string };
       pin_ip_bloqueada: { Args: { p_ip: string }; Returns: boolean };
       pin_registrar_fallo_ip: { Args: { p_ip: string }; Returns: undefined };
+      registrar_posicion: {
+        Args: {
+          p_capturada_en: string;
+          p_lat: number;
+          p_lng: number;
+          p_precision_m: number;
+        };
+        Returns: {
+          aceptada: boolean;
+          alerta_activa: boolean;
+          trayecto_activo: boolean;
+          trayecto_cerrado: boolean;
+        }[];
+      };
       registrar_protegido: {
         Args: {
           p_colegio_id: string;
@@ -442,9 +580,11 @@ export type Database = {
     };
     Enums: {
       alcance_visibilidad: 'SOLO_ALERTAS';
+      estado_alerta: 'ENVIADA' | 'CANCELADA' | 'ATENDIDA' | 'CERRADA';
       estado_protegido: 'PENDIENTE_VALIDACION' | 'ACTIVO' | 'INACTIVO';
       estado_trayecto: 'EN_CURSO' | 'CERRADO';
       sentido_ruta: 'CASA_COLEGIO' | 'COLEGIO_CASA';
+      tipo_alerta: 'MANUAL_BOTON';
       tipo_consentimiento: 'OTORGADO' | 'REVOCADO';
     };
     CompositeTypes: {
@@ -568,9 +708,11 @@ export const Constants = {
   public: {
     Enums: {
       alcance_visibilidad: ['SOLO_ALERTAS'],
+      estado_alerta: ['ENVIADA', 'CANCELADA', 'ATENDIDA', 'CERRADA'],
       estado_protegido: ['PENDIENTE_VALIDACION', 'ACTIVO', 'INACTIVO'],
       estado_trayecto: ['EN_CURSO', 'CERRADO'],
       sentido_ruta: ['CASA_COLEGIO', 'COLEGIO_CASA'],
+      tipo_alerta: ['MANUAL_BOTON'],
       tipo_consentimiento: ['OTORGADO', 'REVOCADO'],
     },
   },

@@ -3,14 +3,17 @@ import { ListMyProtegidos } from '../../../profile/domain/useCases/ListMyProtegi
 import { Route } from '../../../routes/domain/entities/Route';
 import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';
 import { Trip } from '../../domain/entities/Trip';
+import { ShareLocation } from '../../domain/useCases/ShareLocation';
 import { TrackTrips } from '../../domain/useCases/TrackTrips';
-import { TRIP_ERROR_MESSAGES } from '../tripMessages';
+import { LOCATION_PERMISSION_DENIED, TRIP_ERROR_MESSAGES } from '../tripMessages';
 
 export function useProtegidoTripViewModel(
   listMyProtegidos: ListMyProtegidos,
   manageRoutes: ManageRoutes,
   trackTrips: TrackTrips,
+  shareLocation: ShareLocation,
 ) {
+  const [permissionRoute, setPermissionRoute] = useState<Route | null>(null);
   const [protegidoId, setProtegidoId] = useState<string | null>(null);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [trip, setTrip] = useState<Trip | null>(null);
@@ -54,7 +57,7 @@ export function useProtegidoTripViewModel(
     load();
   }, [load]);
 
-  const start = useCallback(
+  const startTrip = useCallback(
     async (route: Route) => {
       setIsStarting(true);
       setErrorMessage('');
@@ -69,5 +72,41 @@ export function useProtegidoTripViewModel(
     [load, trackTrips, trip],
   );
 
-  return { protegidoId, routes, routesFailed, trip, isLoading, isStarting, errorMessage, start };
+  // W8 (D18): sin permiso de ubicación primero se explica para qué se usa.
+  const start = useCallback(
+    async (route: Route) => {
+      setErrorMessage('');
+      if ((await shareLocation.permission()) !== 'GRANTED') {
+        setPermissionRoute(route);
+        return;
+      }
+      await startTrip(route);
+    },
+    [shareLocation, startTrip],
+  );
+
+  const confirmPermission = useCallback(async () => {
+    const route = permissionRoute;
+    setPermissionRoute(null);
+    if (!route) return;
+    if ((await shareLocation.requestPermission()) !== 'GRANTED') {
+      setErrorMessage(LOCATION_PERMISSION_DENIED);
+      return;
+    }
+    await startTrip(route);
+  }, [permissionRoute, shareLocation, startTrip]);
+
+  return {
+    protegidoId,
+    routes,
+    routesFailed,
+    trip,
+    isLoading,
+    isStarting,
+    errorMessage,
+    start,
+    reload: load,
+    needsPermission: permissionRoute !== null,
+    confirmPermission,
+  };
 }
