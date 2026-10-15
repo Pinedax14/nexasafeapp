@@ -15,3 +15,6 @@ e3849b291b266f1969edf87a3ad5ebe58f913184:supabase/functions/admin-personal/handl
 # reemplazado por 'codigo-de-prueba-0000001' en el commit siguiente. Revisado por el Security Champion (12/10/2026).
 45b32abe03f8f5c9cc8c12002c9be3128b7f0a2e:apps/mobile/src/features/network/presentation/screens/NetworkScreens.test.tsx:generic-api-key:14
 45b32abe03f8f5c9cc8c12002c9be3128b7f0a2e:apps/mobile/src/features/network/domain/useCases/SupportNetwork.test.ts:generic-api-key:11
+# Falso positivo: constante de prueba de notify-push (no es un secreto real), reemplazada
+# por 'clave-falsa' en el commit siguiente. Revisado por el Security Champion (15/10/2026).
+4fc04fe9b74bda1c066f2c1a6f20e9e124d4ebb2:supabase/functions/notify-push/handler.test.ts:generic-api-key:17

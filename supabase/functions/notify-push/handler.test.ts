@@ -14,7 +14,7 @@ import {
 
 const NOW = new Date('2026-10-15T12:00:00Z');
 const ALERTA_ID = 'e0000000-0000-0000-0000-000000000001';
-const SECRET = 'secreto-de-prueba-1234';
+const SECRET = 'clave-falsa';
 
 type Calls = { slept: number[]; claimed: string[]; batches: PushMessage[][] };
 
@@ -120,7 +120,7 @@ Deno.test('sin el secreto correcto no hace nada', async () => {
   const handler = createHandler(deps);
 
   assertEquals((await handler(post({ alerta_id: ALERTA_ID }, null))).status, 401);
-  assertEquals((await handler(post({ alerta_id: ALERTA_ID }, 'otro-secreto-de-prueba'))).status, 401);
+  assertEquals((await handler(post({ alerta_id: ALERTA_ID }, 'clave-otra!'))).status, 401);
   assertEquals(deps.claimed, []);
 });
 
@@ -165,7 +165,7 @@ Deno.test('el mensaje solo lleva el primer nombre, sin ubicación, con sonido y 
 
 Deno.test('compara el secreto completo', () => {
   assertEquals(sameSecret(SECRET, SECRET), true);
-  assertEquals(sameSecret('secreto-de-prueba-1235', SECRET), false);
+  assertEquals(sameSecret('clave-falsx', SECRET), false);
   assertEquals(sameSecret('corto', SECRET), false);
   assertEquals(sameSecret('', ''), false);
 });
