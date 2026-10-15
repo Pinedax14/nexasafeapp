@@ -15,7 +15,18 @@ import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';
 import { Trip } from '../../domain/entities/Trip';
 import { TripRepository } from '../../domain/repositories/TripRepository';
 import { TrackTrips } from '../../domain/useCases/TrackTrips';
-import { formatTime, NO_ROUTES_MESSAGE, TRIP_ERROR_MESSAGES, tripSince } from '../tripMessages';
+import { LocationPermission, Position, SharingMode } from '../../domain/entities/Position';
+import { LocationTracker } from '../../domain/repositories/LocationTracker';
+import { PositionRepository } from '../../domain/repositories/PositionRepository';
+import { ShareLocation } from '../../domain/useCases/ShareLocation';
+import {
+  formatTime,
+  LOCATION_PERMISSION_DENIED,
+  LOCATION_PERMISSION_TITLE,
+  NO_ROUTES_MESSAGE,
+  TRIP_ERROR_MESSAGES,
+  tripSince,
+} from '../tripMessages';
 import { ACCOMPANIMENT_TEXT } from '../components/AccompanimentBanner';
 import { ProtegidoTripScreen } from './ProtegidoTripScreen';
 
@@ -45,6 +56,8 @@ type Options = {
   start?: Awaited<ReturnType<TripRepository['start']>>;
   profile?: Awaited<ReturnType<ProtegidoRepository['listMine']>>;
   alerts?: Partial<jest.Mocked<AlertRepository>>;
+  permission?: LocationPermission;
+  requested?: LocationPermission;
 };
 
 const sentAlert: Alert = {
@@ -87,17 +100,43 @@ async function setup(options: Options = {}) {
     ...options.alerts,
   };
 
+  let mode: SharingMode | null = null;
+  let deliver: ((positions: Position[]) => Promise<void>) | null = null;
+  const tracker: jest.Mocked<LocationTracker> = {
+    permission: jest.fn().mockResolvedValue(options.permission ?? 'GRANTED'),
+    requestPermission: jest.fn().mockResolvedValue(options.requested ?? 'GRANTED'),
+    start: jest.fn(async (next: SharingMode) => {
+      mode = next;
+      return true;
+    }),
+    stop: jest.fn(async () => {
+      mode = null;
+    }),
+    currentMode: jest.fn(async () => mode),
+    onPositions: jest.fn((handler) => {
+      deliver = handler;
+    }),
+  };
+  const positions: jest.Mocked<PositionRepository> = {
+    send: jest.fn().mockResolvedValue({
+      ok: true,
+      value: { accepted: true, tripActive: false, alertActive: false, tripClosed: true },
+    }),
+    latest: jest.fn(),
+    subscribe: jest.fn(),
+  };
   await render(
     <ProtegidoTripScreen
       listMyProtegidos={new ListMyProtegidos(profiles)}
       manageRoutes={new ManageRoutes(routes)}
       trackTrips={new TrackTrips(trips)}
       panicAlerts={new PanicAlerts(alerts)}
+      shareLocation={new ShareLocation(positions, tracker)}
       userName="Menor"
       onSignOut={jest.fn()}
     />,
   );
-  return { trips, routes, alerts };
+  return { trips, routes, alerts, tracker, deliver: (list: Position[]) => deliver?.(list) };
 }
 
 describe('ProtegidoTripScreen (E4-01)', () => {
@@ -282,6 +321,69 @@ describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
 
     expect(await screen.findByText(ALERT_SENT_TITLE)).toBeTruthy();
     expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
+  });
+});
+
+describe('ProtegidoTripScreen · ubicación en vivo (E4-02, E6-05, E4-03)', () => {
+  const fix: Position = {
+    latitude: 4.6,
+    longitude: -74.08,
+    accuracyMeters: 8,
+    capturedAt: '2026-10-15T12:00:00Z',
+  };
+
+  it('sin permiso primero explica para qué se usa la ubicación (W8)', async () => {
+    const { trips, tracker } = await setup({ permission: 'UNDETERMINED', trips: [[], [trip]] });
+
+    await fireEvent.press(await screen.findByLabelText('Iniciar trayecto Casa → colegio'));
+
+    expect(await screen.findByText(LOCATION_PERMISSION_TITLE)).toBeTruthy();
+    expect(trips.start).not.toHaveBeenCalled();
+
+    await fireEvent.press(screen.getByText('Continuar'));
+
+    expect(tracker.requestPermission).toHaveBeenCalled();
+    expect(trips.start).toHaveBeenCalledWith('r-1');
+    expect(await screen.findByText(tripSince(trip.startedAt))).toBeTruthy();
+  });
+
+  it('si niega el permiso el trayecto no se inicia', async () => {
+    const { trips } = await setup({ permission: 'UNDETERMINED', requested: 'DENIED' });
+
+    await fireEvent.press(await screen.findByLabelText('Iniciar trayecto Casa → colegio'));
+    await fireEvent.press(await screen.findByText('Continuar'));
+
+    expect(await screen.findByText(LOCATION_PERMISSION_DENIED)).toBeTruthy();
+    expect(trips.start).not.toHaveBeenCalled();
+  });
+
+  it('con un trayecto en curso comparte la ubicación del trayecto', async () => {
+    const { tracker } = await setup({ trips: [[trip]] });
+
+    await screen.findByText(tripSince(trip.startedAt));
+
+    expect(tracker.start).toHaveBeenCalledWith('TRIP');
+  });
+
+  it('sin trayecto ni alerta no captura ubicación (RF-41)', async () => {
+    const { tracker } = await setup();
+
+    await screen.findByText('¿A dónde vas?');
+
+    expect(tracker.start).not.toHaveBeenCalled();
+  });
+
+  it('al llegar al destino el servidor cierra el trayecto y la pantalla se actualiza', async () => {
+    const { trips, tracker, deliver } = await setup({ trips: [[trip], []] });
+    await screen.findByText(tripSince(trip.startedAt));
+
+    await act(async () => {
+      await deliver([fix]);
+    });
+
+    expect(tracker.stop).toHaveBeenCalled();
+    expect(trips.listActive).toHaveBeenCalledTimes(2);
+    expect(await screen.findByText('¿A dónde vas?')).toBeTruthy();
   });
 });
 

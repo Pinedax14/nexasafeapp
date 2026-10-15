@@ -16,7 +16,15 @@
           "backgroundColor": "#6D28D9"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "NexaSafe usa tu ubicación solo durante un trayecto o una alerta, para que tu acudiente te acompañe.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true
