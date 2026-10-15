@@ -2,6 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 03
+
+### Agregado
+- Migración `sprint_03_posiciones_alertas` (D19–D22): tablas `alertas` (con `protegido_id`, `trayecto_id` opcional y ventana `cancelable_hasta` de 10 s) y `posiciones` (latitud y longitud cifradas con `pgcrypto` y llave en Vault) con RLS; funciones `disparar_alerta` (una alerta activa, máximo 3 cada 10 min), `cancelar_alerta_verificada` (solo `service_role`, para `auth-pin`), `registrar_posicion` (solo con trayecto o alerta activos, descarta precisión mayor de 100 m, más de una por segundo y saltos de más de 200 km/h; cierra el trayecto a menos de 50 m del destino) y `obtener_ultima_posicion` (auditada); canal privado de Realtime `protegido:<id>` solo para el guardián del menor. 43 pruebas pgTAP.
+
 ## [0.2.0] — Sprint 02 — 15/10/2026
 
 ### Agregado
