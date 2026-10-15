@@ -85,6 +85,11 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E
 | Tampering | El cliente alarga la ventana de cancelación | `alertas.cancelable_hasta` | Hora del servidor; la cancelación compara con `now()` en el servidor (D22, D23) | Planificado |
 | Repudiation | El menor niega haber disparado o cancelado | `audit_log` | `DISPARAR_ALERTA` y `CANCELAR_ALERTA` con actor y hora del servidor; la bitácora `eventos_incidente` llega con E9-01 (D24) | Planificado |
 | Repudiation | Un guardián niega haber recibido la alerta | `eventos_incidente` | Bitácora append-only con acuse y timestamp de servidor (E9-01) | Planificado |
+| Spoofing | Alguien llama a `notify-push` para enviar avisos falsos | Edge Function `notify-push` (E7-01) | Secreto compartido en Vault y en los secretos de la función; la función relee la alerta en la base y solo avisa si sigue `ENVIADA` (D25) | Planificado (Sprint 04) |
+| Information disclosure | La notificación push muestra datos del menor en la pantalla bloqueada | Push (E7-01) | Texto mínimo: primer nombre y "pidió ayuda"; sin ubicación en el contenido de la notificación | Planificado (Sprint 04) |
+| Information disclosure | Un token push ajeno recibe alertas | `dispositivos_push` | El token se asocia a la sesión que lo registra (`registrar_dispositivo`); al cerrar sesión se borra | Planificado (Sprint 04) |
+| Elevation of privilege | Un contacto de apoyo cierra la alerta | `cerrar_alerta` (E9-02) | Solo el guardián y el personal activo del colegio cierran (D29) | Planificado (Sprint 04) |
+| Information disclosure | Un agresor ve en la pantalla del menor que se pidió ayuda | Modo discreto (E6-04) | Tras la ventana, pantalla neutra y notificación fija con texto neutro (D30) | Planificado (Sprint 04) |
 | Denial of service | Inundación de alertas falsas | Endpoint de alerta | Rate limiting por usuario (máximo 3 alertas por menor cada 10 min, D22) + cierre clasificado (E9-02) | Planificado |
 
 ## E8/E9 — Vista institucional y bitácora
@@ -93,4 +98,6 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E
 |---|---|---|---|---|
 | Tampering | Modificación de eventos de un incidente | `eventos_incidente` | Sin UPDATE ni DELETE en RLS | Planificado |
 | Information disclosure | El puesto de control ve alertas de otro colegio | Vista institucional | RLS por `colegio_id` | Planificado |
+| Information disclosure | El puesto de control o el contacto de apoyo ven el trayecto diario del menor | `obtener_ultima_posicion` (E8-01) | Solo ven la posición de una alerta activa, nunca la de un trayecto (D26, RF-41) | Planificado (Sprint 04) |
+| Information disclosure | El gráfico expone datos de menores | `resumen_alertas_colegio` (E8-01) | Solo conteos por día y clasificación del propio colegio, sin nombres (D26) | Planificado (Sprint 04) |
 | Repudiation | Acceso a datos de un menor sin rastro | `audit_log` | Registro de actor, acción y timestamp | Planificado |
