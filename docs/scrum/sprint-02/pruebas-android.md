@@ -6,6 +6,8 @@ El mapa (WebView + Leaflet) **no funciona en el navegador** (R9), así que E3-01
 
 Lo que no se ve desde la app (políticas RLS, `audit_log`, límites del servidor para geometría, corredor y duración, límite de 10 invitaciones por hora) lo cubren las pruebas pgTAP, Deno y Jest del CI.
 
+> **PENDIENTE: prueba en Android físico.** El 15/10/2026 el equipo decidió dejarla para más adelante (no hay un Android disponible por ahora). Las 7 historias del sprint quedan con este punto de la DoD abierto y se registra como desviación en la review.
+
 ## Datos de la sesión de prueba
 
 | Dato | Valor |
