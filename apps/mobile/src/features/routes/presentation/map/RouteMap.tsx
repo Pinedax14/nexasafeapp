@@ -18,6 +18,8 @@ type RouteMapProps = {
   corridorMeters: number;
   editable: boolean;
   onAddPoint?: (point: GeoPoint) => void;
+  /** E4-02: posición en vivo del menor, si se está siguiendo un trayecto. */
+  live?: GeoPoint | null;
 };
 
 type MapMessage = { type?: unknown; latitude?: unknown; longitude?: unknown };
@@ -35,16 +37,22 @@ const isFiniteNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value);
 
 /** D9: OpenStreetMap con Leaflet dentro de un WebView. */
-export function RouteMap({ points, corridorMeters, editable, onAddPoint }: RouteMapProps) {
+export function RouteMap({
+  points,
+  corridorMeters,
+  editable,
+  onAddPoint,
+  live = null,
+}: RouteMapProps) {
   const webView = useRef<WebView>(null);
   const [isReady, setIsReady] = useState(false);
   const html = useMemo(buildMapHtml, []);
 
   useEffect(() => {
     if (!isReady) return;
-    const state = JSON.stringify({ points, corridorMeters, editable });
+    const state = JSON.stringify({ points, corridorMeters, editable, live });
     webView.current?.injectJavaScript?.(`window.nexaRender(${state}); true;`);
-  }, [isReady, points, corridorMeters, editable]);
+  }, [isReady, points, corridorMeters, editable, live]);
 
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {

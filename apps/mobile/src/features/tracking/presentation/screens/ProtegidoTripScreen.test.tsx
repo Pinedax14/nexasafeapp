@@ -1,4 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { Alert } from '../../../alerts/domain/entities/Alert';
+import { AlertRepository } from '../../../alerts/domain/repositories/AlertRepository';
+import { PanicAlerts } from '../../../alerts/domain/useCases/PanicAlerts';
+import {
+  ALERT_ACTIVE_MESSAGE,
+  ALERT_CANCELLED_MESSAGE,
+  ALERT_ERROR_MESSAGES,
+  ALERT_SENT_TITLE,
+} from '../../../alerts/presentation/alertMessages';
 import { ProtegidoRepository } from '../../../profile/domain/repositories/ProtegidoRepository';
 import { ListMyProtegidos } from '../../../profile/domain/useCases/ListMyProtegidos';
 import { RouteRepository } from '../../../routes/domain/repositories/RouteRepository';
@@ -6,7 +15,18 @@ import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';
 import { Trip } from '../../domain/entities/Trip';
 import { TripRepository } from '../../domain/repositories/TripRepository';
 import { TrackTrips } from '../../domain/useCases/TrackTrips';
-import { formatTime, NO_ROUTES_MESSAGE, TRIP_ERROR_MESSAGES, tripSince } from '../tripMessages';
+import { LocationPermission, Position, SharingMode } from '../../domain/entities/Position';
+import { LocationTracker } from '../../domain/repositories/LocationTracker';
+import { PositionRepository } from '../../domain/repositories/PositionRepository';
+import { ShareLocation } from '../../domain/useCases/ShareLocation';
+import {
+  formatTime,
+  LOCATION_PERMISSION_DENIED,
+  LOCATION_PERMISSION_TITLE,
+  NO_ROUTES_MESSAGE,
+  TRIP_ERROR_MESSAGES,
+  tripSince,
+} from '../tripMessages';
 import { ACCOMPANIMENT_TEXT } from '../components/AccompanimentBanner';
 import { ProtegidoTripScreen } from './ProtegidoTripScreen';
 
@@ -35,6 +55,16 @@ type Options = {
   trips?: Trip[][];
   start?: Awaited<ReturnType<TripRepository['start']>>;
   profile?: Awaited<ReturnType<ProtegidoRepository['listMine']>>;
+  alerts?: Partial<jest.Mocked<AlertRepository>>;
+  permission?: LocationPermission;
+  requested?: LocationPermission;
+};
+
+const sentAlert: Alert = {
+  id: 'al-1',
+  status: 'ENVIADA',
+  createdAt: '2026-10-15T12:00:00Z',
+  cancellableUntil: '2026-10-15T12:00:10Z',
 };
 
 async function setup(options: Options = {}) {
@@ -63,17 +93,50 @@ async function setup(options: Options = {}) {
   };
   sequence.forEach((value) => trips.listActive.mockResolvedValueOnce({ ok: true, value }));
   trips.listActive.mockResolvedValue({ ok: true, value: sequence[sequence.length - 1] });
+  const alerts: jest.Mocked<AlertRepository> = {
+    trigger: jest.fn().mockResolvedValue({ ok: true, value: sentAlert }),
+    cancel: jest.fn().mockResolvedValue({ ok: true, value: undefined }),
+    active: jest.fn().mockResolvedValue({ ok: true, value: null }),
+    ...options.alerts,
+  };
 
+  let mode: SharingMode | null = null;
+  let deliver: ((positions: Position[]) => Promise<void>) | null = null;
+  const tracker: jest.Mocked<LocationTracker> = {
+    permission: jest.fn().mockResolvedValue(options.permission ?? 'GRANTED'),
+    requestPermission: jest.fn().mockResolvedValue(options.requested ?? 'GRANTED'),
+    start: jest.fn(async (next: SharingMode) => {
+      mode = next;
+      return true;
+    }),
+    stop: jest.fn(async () => {
+      mode = null;
+    }),
+    currentMode: jest.fn(async () => mode),
+    onPositions: jest.fn((handler) => {
+      deliver = handler;
+    }),
+  };
+  const positions: jest.Mocked<PositionRepository> = {
+    send: jest.fn().mockResolvedValue({
+      ok: true,
+      value: { accepted: true, tripActive: false, alertActive: false, tripClosed: true },
+    }),
+    latest: jest.fn(),
+    subscribe: jest.fn(),
+  };
   await render(
     <ProtegidoTripScreen
       listMyProtegidos={new ListMyProtegidos(profiles)}
       manageRoutes={new ManageRoutes(routes)}
       trackTrips={new TrackTrips(trips)}
+      panicAlerts={new PanicAlerts(alerts)}
+      shareLocation={new ShareLocation(positions, tracker)}
       userName="Menor"
       onSignOut={jest.fn()}
     />,
   );
-  return { trips, routes };
+  return { trips, routes, alerts, tracker, deliver: (list: Position[]) => deliver?.(list) };
 }
 
 describe('ProtegidoTripScreen (E4-01)', () => {
@@ -148,6 +211,179 @@ describe('ProtegidoTripScreen · indicador de acompañamiento (E4-04)', () => {
 
     expect(await screen.findByText('¿A dónde vas?')).toBeTruthy();
     expect(screen.queryByText(ACCOMPANIMENT_TEXT)).toBeNull();
+  });
+});
+
+describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  async function hold(ms: number) {
+    const button = await screen.findByLabelText('Botón de ayuda');
+    await fireEvent(button, 'pressIn');
+    await act(async () => {
+      jest.advanceTimersByTime(ms);
+    });
+    await fireEvent(button, 'pressOut');
+  }
+
+  it('mantener presionado 3 s dispara la alerta y muestra la cuenta regresiva', async () => {
+    const { alerts } = await setup();
+
+    await hold(3000);
+
+    expect(alerts.trigger).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(ALERT_SENT_TITLE)).toBeTruthy();
+    expect(screen.getByLabelText('10 segundos para cancelar')).toBeTruthy();
+    expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
+  });
+
+  it('soltar antes de 3 s no dispara nada', async () => {
+    const { alerts } = await setup();
+
+    await hold(2000);
+
+    expect(alerts.trigger).not.toHaveBeenCalled();
+    expect(screen.queryByText(ALERT_SENT_TITLE)).toBeNull();
+  });
+
+  it('el botón está también durante un trayecto', async () => {
+    await setup({ trips: [[trip]] });
+
+    expect(await screen.findByText(tripSince(trip.startedAt))).toBeTruthy();
+    expect(screen.getByLabelText('Botón de ayuda')).toBeTruthy();
+  });
+
+  it('con el PIN correcto dentro de la ventana la alerta se cancela', async () => {
+    const { alerts } = await setup();
+    await hold(3000);
+
+    await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '1234');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    expect(alerts.cancel).toHaveBeenCalledWith('al-1', '1234');
+    expect(await screen.findByText(ALERT_CANCELLED_MESSAGE)).toBeTruthy();
+    expect(screen.getByLabelText('Botón de ayuda')).toBeTruthy();
+  });
+
+  it('un PIN incorrecto deja la alerta activa', async () => {
+    await setup({
+      alerts: { cancel: jest.fn().mockResolvedValue({ ok: false, reason: 'INVALID_PIN' }) },
+    });
+    await hold(3000);
+
+    await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '9999');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.INVALID_PIN)).toBeTruthy();
+    expect(screen.getByText(ALERT_SENT_TITLE)).toBeTruthy();
+  });
+
+  it('pasados 10 s ya no se puede cancelar', async () => {
+    await setup();
+    await hold(3000);
+
+    await act(async () => {
+      jest.advanceTimersByTime(11000);
+    });
+
+    expect(await screen.findByText(ALERT_ACTIVE_MESSAGE)).toBeTruthy();
+    expect(screen.queryByLabelText('PIN para cancelar')).toBeNull();
+  });
+
+  it('si el servidor dice que la ventana venció, se muestra la alerta activa', async () => {
+    await setup({
+      alerts: { cancel: jest.fn().mockResolvedValue({ ok: false, reason: 'NOT_CANCELLABLE' }) },
+    });
+    await hold(3000);
+
+    await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '1234');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.NOT_CANCELLABLE)).toBeTruthy();
+    expect(screen.getByText(ALERT_ACTIVE_MESSAGE)).toBeTruthy();
+  });
+
+  it('muestra el error si no pudo disparar', async () => {
+    await setup({
+      alerts: { trigger: jest.fn().mockResolvedValue({ ok: false, reason: 'RATE_LIMITED' }) },
+    });
+
+    await hold(3000);
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.RATE_LIMITED)).toBeTruthy();
+  });
+
+  it('al abrir la app recupera la alerta activa', async () => {
+    await setup({
+      alerts: { active: jest.fn().mockResolvedValue({ ok: true, value: sentAlert }) },
+    });
+
+    expect(await screen.findByText(ALERT_SENT_TITLE)).toBeTruthy();
+    expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
+  });
+});
+
+describe('ProtegidoTripScreen · ubicación en vivo (E4-02, E6-05, E4-03)', () => {
+  const fix: Position = {
+    latitude: 4.6,
+    longitude: -74.08,
+    accuracyMeters: 8,
+    capturedAt: '2026-10-15T12:00:00Z',
+  };
+
+  it('sin permiso primero explica para qué se usa la ubicación (W8)', async () => {
+    const { trips, tracker } = await setup({ permission: 'UNDETERMINED', trips: [[], [trip]] });
+
+    await fireEvent.press(await screen.findByLabelText('Iniciar trayecto Casa → colegio'));
+
+    expect(await screen.findByText(LOCATION_PERMISSION_TITLE)).toBeTruthy();
+    expect(trips.start).not.toHaveBeenCalled();
+
+    await fireEvent.press(screen.getByText('Continuar'));
+
+    expect(tracker.requestPermission).toHaveBeenCalled();
+    expect(trips.start).toHaveBeenCalledWith('r-1');
+    expect(await screen.findByText(tripSince(trip.startedAt))).toBeTruthy();
+  });
+
+  it('si niega el permiso el trayecto no se inicia', async () => {
+    const { trips } = await setup({ permission: 'UNDETERMINED', requested: 'DENIED' });
+
+    await fireEvent.press(await screen.findByLabelText('Iniciar trayecto Casa → colegio'));
+    await fireEvent.press(await screen.findByText('Continuar'));
+
+    expect(await screen.findByText(LOCATION_PERMISSION_DENIED)).toBeTruthy();
+    expect(trips.start).not.toHaveBeenCalled();
+  });
+
+  it('con un trayecto en curso comparte la ubicación del trayecto', async () => {
+    const { tracker } = await setup({ trips: [[trip]] });
+
+    await screen.findByText(tripSince(trip.startedAt));
+
+    expect(tracker.start).toHaveBeenCalledWith('TRIP');
+  });
+
+  it('sin trayecto ni alerta no captura ubicación (RF-41)', async () => {
+    const { tracker } = await setup();
+
+    await screen.findByText('¿A dónde vas?');
+
+    expect(tracker.start).not.toHaveBeenCalled();
+  });
+
+  it('al llegar al destino el servidor cierra el trayecto y la pantalla se actualiza', async () => {
+    const { trips, tracker, deliver } = await setup({ trips: [[trip], []] });
+    await screen.findByText(tripSince(trip.startedAt));
+
+    await act(async () => {
+      await deliver([fix]);
+    });
+
+    expect(tracker.stop).toHaveBeenCalled();
+    expect(trips.listActive).toHaveBeenCalledTimes(2);
+    expect(await screen.findByText('¿A dónde vas?')).toBeTruthy();
   });
 });
 

@@ -3,6 +3,8 @@
 //    el servidor elige un PIN aleatorio y lo devuelve una sola vez al guardián.
 //  - "ingresar": el menor entra con su documento + PIN y recibe una sesión. Los fallos se
 //    limitan por menor (D7) y por IP (SEC-01).
+//  - "cancelar_alerta" (E6-03, D23): el menor cancela su alerta con el PIN dentro de los 10 s
+//    de la ventana. Los PIN incorrectos cuentan para el mismo bloqueo del ingreso.
 // El PIN solo se guarda como hash Argon2id en protegidos.pin_hash.
 
 export type Caller = { id: string; rol: string | null };
@@ -38,6 +40,10 @@ export type AuthPinDeps = {
   savePin(protegidoId: string, usuarioId: string, pinHash: string): Promise<boolean>;
   fingerprint(documento: string): Promise<string | null>;
   findLoginCandidate(documentoHuella: string): Promise<LoginCandidate | null>;
+  /** Menor cuya cuenta es la de la sesión (rol protegido). */
+  findProtegidoByUser(usuarioId: string): Promise<LoginCandidate | null>;
+  /** true si se canceló, false si ya no se puede cancelar, null si hubo un error. */
+  cancelAlert(alertaId: string, protegidoId: string, actorId: string): Promise<boolean | null>;
   recordFailure(
     protegidoId: string,
     intentos: number,
@@ -146,6 +152,26 @@ async function assignPin(
   return json(200, generated ? { ok: true, pin } : { ok: true });
 }
 
+/** D7: registra un PIN incorrecto y devuelve true si el menor quedó bloqueado. */
+async function registerWrongPin(
+  candidate: LoginCandidate,
+  deps: AuthPinDeps,
+  accion: string,
+): Promise<boolean> {
+  const intentos = candidate.intentosFallidos + 1;
+  await deps.audit(null, candidate.id, accion);
+  if (intentos >= MAX_FAILED_ATTEMPTS) {
+    await deps.recordFailure(
+      candidate.id,
+      0,
+      new Date(deps.now().getTime() + LOCK_DURATION_MS).toISOString(),
+    );
+    return true;
+  }
+  await deps.recordFailure(candidate.id, intentos, null);
+  return false;
+}
+
 async function login(
   req: Request,
   body: Record<string, unknown>,
@@ -183,19 +209,9 @@ async function login(
   }
 
   if (!(await deps.verifyPin(pin, candidate.pinHash))) {
-    const intentos = candidate.intentosFallidos + 1;
-    await deps.audit(null, candidate.id, 'INGRESO_PIN_FALLIDO');
     await recordIpFailure();
-    if (intentos >= MAX_FAILED_ATTEMPTS) {
-      await deps.recordFailure(
-        candidate.id,
-        0,
-        new Date(now.getTime() + LOCK_DURATION_MS).toISOString(),
-      );
-      return json(429, { error: 'LOCKED' });
-    }
-    await deps.recordFailure(candidate.id, intentos, null);
-    return json(401, { error: 'INVALID_CREDENTIALS' });
+    const locked = await registerWrongPin(candidate, deps, 'INGRESO_PIN_FALLIDO');
+    return locked ? json(429, { error: 'LOCKED' }) : json(401, { error: 'INVALID_CREDENTIALS' });
   }
 
   await deps.recordSuccess(candidate.id);
@@ -204,6 +220,40 @@ async function login(
 
   await deps.audit(candidate.usuarioId, candidate.id, 'INGRESO_PIN');
   return json(200, session);
+}
+
+async function cancelAlert(
+  req: Request,
+  body: Record<string, unknown>,
+  deps: AuthPinDeps,
+): Promise<Response> {
+  const caller = await deps.getCaller(req.headers.get('Authorization'));
+  if (!caller) return json(401, { error: 'UNAUTHORIZED' });
+  if (caller.rol !== 'protegido') return json(403, { error: 'FORBIDDEN' });
+
+  const alertaId = typeof body.alerta_id === 'string' ? body.alerta_id : '';
+  const pin = typeof body.pin === 'string' ? body.pin : '';
+  if (!UUID_PATTERN.test(alertaId) || !PIN_PATTERN.test(pin)) {
+    return json(400, { error: 'INVALID_INPUT' });
+  }
+
+  const candidate = await deps.findProtegidoByUser(caller.id);
+  if (!candidate || !candidate.pinHash) return json(404, { error: 'NOT_FOUND' });
+  if (candidate.bloqueadoHasta && new Date(candidate.bloqueadoHasta) > deps.now()) {
+    return json(429, { error: 'LOCKED' });
+  }
+
+  if (!(await deps.verifyPin(pin, candidate.pinHash))) {
+    const locked = await registerWrongPin(candidate, deps, 'CANCELAR_ALERTA_PIN_FALLIDO');
+    return locked ? json(429, { error: 'LOCKED' }) : json(401, { error: 'INVALID_PIN' });
+  }
+  await deps.recordSuccess(candidate.id);
+
+  const cancelled = await deps.cancelAlert(alertaId, candidate.id, caller.id);
+  if (cancelled === null) return json(500, { error: 'UNKNOWN' });
+  // Pasados los 10 s (o si la alerta no es suya) ya no se cancela (D23).
+  if (!cancelled) return json(409, { error: 'NOT_CANCELLABLE' });
+  return json(200, { ok: true });
 }
 
 export function createHandler(deps: AuthPinDeps): (req: Request) => Promise<Response> {
@@ -221,6 +271,7 @@ export function createHandler(deps: AuthPinDeps): (req: Request) => Promise<Resp
 
     if (body.accion === 'asignar') return assignPin(req, body, deps);
     if (body.accion === 'ingresar') return login(req, body, deps);
+    if (body.accion === 'cancelar_alerta') return cancelAlert(req, body, deps);
     return json(400, { error: 'INVALID_INPUT' });
   };
 }
