@@ -23,7 +23,7 @@ Issues con las etiquetas `sprint:03`, `epic:E4` / `epic:E6` y `security`.
 - [x] Wireframes W7–W9 aprobados: [`wireframes.md`](wireframes.md).
 - [x] STRIDE de E4-02, E4-03 y E6 en [`threat-model.md`](../../security/threat-model.md).
 - [ ] Migración con RLS y prueba pgTAP de cada política.
-- [ ] Llave de cifrado de posiciones en Vault (dev y staging) y autorización de canales privados de Realtime.
+- [ ] Autorización de canales privados de Realtime en dev y staging (la llave de cifrado de posiciones la crea la migración en Vault, como la del documento).
 - [ ] PIA: captura de ubicación en segundo plano y tabla `posiciones`.
 
 ## Criterios de aceptación (Gherkin)

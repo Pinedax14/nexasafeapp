@@ -113,7 +113,7 @@ Entonces deja de enviar posiciones de la alerta
 ## 4. Otros pendientes del refinement
 
 - **R1 (sin investigar):** probar en el celular prestado si el sistema detiene el servicio en primer plano. Sin celular no hay forma de verificar E4-02, E4-03 y E6-05; se programan con pruebas automáticas y la verificación queda pendiente (R9).
-- **Cifrado de `posiciones`:** crear la llave en Vault de dev y staging (como `documento_cifrado_key`) antes de aplicar la migración.
+- **Cifrado de `posiciones`:** la migración crea la llave en Vault de cada base (como la del documento del menor); no hay paso manual.
 - **PIA:** declarar la captura de ubicación en segundo plano, la tabla `posiciones` y su retención (90 días, purga en la fase 2, RF-39).
 - **Realtime privado:** activar la autorización de canales privados en Supabase (dev y staging).
 - **Build:** la ubicación en segundo plano no funciona en el navegador ni en Expo Go; se prueba con el APK de EAS (`preview`).
