@@ -11,6 +11,8 @@ import { buildMapHtml, OSM_COPYRIGHT_URL } from './mapHtml';
  */
 export const MAP_BASE_URL = 'https://github.com/Pinedax14/nexasafeapp/';
 
+const NO_ALERTS: GeoPoint[] = [];
+
 export const MAP_WEB_FALLBACK = 'El mapa solo funciona en la app de Android.';
 
 type RouteMapProps = {
@@ -20,6 +22,8 @@ type RouteMapProps = {
   onAddPoint?: (point: GeoPoint) => void;
   /** E4-02: posición en vivo del menor, si se está siguiendo un trayecto. */
   live?: GeoPoint | null;
+  /** E8-01: posiciones de las alertas activas del colegio. */
+  alerts?: GeoPoint[];
 };
 
 type MapMessage = { type?: unknown; latitude?: unknown; longitude?: unknown };
@@ -43,6 +47,7 @@ export function RouteMap({
   editable,
   onAddPoint,
   live = null,
+  alerts = NO_ALERTS,
 }: RouteMapProps) {
   const webView = useRef<WebView>(null);
   const [isReady, setIsReady] = useState(false);
@@ -50,9 +55,9 @@ export function RouteMap({
 
   useEffect(() => {
     if (!isReady) return;
-    const state = JSON.stringify({ points, corridorMeters, editable, live });
+    const state = JSON.stringify({ points, corridorMeters, editable, live, alerts });
     webView.current?.injectJavaScript?.(`window.nexaRender(${state}); true;`);
-  }, [isReady, points, corridorMeters, editable, live]);
+  }, [isReady, points, corridorMeters, editable, live, alerts]);
 
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {

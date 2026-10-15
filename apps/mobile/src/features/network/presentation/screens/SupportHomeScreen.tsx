@@ -1,20 +1,39 @@
-import { Pressable, ScrollView, Text } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text } from 'react-native';
+import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { AlertSummary } from '../../../alerts/domain/entities/AlertSummary';
+import { RespondToAlerts } from '../../../alerts/domain/useCases/RespondToAlerts';
+import { AlertList } from '../../../alerts/presentation/components/AlertList';
+import { useAlertListViewModel } from '../../../alerts/presentation/viewModels/useAlertListViewModel';
 import { NO_ALERTS_MESSAGE, SUPPORT_SCOPE_NOTICE } from '../networkMessages';
 
 type SupportHomeScreenProps = {
+  respondToAlerts: RespondToAlerts;
   userName: string;
+  onOpenAlert: (alert: AlertSummary) => void;
   onSignOut: () => void;
 };
 
-/** Inicio del contacto de apoyo (E2-01). Las alertas llegan en el Sprint 03 (E6, E7). */
-export function SupportHomeScreen({ userName, onSignOut }: SupportHomeScreenProps) {
+/** Inicio del contacto de apoyo (E2-01): solo ve las alertas del menor (D8), W11. */
+export function SupportHomeScreen({
+  respondToAlerts,
+  userName,
+  onOpenAlert,
+  onSignOut,
+}: SupportHomeScreenProps) {
+  const vm = useAlertListViewModel(respondToAlerts, false);
+
   return (
     <ScrollView contentContainerStyle={styles.screen}>
       <Text style={styles.title}>Hola, {userName}</Text>
       <Text style={styles.subtitle}>{SUPPORT_SCOPE_NOTICE}</Text>
       <Text style={styles.sectionTitle}>Alertas</Text>
-      <Text style={styles.empty}>{NO_ALERTS_MESSAGE}</Text>
+      {vm.isLoading ? (
+        <ActivityIndicator color={colors.primary} />
+      ) : (
+        <AlertList alerts={vm.alerts} emptyText={NO_ALERTS_MESSAGE} onOpen={onOpenAlert} />
+      )}
+      {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
       <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
         <Text style={styles.linkText}>Cerrar sesión</Text>
       </Pressable>
