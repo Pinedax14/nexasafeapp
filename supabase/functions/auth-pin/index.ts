@@ -140,6 +140,32 @@ Deno.serve(
       };
     },
 
+    async findProtegidoByUser(usuarioId) {
+      const { data } = await admin
+        .from('protegidos')
+        .select('id, estado, usuario_id, pin_hash, pin_intentos_fallidos, pin_bloqueado_hasta')
+        .eq('usuario_id', usuarioId)
+        .maybeSingle();
+      if (!data) return null;
+      return {
+        id: data.id,
+        estado: data.estado,
+        usuarioId: data.usuario_id,
+        pinHash: data.pin_hash,
+        intentosFallidos: data.pin_intentos_fallidos,
+        bloqueadoHasta: data.pin_bloqueado_hasta,
+      };
+    },
+
+    async cancelAlert(alertaId, protegidoId, actorId) {
+      const { data, error } = await admin.rpc('cancelar_alerta_verificada', {
+        p_alerta_id: alertaId,
+        p_protegido_id: protegidoId,
+        p_actor_id: actorId,
+      });
+      return error ? null : data === true;
+    },
+
     async recordFailure(protegidoId, intentos, bloqueadoHasta) {
       await admin
         .from('protegidos')
