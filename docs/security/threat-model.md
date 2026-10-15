@@ -52,7 +52,7 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026). Los controles marca
 
 ## E3/E4 — Rutas y trayecto acompañado
 
-STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E3-03, E4-01 y E4-04. Las filas de E4-02 y E4-03 se amplían en el refinement del Sprint 03.
+STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E3-03, E4-01 y E4-04, y en el refinement del Sprint 03 (15/10/2026) para E4-02 y E4-03 (decisiones D18–D21 aprobadas el 15/10/2026 en [`docs/scrum/sprint-03/refinement.md`](../scrum/sprint-03/refinement.md)).
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
@@ -69,14 +69,23 @@ STRIDE ampliado en el refinement del Sprint 02 (05/10/2026) para E3-01, E3-02, E
 | Denial of service | Rutas enormes o inválidas que degradan la base de datos | `rutas.geometria` | Validación en el servidor: geometría válida (`ST_IsValid`), número de puntos y longitud máximos | Implementado (E3-01a, 12/10/2026): 2–200 puntos, `ST_IsValid`, máximo 30 km y dentro de Colombia (D15) |
 | Denial of service | Varios trayectos `EN_CURSO` a la vez para el mismo menor | `trayectos` | Índice único parcial: un solo trayecto `EN_CURSO` por menor | Implementado (E4-01, 12/10/2026) |
 | Elevation of privilege | El menor o un contacto de apoyo edita la configuración de su propia vigilancia | `rutas` | Sin políticas de escritura para `protegido` ni `apoyo` | Implementado (E3-01a, 12/10/2026) |
+| Spoofing | Un tercero envía posiciones a nombre del menor | `posiciones` (E4-02) | Solo `registrar_posicion` escribe, con la sesión del propio menor (rol `protegido`) y su trayecto `EN_CURSO` o alerta activa (D19) | Planificado |
+| Tampering | Posiciones con saltos imposibles para cerrar el trayecto a propósito | `registrar_posicion`, geocerca (E4-03) | Rechazar posiciones con velocidad implausible frente a la anterior (más de 200 km/h) y con precisión peor de 100 m; el cierre solo usa posiciones aceptadas (D21). La detección de mock location en release queda para el endurecimiento (RNF-07) | Planificado |
+| Information disclosure | Un guardián de otro menor o un contacto de apoyo escucha el canal en vivo | Realtime Broadcast (E4-02) | Canal privado `protegido:<id>` con política RLS en `realtime.messages` solo para el guardián del menor (D20) | Planificado |
+| Information disclosure | Fuga de la ubicación histórica desde la base de datos | `posiciones` | Latitud y longitud cifradas con `pgcrypto` y llave en Vault (RNF-02); sin `SELECT` directo; lectura de la última posición auditada (D19) | Planificado |
+| Information disclosure | La app sigue capturando después de llegar o de cancelar | App (servicio en primer plano) | La captura se detiene cuando el servidor responde que el trayecto o la alerta ya no están activos; el servidor rechaza posiciones fuera de trayecto o alerta (RF-41) | Planificado |
+| Denial of service | Envío masivo de posiciones | `registrar_posicion` | Máximo 1 posición por segundo por menor; las demás se rechazan | Planificado |
 
 ## E6/E7 — Alerta de pánico y respuesta
 
 | Categoría | Amenaza | Componente | Control | Estado |
 |---|---|---|---|---|
 | Spoofing | Un agresor fuerza al menor a cancelar la alerta | Ventana de PIN | Pasados 10 s la alerta no se cancela; modo discreto (E6-04) | Planificado |
+| Spoofing | Alguien que no es el menor cancela la alerta | `auth-pin` acción `cancelar_alerta` (E6-03) | PIN verificado solo en el servidor con Argon2id y los límites de intentos de E1-04 (D23) | Planificado |
+| Tampering | El cliente alarga la ventana de cancelación | `alertas.cancelable_hasta` | Hora del servidor; la cancelación compara con `now()` en el servidor (D22, D23) | Planificado |
+| Repudiation | El menor niega haber disparado o cancelado | `audit_log` | `DISPARAR_ALERTA` y `CANCELAR_ALERTA` con actor y hora del servidor; la bitácora `eventos_incidente` llega con E9-01 (D24) | Planificado |
 | Repudiation | Un guardián niega haber recibido la alerta | `eventos_incidente` | Bitácora append-only con acuse y timestamp de servidor (E9-01) | Planificado |
-| Denial of service | Inundación de alertas falsas | Endpoint de alerta | Rate limiting por usuario + cierre clasificado (E9-02) | Planificado |
+| Denial of service | Inundación de alertas falsas | Endpoint de alerta | Rate limiting por usuario (máximo 3 alertas por menor cada 10 min, D22) + cierre clasificado (E9-02) | Planificado |
 
 ## E8/E9 — Vista institucional y bitácora
 

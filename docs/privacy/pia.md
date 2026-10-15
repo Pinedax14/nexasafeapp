@@ -25,6 +25,8 @@
 | Rutas casa–colegio del menor (Sprint 02) | Menor | Sí: revela dónde vive y estudia | `rutas` (sin cifrado por columna, D13), con RLS y lectura auditada; copia cifrada en el teléfono con `expo-secure-store` que se borra al cerrar sesión (E3-01b, D11) | Acompañar el trayecto del menor (RF-09) |
 | Zonas del mapa consultadas (Sprint 02) | Acudiente | No | No se guardan: el servidor de teselas de OpenStreetMap recibe la zona y el zoom que se ven en pantalla, con la IP del teléfono (D9) | Mostrar el mapa para dibujar la ruta |
 | Inicio de cada trayecto (Sprint 02) | Menor | Sí: revela cuándo sale de casa o del colegio | `trayectos` (`inicio_en` con hora del servidor, ruta y estado), con RLS: solo el menor y su guardián; auditado con `INICIAR_TRAYECTO` | Acompañar el trayecto (RF-12). Sin ubicación: la posición en vivo llega con E4-02 (Sprint 03) |
+| Ubicación del menor (Sprint 03) | Menor | Sí: revela dónde está en tiempo real | `posiciones`, con latitud y longitud cifradas por columna (`pgcrypto`, llave en Vault, RNF-02, D19); solo se guarda con un trayecto `EN_CURSO` o una alerta activa (RF-41); nadie la lee directamente: el guardián ve la última con una lectura auditada y la recibe en vivo por un canal privado de Realtime (D20). En el teléfono se captura con el servicio en primer plano de Android y su notificación fija, cada 15 s o 20 m en el trayecto y cada 5 s en una alerta (D18). Retención: 90 días con purga automática en la fase 2 (RF-39) | Acompañar el trayecto (RF-13), cerrarlo al llegar (RF-14) y dar trazabilidad a una alerta (RF-24) |
+| Alertas del menor (Sprint 03) | Menor | Sí | `alertas` (tipo, estado, hora del servidor y trayecto si lo hay), con RLS: solo el menor y su guardián; disparo y cancelación auditados | Pedir ayuda con el botón de pánico (RF-20) y cancelarla con el PIN (RF-22) |
 | Nombre y correo del contacto de apoyo (Sprint 02) | Contacto de apoyo | No | Supabase Auth (rol `apoyo`) y `contactos_apoyo` (nombre, menor, fecha de aceptación); la invitación guarda solo el hash del token | Que el guardián sepa quién recibirá las alertas del menor (RF-06). Antes de aceptar, el contacto solo ve el primer nombre del menor (D17) |
 
 **No se recolecta en este sprint:** ubicación, fecha de nacimiento, dirección ni teléfono (decisión D6). La ubicación empieza en el Sprint 02 y solo durante trayectos o alertas (RF-41).
@@ -61,6 +63,9 @@ Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─►
 | Datos personales en logs o capturas del CI | Media | Alto | Regla Semgrep contra `console.*` en la app; `audit_log` sin valores | Bajo |
 | El administrador accede a datos de menores | Baja | Crítico | El rol `admin` no tiene políticas sobre `protegidos` ni `consentimientos`; sus acciones quedan en `audit_log` | Bajo |
 | Las teselas del mapa revelan a OpenStreetMap la zona de la casa y el colegio | Media | Medio | Solo se piden teselas al editar o ver la ruta; no se envían datos del menor ni coordenadas exactas, solo la zona visible; Leaflet empaquetado en la app, sin CDN (D9) | Bajo |
+| Seguimiento de la ubicación fuera del trayecto o la alerta | Baja | Crítico | El servidor rechaza posiciones sin trayecto ni alerta activos y la app deja de capturar cuando el servidor lo indica, al llegar y al cerrar sesión (RF-41); la notificación fija de Android muestra cuándo se comparte | Bajo |
+| Fuga del historial de ubicaciones | Baja | Crítico | Cifrado por columna con llave en Vault; sin lectura directa; lectura de la última posición auditada | Bajo |
+| Un tercero escucha la ubicación en vivo | Baja | Crítico | Canal privado de Realtime autorizado por RLS solo para el guardián del menor (D20) | Bajo |
 | Toma de una cuenta de administrador | Baja | Crítico | Un solo administrador creado desde el panel; contraseña robusta; revisión de `audit_log` en cada Security Review | Medio |
 
 ## 5. Acciones pendientes
@@ -69,4 +74,4 @@ Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─►
 - [ ] Verificar con pruebas de política que cada control de RLS de la sección 4 funciona (DoD del Sprint 01).
 - [ ] PENDIENTE: definir el canal de contacto para peticiones de habeas data (ver `politica-tratamiento.md`).
 - [x] Declarar el servidor de teselas de OpenStreetMap y las rutas del menor (09/10/2026, E3-01a).
-- [ ] Actualizar esta evaluación en el Sprint 03 para incluir la ubicación en vivo (E4-02).
+- [x] Actualizar esta evaluación para incluir la ubicación en vivo y las alertas (15/10/2026, Sprint 03).
