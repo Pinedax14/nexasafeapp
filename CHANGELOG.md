@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 03
+
+### Agregado
+- E4-02, E6-05 y E4-03 Ubicación en vivo (D18–D21, RF-13, RF-14, RF-24, RF-41): con un trayecto `EN_CURSO` el teléfono del menor comparte su posición cada 15 s o 20 m, y cada 5 s durante una alerta, con el servicio en primer plano de Android y la notificación fija "NexaSafe te está acompañando" (`expo-location` 19 y `expo-task-manager` 14, tarea definida al cargar el bundle); deja de capturar cuando el servidor dice que ya no hay trayecto ni alerta, al llegar a menos de 50 m del destino (el servidor cierra el trayecto) y al cerrar sesión. Antes del primer trayecto, W8 explica para qué se usa la ubicación y pide "Permitir todo el tiempo". El guardián abre "Ver en vivo ›" y ve la posición sobre el mapa de la ruta, actualizada por el canal privado de Realtime, y la hora de llegada (W7). 61 pruebas Jest nuevas.
+- E6-01 y E6-03 Botón de pánico (W9, RF-20, RF-22): en el inicio del menor, con o sin trayecto, un botón "AYUDA" que se dispara al mantenerlo presionado 3 s (`disparar_alerta`); muestra la cuenta regresiva de 10 s para cancelarla con el PIN (acción `cancelar_alerta` de `auth-pin`) y, pasada la ventana, "Tu alerta está activa". Al abrir la app recupera la alerta activa. Nueva feature `alerts`; tipos de Supabase con `alertas`, `posiciones` y sus funciones. 41 pruebas Jest nuevas.
+
 ## [0.2.0] — Sprint 02 — 15/10/2026
 
 ### Agregado

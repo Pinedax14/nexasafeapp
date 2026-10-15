@@ -25,10 +25,14 @@ const MAP_SCRIPT = `
     attribution: '&copy; <a href="${OSM_COPYRIGHT_URL}">OpenStreetMap</a>'
   }).addTo(map);
 
-  var state = { points: [], corridorMeters: 50, editable: false };
+  var state = { points: [], corridorMeters: 50, editable: false, live: null };
   var corridor = L.polyline([], { color: '${colors.primary}', opacity: 0.25, lineCap: 'round', lineJoin: 'round', interactive: false }).addTo(map);
   var line = L.polyline([], { color: '${colors.primary}', weight: 4, interactive: false }).addTo(map);
   var markers = L.layerGroup().addTo(map);
+  // E4-02: posición en vivo del menor.
+  var live = L.circleMarker([0, 0], {
+    radius: 9, color: '${colors.onPrimary}', weight: 3, fillColor: '${colors.error}', fillOpacity: 1, interactive: false
+  });
   var centered = false;
 
   // El corredor se dibuja con el ancho en metros convertido a píxeles del zoom actual.
@@ -50,8 +54,14 @@ const MAP_SCRIPT = `
         fillColor: index === 0 ? '${colors.onPrimary}' : '${colors.primary}', interactive: false
       }).addTo(markers);
     });
-    if (!centered && latLngs.length >= 2) {
-      map.fitBounds(L.latLngBounds(latLngs), { padding: [24, 24] });
+    if (state.live) {
+      live.setLatLng([state.live.latitude, state.live.longitude]).addTo(map);
+    } else {
+      live.remove();
+    }
+    var bounds = state.live ? latLngs.concat([[state.live.latitude, state.live.longitude]]) : latLngs;
+    if (!centered && bounds.length >= 2) {
+      map.fitBounds(L.latLngBounds(bounds), { padding: [24, 24] });
       centered = true;
     }
   }
