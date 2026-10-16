@@ -25,7 +25,7 @@ const MAP_SCRIPT = `
     attribution: '&copy; <a href="${OSM_COPYRIGHT_URL}">OpenStreetMap</a>'
   }).addTo(map);
 
-  var state = { points: [], corridorMeters: 50, editable: false, live: null };
+  var state = { points: [], corridorMeters: 50, editable: false, live: null, alerts: [] };
   var corridor = L.polyline([], { color: '${colors.primary}', opacity: 0.25, lineCap: 'round', lineJoin: 'round', interactive: false }).addTo(map);
   var line = L.polyline([], { color: '${colors.primary}', weight: 4, interactive: false }).addTo(map);
   var markers = L.layerGroup().addTo(map);
@@ -33,6 +33,8 @@ const MAP_SCRIPT = `
   var live = L.circleMarker([0, 0], {
     radius: 9, color: '${colors.onPrimary}', weight: 3, fillColor: '${colors.error}', fillOpacity: 1, interactive: false
   });
+  // E8-01: alertas activas del colegio.
+  var alertMarkers = L.layerGroup().addTo(map);
   var centered = false;
 
   // El corredor se dibuja con el ancho en metros convertido a píxeles del zoom actual.
@@ -59,9 +61,20 @@ const MAP_SCRIPT = `
     } else {
       live.remove();
     }
-    var bounds = state.live ? latLngs.concat([[state.live.latitude, state.live.longitude]]) : latLngs;
+    alertMarkers.clearLayers();
+    var alertLatLngs = (state.alerts || []).map(function (p) { return [p.latitude, p.longitude]; });
+    alertLatLngs.forEach(function (latLng) {
+      L.circleMarker(latLng, {
+        radius: 9, color: '${colors.onPrimary}', weight: 3, fillColor: '${colors.error}', fillOpacity: 1, interactive: false
+      }).addTo(alertMarkers);
+    });
+    var bounds = latLngs.concat(alertLatLngs);
+    if (state.live) bounds.push([state.live.latitude, state.live.longitude]);
     if (!centered && bounds.length >= 2) {
       map.fitBounds(L.latLngBounds(bounds), { padding: [24, 24] });
+      centered = true;
+    } else if (!centered && bounds.length === 1) {
+      map.setView(bounds[0], 16);
       centered = true;
     }
   }

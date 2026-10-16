@@ -1,6 +1,9 @@
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { AlertSummary } from '../../../alerts/domain/entities/AlertSummary';
+import { RespondToAlerts } from '../../../alerts/domain/useCases/RespondToAlerts';
+import { useAlertListViewModel } from '../../../alerts/presentation/viewModels/useAlertListViewModel';
 import { TrackTrips } from '../../../tracking/domain/useCases/TrackTrips';
 import { tripSince } from '../../../tracking/presentation/tripMessages';
 import { Protegido } from '../../domain/entities/Protegido';
@@ -17,6 +20,9 @@ type GuardianHomeScreenProps = {
   onOpenRoutes: (protegido: Protegido) => void;
   onOpenNetwork?: (protegido: Protegido) => void;
   onOpenLive?: (protegido: Protegido) => void;
+  /** W11: alertas activas de los menores del guardián. */
+  respondToAlerts?: RespondToAlerts;
+  onOpenAlert?: (alert: AlertSummary) => void;
   onSignOut: () => void;
 };
 
@@ -29,9 +35,12 @@ export function GuardianHomeScreen({
   onOpenRoutes,
   onOpenNetwork,
   onOpenLive,
+  respondToAlerts,
+  onOpenAlert,
   onSignOut,
 }: GuardianHomeScreenProps) {
   const vm = useGuardianHomeViewModel(listMyProtegidos, trackTrips);
+  const { alerts: activeAlerts } = useAlertListViewModel(respondToAlerts, true);
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
@@ -59,6 +68,18 @@ export function GuardianHomeScreen({
                   En trayecto · {tripSince(vm.activeTrips[protegido.id].startedAt).toLowerCase()}
                 </Text>
               )}
+              {activeAlerts
+                .filter((alert) => alert.protegidoId === protegido.id)
+                .map((alert) => (
+                  <Pressable
+                    key={alert.id}
+                    onPress={() => onOpenAlert?.(alert)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Alerta activa de ${protegido.name}`}
+                  >
+                    <Text style={local.alert}>🚨 Alerta activa ›</Text>
+                  </Pressable>
+                ))}
               {!!vm.activeTrips[protegido.id] && onOpenLive && (
                 <Pressable
                   onPress={() => onOpenLive(protegido)}
@@ -110,4 +131,5 @@ export function GuardianHomeScreen({
 const local = StyleSheet.create({
   actions: { flexDirection: 'row', gap: 16 },
   trip: { fontSize: 14, fontWeight: '600', color: colors.success },
+  alert: { fontSize: 15, fontWeight: '700', color: colors.error },
 });

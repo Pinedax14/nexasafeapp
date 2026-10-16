@@ -2,6 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 04
+
+### Agregado
+- Migración `sprint_04_bitacora_respuesta_push` (D25–D31): bitácora `eventos_incidente` append-only (sin `UPDATE` ni `DELETE`, ni siquiera para el dueño de la base) con los eventos `DISPARADA`, `CANCELADA`, `NOTIFICADA`, `VOY_EN_CAMINO` y `CERRADA`; cierre clasificado en `alertas` (`clasificacion`, `nota`, `cerrada_en`, `cerrada_por`); lectura de alertas para el contacto de apoyo y el personal del colegio, que ven la posición solo durante una alerta activa (RF-41); funciones `listar_alertas`, `obtener_bitacora` (auditada), `responder_alerta`, `cerrar_alerta`, `resumen_alertas_colegio` (conteos sin datos personales), `registrar_dispositivo`, `borrar_dispositivo` y `tomar_alerta_para_aviso` (solo `service_role`); tabla `dispositivos_push`; trigger que pide a `notify-push` el aviso con `pg_net` y un secreto en Vault. 46 pruebas pgTAP.
+
 ## [Sin publicar] — Sprint 03
 
 ### Agregado
