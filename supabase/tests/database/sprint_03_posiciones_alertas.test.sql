@@ -109,14 +109,14 @@ select ok(not private.puede_escuchar_canal('protegido:a0000000-0000-0000-0000-00
 -- Roles sin acceso
 -- ---------------------------------------------------------------------------
 set local request.jwt.claims = '{"sub": "30000000-0000-0000-0000-000000000001", "role": "authenticated", "app_metadata": {"rol": "apoyo"}}';
-select throws_ok($$select * from public.obtener_ultima_posicion('a0000000-0000-0000-0000-000000000001')$$,
-  '42501', null, 'el contacto de apoyo no lee la posición (D8)');
+select is((select count(*)::int from public.obtener_ultima_posicion('a0000000-0000-0000-0000-000000000001')), 0,
+  'el contacto de apoyo no ve la posición del trayecto (D8, D26)');
 select ok(not private.puede_escuchar_canal('protegido:a0000000-0000-0000-0000-000000000001'),
   'el contacto de apoyo no escucha el canal');
 
 set local request.jwt.claims = '{"sub": "20000000-0000-0000-0000-000000000001", "role": "authenticated", "app_metadata": {"rol": "institucion"}}';
-select throws_ok($$select * from public.obtener_ultima_posicion('a0000000-0000-0000-0000-000000000001')$$,
-  '42501', null, 'el personal del colegio no lee la posición');
+select is((select count(*)::int from public.obtener_ultima_posicion('a0000000-0000-0000-0000-000000000001')), 0,
+  'el personal del colegio no ve la posición del trayecto (D26)');
 select ok(not private.puede_escuchar_canal('otro-canal'), 'un canal con otro formato se rechaza');
 
 -- ---------------------------------------------------------------------------

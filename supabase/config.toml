@@ -418,3 +418,7 @@ enabled = true
 # verifica por sí misma el JWT del guardián en la acción asignar.
 [functions.auth-pin]
 verify_jwt = false
+
+# E7-01 (D25): la llama la base de datos con pg_net; se autentica con un secreto compartido.
+[functions.notify-push]
+verify_jwt = false

@@ -48,6 +48,13 @@ import { RoutesScreen } from '../features/routes/presentation/screens/RoutesScre
 import { SplashScreen } from '../features/splash/presentation/screens/SplashScreen';
 import { SupabaseAlertRepository } from '../features/alerts/data/repositories/SupabaseAlertRepository';
 import { PanicAlerts } from '../features/alerts/domain/useCases/PanicAlerts';
+import { SupabaseAlertResponseRepository } from '../features/alerts/data/repositories/SupabaseAlertResponseRepository';
+import { AlertSummary } from '../features/alerts/domain/entities/AlertSummary';
+import { RespondToAlerts } from '../features/alerts/domain/useCases/RespondToAlerts';
+import { ExpoPushNotifier } from '../features/alerts/data/push/ExpoPushNotifier';
+import { AlertNotifications } from '../features/alerts/domain/useCases/AlertNotifications';
+import { AlertDetailScreen } from '../features/alerts/presentation/screens/AlertDetailScreen';
+import { ControlRoomScreen } from '../features/alerts/presentation/screens/ControlRoomScreen';
 import { SupabaseTripRepository } from '../features/tracking/data/repositories/SupabaseTripRepository';
 import { TrackTrips } from '../features/tracking/domain/useCases/TrackTrips';
 import { WatchLive } from '../features/tracking/domain/useCases/WatchLive';
@@ -71,6 +78,8 @@ export function AppContent() {
   const [routesProtegido, setRoutesProtegido] = useState<Protegido | null>(null);
   const [networkProtegido, setNetworkProtegido] = useState<Protegido | null>(null);
   const [liveProtegido, setLiveProtegido] = useState<Protegido | null>(null);
+  const [openedAlert, setOpenedAlert] = useState<AlertSummary | null>(null);
+  const [showEnrollments, setShowEnrollments] = useState(false);
   const [invitationCode, setInvitationCode] = useState('');
   const [editedRoute, setEditedRoute] = useState<{
     direction: RouteDirection;
@@ -100,6 +109,8 @@ export function AppContent() {
       trackTrips: new TrackTrips(new SupabaseTripRepository(supabase)),
       panicAlerts: new PanicAlerts(new SupabaseAlertRepository(supabase)),
       watchLive: new WatchLive(new SupabasePositionRepository(supabase)),
+      respondToAlerts: new RespondToAlerts(new SupabaseAlertResponseRepository(supabase)),
+      alertNotifications: new AlertNotifications(new ExpoPushNotifier(supabase)),
       supportNetwork: new SupportNetwork(new SupabaseSupportNetworkRepository(supabase)),
     };
   }, []);
@@ -122,6 +133,20 @@ export function AppContent() {
     };
   }, [useCases]);
 
+  // E7-01 (D25): quien atiende alertas registra su teléfono para el push, y al tocar la
+  // notificación se abre la alerta. E11-04: fuera de la sesión del menor no se captura ubicación.
+  const role = loggedUser?.role;
+  useEffect(() => {
+    if (!role) return;
+    if (role !== 'protegido') shareLocation.sync(false, false);
+    useCases.alertNotifications.enableFor(role);
+    return useCases.alertNotifications.onAlertOpened(async (alertId) => {
+      const result = await useCases.respondToAlerts.list(false);
+      const alert = result.ok ? result.value.find((item) => item.id === alertId) : undefined;
+      if (alert) setOpenedAlert(alert);
+    });
+  }, [role, useCases]);
+
   // E2-01 (D14): el enlace nexasafe://invitacion/<token> abre la pantalla de la invitación.
   useEffect(() => {
     const openInvitation = (url: string | null) => {
@@ -141,6 +166,8 @@ export function AppContent() {
   const goToRegister = useCallback(() => setAuthRoute('register'), []);
 
   const handleSignOut = useCallback(async () => {
+    // D25: el teléfono deja de recibir avisos de esta cuenta.
+    await useCases.alertNotifications.disable();
     await useCases.signOut.execute();
     // E3-01b: al cerrar sesión no quedan rutas en el teléfono.
     await useCases.manageRoutes.clearCache();
@@ -155,6 +182,8 @@ export function AppContent() {
     setEditedRoute(null);
     setNetworkProtegido(null);
     setLiveProtegido(null);
+    setOpenedAlert(null);
+    setShowEnrollments(false);
     setInvitationCode('');
     setAuthRoute('login');
   }, [useCases]);
@@ -227,9 +256,34 @@ export function AppContent() {
     );
   }
 
-  // E2-01: el contacto de apoyo verá las alertas del menor (Sprint 03).
+  // E2-01 y E7-02: el contacto de apoyo ve las alertas del menor (D8).
+  // W11, W12: alerta abierta por el guardián, el contacto de apoyo o el puesto de control.
+  if (
+    openedAlert &&
+    (loggedUser.role === 'guardian' ||
+      loggedUser.role === 'apoyo' ||
+      loggedUser.role === 'institucion')
+  ) {
+    return (
+      <AlertDetailScreen
+        respondToAlerts={useCases.respondToAlerts}
+        watchLive={useCases.watchLive}
+        alert={openedAlert}
+        role={loggedUser.role}
+        onBack={() => setOpenedAlert(null)}
+      />
+    );
+  }
+
   if (loggedUser.role === 'apoyo') {
-    return <SupportHomeScreen userName={loggedUser.name} onSignOut={handleSignOut} />;
+    return (
+      <SupportHomeScreen
+        respondToAlerts={useCases.respondToAlerts}
+        userName={loggedUser.name}
+        onOpenAlert={setOpenedAlert}
+        onSignOut={handleSignOut}
+      />
+    );
   }
 
   // E1-06: el administrador solo ve la gestión de colegios y personal.
@@ -251,7 +305,20 @@ export function AppContent() {
   }
 
   // E1-03: el personal del colegio valida las matrículas pendientes.
+  // E8-01: el puesto de control abre en las alertas activas (W13).
   if (loggedUser.role === 'institucion') {
+    if (!showEnrollments) {
+      return (
+        <ControlRoomScreen
+          respondToAlerts={useCases.respondToAlerts}
+          watchLive={useCases.watchLive}
+          userName={loggedUser.name}
+          onOpenAlert={setOpenedAlert}
+          onOpenEnrollments={() => setShowEnrollments(true)}
+          onSignOut={handleSignOut}
+        />
+      );
+    }
     return reviewedEnrollment ? (
       <EnrollmentReviewScreen
         validateEnrollment={useCases.validateEnrollment}
@@ -263,6 +330,7 @@ export function AppContent() {
         validateEnrollment={useCases.validateEnrollment}
         userName={loggedUser.name}
         onReview={setReviewedEnrollment}
+        onOpenControlRoom={() => setShowEnrollments(false)}
         onSignOut={handleSignOut}
       />
     );
@@ -350,6 +418,8 @@ export function AppContent() {
         onOpenRoutes={setRoutesProtegido}
         onOpenNetwork={setNetworkProtegido}
         onOpenLive={setLiveProtegido}
+        respondToAlerts={useCases.respondToAlerts}
+        onOpenAlert={setOpenedAlert}
         onSignOut={handleSignOut}
       />
     );

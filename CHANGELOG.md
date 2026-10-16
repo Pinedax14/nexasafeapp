@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). Una sección por sprint.
 
+## [Sin publicar] — Sprint 04
+
+### Agregado
+- E6-04 Modo discreto (D30, RNF-16): al vencer la ventana de 10 s la pantalla del menor solo muestra "Hola, …" y un escudo pequeño, sin la palabra "alerta", sin botón de pánico ni mensajes; la notificación fija de Android en una alerta dice "NexaSafe · Servicio activo". E11-04 (D31, RF-41): la app revisa cada 30 s si la alerta se cerró y entonces deja de capturar; al entrar con un rol distinto del menor se detiene cualquier captura.
+- E7-01 Push en la app (D25): `AlertNotifications` + `ExpoPushNotifier` (`expo-notifications` ~0.32.17): canal `alertas` de importancia máxima con sonido, permiso y token de Expo registrado para guardián, contacto de apoyo y colegio; se borra al cerrar sesión; tocar la notificación abre la alerta. Firebase (`nexasafe-a14b3`): `google-services.json` llega a EAS como variable de tipo archivo (`app.config.js`) y no está en el repositorio; la clave de FCM V1 está en las credenciales de EAS.
+- E7-01 Edge Function `notify-push` (D25): la llama el trigger de `alertas` con `pg_net` y un secreto compartido; espera la ventana de 10 s, toma la alerta una sola vez si sigue `ENVIADA` y envía el push por Expo con el primer nombre del menor, sin ubicación. 12 pruebas Deno.
+- E7-02, E9-01, E9-02 y E8-01 en la app (W11–W13, D26–D29): pantalla de la alerta con mapa (posición cada 5 s mientras está activa), "Voy en camino" (guardián y contacto de apoyo), cierre con 3 clasificaciones y nota (guardián y colegio) y bitácora con actores; puesto de control del colegio con las alertas activas en el mapa y en lista y gráfico interactivo de 14 días por clasificación (`react-native-gifted-charts` 1.4.81, `react-native-svg` 15.12.1); alertas en el inicio del guardián y del contacto de apoyo.
+- Migración `sprint_04_bitacora_respuesta_push` (D25–D31): bitácora `eventos_incidente` append-only (sin `UPDATE` ni `DELETE`, ni siquiera para el dueño de la base) con los eventos `DISPARADA`, `CANCELADA`, `NOTIFICADA`, `VOY_EN_CAMINO` y `CERRADA`; cierre clasificado en `alertas` (`clasificacion`, `nota`, `cerrada_en`, `cerrada_por`); lectura de alertas para el contacto de apoyo y el personal del colegio, que ven la posición solo durante una alerta activa (RF-41); funciones `listar_alertas`, `obtener_bitacora` (auditada), `responder_alerta`, `cerrar_alerta`, `resumen_alertas_colegio` (conteos sin datos personales), `registrar_dispositivo`, `borrar_dispositivo` y `tomar_alerta_para_aviso` (solo `service_role`); tabla `dispositivos_push`; trigger que pide a `notify-push` el aviso con `pg_net` y un secreto en Vault. 46 pruebas pgTAP.
+
 ## [Sin publicar] — Sprint 03
 
 ### Agregado

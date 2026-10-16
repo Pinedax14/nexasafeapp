@@ -11,27 +11,42 @@ export type Database = {
       alertas: {
         Row: {
           cancelable_hasta: string;
+          cerrada_en: string | null;
+          cerrada_por: string | null;
+          clasificacion: Database['public']['Enums']['clasificacion_alerta'] | null;
           creada_en: string;
           estado: Database['public']['Enums']['estado_alerta'];
           id: string;
+          nota: string | null;
+          notificada_en: string | null;
           protegido_id: string;
           tipo: Database['public']['Enums']['tipo_alerta'];
           trayecto_id: string | null;
         };
         Insert: {
           cancelable_hasta?: string;
+          cerrada_en?: string | null;
+          cerrada_por?: string | null;
+          clasificacion?: Database['public']['Enums']['clasificacion_alerta'] | null;
           creada_en?: string;
           estado?: Database['public']['Enums']['estado_alerta'];
           id?: string;
+          nota?: string | null;
+          notificada_en?: string | null;
           protegido_id: string;
           tipo?: Database['public']['Enums']['tipo_alerta'];
           trayecto_id?: string | null;
         };
         Update: {
           cancelable_hasta?: string;
+          cerrada_en?: string | null;
+          cerrada_por?: string | null;
+          clasificacion?: Database['public']['Enums']['clasificacion_alerta'] | null;
           creada_en?: string;
           estado?: Database['public']['Enums']['estado_alerta'];
           id?: string;
+          nota?: string | null;
+          notificada_en?: string | null;
           protegido_id?: string;
           tipo?: Database['public']['Enums']['tipo_alerta'];
           trayecto_id?: string | null;
@@ -193,6 +208,59 @@ export type Database = {
             columns: ['protegido_id'];
             isOneToOne: false;
             referencedRelation: 'protegidos';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      dispositivos_push: {
+        Row: {
+          actualizado_en: string;
+          token: string;
+          usuario_id: string;
+        };
+        Insert: {
+          actualizado_en?: string;
+          token: string;
+          usuario_id: string;
+        };
+        Update: {
+          actualizado_en?: string;
+          token?: string;
+          usuario_id?: string;
+        };
+        Relationships: [];
+      };
+      eventos_incidente: {
+        Row: {
+          actor_id: string | null;
+          alerta_id: string;
+          creado_en: string;
+          detalle: string | null;
+          id: number;
+          tipo_evento: Database['public']['Enums']['tipo_evento_incidente'];
+        };
+        Insert: {
+          actor_id?: string | null;
+          alerta_id: string;
+          creado_en?: string;
+          detalle?: string | null;
+          id?: never;
+          tipo_evento: Database['public']['Enums']['tipo_evento_incidente'];
+        };
+        Update: {
+          actor_id?: string | null;
+          alerta_id?: string;
+          creado_en?: string;
+          detalle?: string | null;
+          id?: never;
+          tipo_evento?: Database['public']['Enums']['tipo_evento_incidente'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'eventos_incidente_alerta_id_fkey';
+            columns: ['alerta_id'];
+            isOneToOne: false;
+            referencedRelation: 'alertas';
             referencedColumns: ['id'];
           },
         ];
@@ -473,9 +541,18 @@ export type Database = {
     };
     Functions: {
       aceptar_invitacion: { Args: { p_token: string }; Returns: string };
+      borrar_dispositivo: { Args: { p_token: string }; Returns: undefined };
       cancelar_alerta_verificada: {
         Args: { p_actor_id: string; p_alerta_id: string; p_protegido_id: string };
         Returns: boolean;
+      };
+      cerrar_alerta: {
+        Args: {
+          p_alerta_id: string;
+          p_clasificacion: Database['public']['Enums']['clasificacion_alerta'];
+          p_nota: string;
+        };
+        Returns: undefined;
       };
       crear_invitacion: {
         Args: { p_protegido_id: string };
@@ -505,6 +582,28 @@ export type Database = {
         Returns: string;
       };
       iniciar_trayecto: { Args: { p_ruta_id: string }; Returns: string };
+      listar_alertas: {
+        Args: { p_solo_activas: boolean };
+        Returns: {
+          cancelable_hasta: string;
+          cerrada_en: string;
+          clasificacion: Database['public']['Enums']['clasificacion_alerta'];
+          creada_en: string;
+          estado: Database['public']['Enums']['estado_alerta'];
+          id: string;
+          menor: string;
+          protegido_id: string;
+        }[];
+      };
+      obtener_bitacora: {
+        Args: { p_alerta_id: string };
+        Returns: {
+          actor: string;
+          creado_en: string;
+          detalle: string;
+          tipo_evento: Database['public']['Enums']['tipo_evento_incidente'];
+        }[];
+      };
       obtener_protegido: {
         Args: { p_protegido_id: string };
         Returns: {
@@ -541,6 +640,7 @@ export type Database = {
       pin_huella_documento: { Args: { p_documento: string }; Returns: string };
       pin_ip_bloqueada: { Args: { p_ip: string }; Returns: boolean };
       pin_registrar_fallo_ip: { Args: { p_ip: string }; Returns: undefined };
+      registrar_dispositivo: { Args: { p_token: string }; Returns: undefined };
       registrar_posicion: {
         Args: {
           p_capturada_en: string;
@@ -565,6 +665,22 @@ export type Database = {
         };
         Returns: string;
       };
+      responder_alerta: { Args: { p_alerta_id: string }; Returns: undefined };
+      resumen_alertas_colegio: {
+        Args: { p_dias: number };
+        Returns: {
+          clasificacion: string;
+          dia: string;
+          total: number;
+        }[];
+      };
+      tomar_alerta_para_aviso: {
+        Args: { p_alerta_id: string };
+        Returns: {
+          menor: string;
+          tokens: string[];
+        }[];
+      };
       validar_protegido: {
         Args: { p_protegido_id: string };
         Returns: undefined;
@@ -580,12 +696,14 @@ export type Database = {
     };
     Enums: {
       alcance_visibilidad: 'SOLO_ALERTAS';
+      clasificacion_alerta: 'FALSA_ALARMA' | 'SITUACION_RESUELTA' | 'REMITIDA_A_AUTORIDAD';
       estado_alerta: 'ENVIADA' | 'CANCELADA' | 'ATENDIDA' | 'CERRADA';
       estado_protegido: 'PENDIENTE_VALIDACION' | 'ACTIVO' | 'INACTIVO';
       estado_trayecto: 'EN_CURSO' | 'CERRADO';
       sentido_ruta: 'CASA_COLEGIO' | 'COLEGIO_CASA';
       tipo_alerta: 'MANUAL_BOTON';
       tipo_consentimiento: 'OTORGADO' | 'REVOCADO';
+      tipo_evento_incidente: 'DISPARADA' | 'CANCELADA' | 'NOTIFICADA' | 'VOY_EN_CAMINO' | 'CERRADA';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -708,12 +826,14 @@ export const Constants = {
   public: {
     Enums: {
       alcance_visibilidad: ['SOLO_ALERTAS'],
+      clasificacion_alerta: ['FALSA_ALARMA', 'SITUACION_RESUELTA', 'REMITIDA_A_AUTORIDAD'],
       estado_alerta: ['ENVIADA', 'CANCELADA', 'ATENDIDA', 'CERRADA'],
       estado_protegido: ['PENDIENTE_VALIDACION', 'ACTIVO', 'INACTIVO'],
       estado_trayecto: ['EN_CURSO', 'CERRADO'],
       sentido_ruta: ['CASA_COLEGIO', 'COLEGIO_CASA'],
       tipo_alerta: ['MANUAL_BOTON'],
       tipo_consentimiento: ['OTORGADO', 'REVOCADO'],
+      tipo_evento_incidente: ['DISPARADA', 'CANCELADA', 'NOTIFICADA', 'VOY_EN_CAMINO', 'CERRADA'],
     },
   },
 } as const;

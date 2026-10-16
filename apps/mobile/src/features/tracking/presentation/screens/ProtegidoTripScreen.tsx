@@ -49,6 +49,7 @@ export function ProtegidoTripScreen({
   const tripActive = vm.trip?.status === 'EN_CURSO';
   const alertActive = !!panic.alert;
   const { isLoading, reload } = vm;
+  const refreshAlert = panic.refresh;
 
   useEffect(() => {
     if (!isLoading) shareLocation.sync(tripActive, alertActive);
@@ -59,78 +60,86 @@ export function ProtegidoTripScreen({
     () =>
       shareLocation.onReport((report) => {
         if (report.tripClosed) reload();
+        // E11-04: si cerraron la alerta, la app deja de capturar y sale del modo discreto.
+        if (!report.alertActive) refreshAlert();
       }),
-    [reload, shareLocation],
+    [refreshAlert, reload, shareLocation],
   );
   const tripRoute = vm.trip ? vm.routes.find((route) => route.id === vm.trip?.routeId) : undefined;
 
   return (
     <View style={local.container}>
-      <AccompanimentBanner trip={vm.trip} />
+      <AccompanimentBanner trip={vm.trip} discreet={panic.discreet} />
       <ScrollView contentContainerStyle={styles.screen}>
         <Text style={styles.title}>Hola, {userName} 👋</Text>
 
-        {panic.alert && (
-          <AlertPanel
-            secondsLeft={panic.secondsLeft}
-            canCancel={panic.canCancel}
-            pin={panic.pin}
-            onChangePin={panic.setPin}
-            onCancel={panic.cancel}
-            isCancelling={panic.isCancelling}
-          />
-        )}
-        {!!panic.errorMessage && <Text style={styles.error}>{panic.errorMessage}</Text>}
-        {!!panic.notice && <Text style={local.notice}>{panic.notice}</Text>}
-
-        {vm.needsPermission && (
-          <View style={local.permissionCard}>
-            <Text style={styles.sectionTitle}>{LOCATION_PERMISSION_TITLE}</Text>
-            <Text style={local.tripText}>{LOCATION_PERMISSION_TEXT}</Text>
-            <Pressable
-              style={styles.button}
-              onPress={vm.confirmPermission}
-              accessibilityRole="button"
-            >
-              <Text style={styles.buttonText}>Continuar</Text>
-            </Pressable>
-          </View>
-        )}
-
-        {vm.isLoading ? (
-          <ActivityIndicator color={colors.primary} />
-        ) : vm.trip ? (
-          <View style={local.tripCard}>
-            <Text style={styles.sectionTitle}>
-              {tripRoute ? DIRECTION_LABELS[tripRoute.direction] : 'Trayecto en curso'}
-            </Text>
-            <Text style={local.tripText}>{tripSince(vm.trip.startedAt)}</Text>
-            <Text style={local.tripText}>Tu acudiente sabe que vas en camino.</Text>
-          </View>
-        ) : vm.routes.length === 0 ? (
-          !vm.routesFailed && <Text style={styles.empty}>{NO_ROUTES_MESSAGE}</Text>
-        ) : (
+        {/* E6-04 (D30): en modo discreto no se ve nada que delate la alerta. */}
+        {!panic.discreet && (
           <>
-            <Text style={styles.subtitle}>¿A dónde vas?</Text>
-            {vm.routes.map((route) => (
-              <Pressable
-                key={route.id}
-                style={[local.routeButton, vm.isStarting && styles.buttonDisabled]}
-                onPress={() => vm.start(route)}
-                disabled={vm.isStarting}
-                accessibilityRole="button"
-                accessibilityLabel={`Iniciar trayecto ${DIRECTION_LABELS[route.direction]}`}
-              >
-                <Text style={local.routeButtonText}>▶ {DIRECTION_LABELS[route.direction]}</Text>
-              </Pressable>
-            ))}
-            <Text style={local.hint}>Un toque inicia el trayecto y tu acudiente te acompaña.</Text>
+            {panic.alert && (
+              <AlertPanel
+                secondsLeft={panic.secondsLeft}
+                pin={panic.pin}
+                onChangePin={panic.setPin}
+                onCancel={panic.cancel}
+                isCancelling={panic.isCancelling}
+              />
+            )}
+            {!!panic.errorMessage && <Text style={styles.error}>{panic.errorMessage}</Text>}
+            {!!panic.notice && <Text style={local.notice}>{panic.notice}</Text>}
+
+            {vm.needsPermission && (
+              <View style={local.permissionCard}>
+                <Text style={styles.sectionTitle}>{LOCATION_PERMISSION_TITLE}</Text>
+                <Text style={local.tripText}>{LOCATION_PERMISSION_TEXT}</Text>
+                <Pressable
+                  style={styles.button}
+                  onPress={vm.confirmPermission}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.buttonText}>Continuar</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {vm.isLoading ? (
+              <ActivityIndicator color={colors.primary} />
+            ) : vm.trip ? (
+              <View style={local.tripCard}>
+                <Text style={styles.sectionTitle}>
+                  {tripRoute ? DIRECTION_LABELS[tripRoute.direction] : 'Trayecto en curso'}
+                </Text>
+                <Text style={local.tripText}>{tripSince(vm.trip.startedAt)}</Text>
+                <Text style={local.tripText}>Tu acudiente sabe que vas en camino.</Text>
+              </View>
+            ) : vm.routes.length === 0 ? (
+              !vm.routesFailed && <Text style={styles.empty}>{NO_ROUTES_MESSAGE}</Text>
+            ) : (
+              <>
+                <Text style={styles.subtitle}>¿A dónde vas?</Text>
+                {vm.routes.map((route) => (
+                  <Pressable
+                    key={route.id}
+                    style={[local.routeButton, vm.isStarting && styles.buttonDisabled]}
+                    onPress={() => vm.start(route)}
+                    disabled={vm.isStarting}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Iniciar trayecto ${DIRECTION_LABELS[route.direction]}`}
+                  >
+                    <Text style={local.routeButtonText}>▶ {DIRECTION_LABELS[route.direction]}</Text>
+                  </Pressable>
+                ))}
+                <Text style={local.hint}>
+                  Un toque inicia el trayecto y tu acudiente te acompaña.
+                </Text>
+              </>
+            )}
+
+            {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
+
+            {!panic.alert && <PanicButton onTrigger={panic.trigger} disabled={panic.isSending} />}
           </>
         )}
-
-        {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
-
-        {!panic.alert && <PanicButton onTrigger={panic.trigger} disabled={panic.isSending} />}
 
         <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
           <Text style={styles.linkText}>Cerrar sesión</Text>
