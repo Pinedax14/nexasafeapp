@@ -13,25 +13,29 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
       # React Native va en 0.x: Dependabot cuenta 0.81 → 0.87 como "minor".
-      # Estas librerías las fija la SDK de Expo y solo cambian con ella.
+      # Estas librerías las fija la SDK de Expo y solo cambian con ella, ni siquiera en
+      # parches: react 19.1.9 con el renderer de React Native (19.1.4) cerraba la app
+      # al abrirla en Android (#53, detectado el 16/10/2026).
       - dependency-name: "react"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "react-dom"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "@types/react"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "react-native"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "react-native-svg"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "react-native-webview"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "expo"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "expo-*"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "jest-expo"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       - dependency-name: "eslint-config-expo"
-        update-types: ["version-update:semver-minor"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
     groups:
       menores:
         update-types: ["minor", "patch"]
