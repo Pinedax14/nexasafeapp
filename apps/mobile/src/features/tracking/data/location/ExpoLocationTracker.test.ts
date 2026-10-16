@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import {
+  DISCREET_NOTIFICATION,
   ExpoLocationTracker,
   FOREGROUND_NOTIFICATION,
   handleLocationTask,
@@ -100,7 +101,19 @@ describe('ExpoLocationTracker (D18)', () => {
     expect(await tracker.requestPermission()).toBe('GRANTED');
   });
 
-  it('arranca con el servicio en primer plano y la frecuencia del modo', async () => {
+  it('en el trayecto avisa con la notificación de acompañamiento', async () => {
+    await new ExpoLocationTracker().start('TRIP');
+
+    expect(location.startLocationUpdatesAsync).toHaveBeenCalledWith(LOCATION_TASK, {
+      accuracy: 4,
+      timeInterval: 15000,
+      distanceInterval: 20,
+      pausesUpdatesAutomatically: false,
+      foregroundService: { ...FOREGROUND_NOTIFICATION, killServiceOnDestroy: false },
+    });
+  });
+
+  it('en una alerta usa una notificación neutra y cada 5 s (E6-04, D30)', async () => {
     const tracker = new ExpoLocationTracker();
 
     expect(await tracker.start('ALERT')).toBe(true);
@@ -109,8 +122,9 @@ describe('ExpoLocationTracker (D18)', () => {
       timeInterval: 5000,
       distanceInterval: 0,
       pausesUpdatesAutomatically: false,
-      foregroundService: { ...FOREGROUND_NOTIFICATION, killServiceOnDestroy: false },
+      foregroundService: { ...DISCREET_NOTIFICATION, killServiceOnDestroy: false },
     });
+    expect(DISCREET_NOTIFICATION.notificationBody).not.toMatch(/alerta|ayuda/i);
     location.hasStartedLocationUpdatesAsync.mockResolvedValue(true);
     expect(await tracker.currentMode()).toBe('ALERT');
   });

@@ -7,6 +7,8 @@ export type AlertFailureReason =
   | 'INVALID_PIN'
   | 'LOCKED'
   | 'NOT_CANCELLABLE'
+  | 'INVALID_DATA'
+  | 'NOT_ACTIVE_ALERT'
   | 'NETWORK'
   | 'UNKNOWN';
 

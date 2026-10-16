@@ -1,4 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { AlertResponseRepository } from '../../../alerts/domain/repositories/AlertResponseRepository';
+import { RespondToAlerts } from '../../../alerts/domain/useCases/RespondToAlerts';
+import { ALERT_ERROR_MESSAGES } from '../../../alerts/presentation/alertMessages';
 import { SupportNetworkRepository } from '../../domain/repositories/SupportNetworkRepository';
 import { invitationLink, SupportNetwork } from '../../domain/useCases/SupportNetwork';
 import {
@@ -195,10 +198,67 @@ describe('AcceptInvitationScreen (W6, E2-01)', () => {
   });
 });
 
-describe('SupportHomeScreen (E2-01)', () => {
-  it('el contacto de apoyo todavía no tiene alertas', async () => {
-    await render(<SupportHomeScreen userName="Ana" onSignOut={jest.fn()} />);
+describe('SupportHomeScreen (E2-01, E7-02)', () => {
+  const alert = {
+    id: 'al-1',
+    protegidoId: 'p-1',
+    childName: 'Menor',
+    status: 'ENVIADA' as const,
+    createdAt: '2026-10-15T12:00:00Z',
+    classification: null,
+    closedAt: null,
+  };
 
-    expect(screen.getByText(NO_ALERTS_MESSAGE)).toBeTruthy();
+  function alerts(list: Awaited<ReturnType<AlertResponseRepository['list']>>) {
+    const responses: jest.Mocked<AlertResponseRepository> = {
+      list: jest.fn().mockResolvedValue(list),
+      log: jest.fn(),
+      respond: jest.fn(),
+      close: jest.fn(),
+      summary: jest.fn(),
+    };
+    return new RespondToAlerts(responses);
+  }
+
+  it('sin alertas lo dice', async () => {
+    await render(
+      <SupportHomeScreen
+        respondToAlerts={alerts({ ok: true, value: [] })}
+        userName="Ana"
+        onOpenAlert={jest.fn()}
+        onSignOut={jest.fn()}
+      />,
+    );
+
+    expect(await screen.findByText(NO_ALERTS_MESSAGE)).toBeTruthy();
+  });
+
+  it('ve las alertas del menor y abre una', async () => {
+    const onOpenAlert = jest.fn();
+    await render(
+      <SupportHomeScreen
+        respondToAlerts={alerts({ ok: true, value: [alert] })}
+        userName="Ana"
+        onOpenAlert={onOpenAlert}
+        onSignOut={jest.fn()}
+      />,
+    );
+
+    await fireEvent.press(await screen.findByLabelText('Abrir alerta de Menor'));
+
+    expect(onOpenAlert).toHaveBeenCalledWith(alert);
+  });
+
+  it('muestra el error si no puede leer las alertas', async () => {
+    await render(
+      <SupportHomeScreen
+        respondToAlerts={alerts({ ok: false, reason: 'NETWORK' })}
+        userName="Ana"
+        onOpenAlert={jest.fn()}
+        onSignOut={jest.fn()}
+      />,
+    );
+
+    expect(await screen.findByText(ALERT_ERROR_MESSAGES.NETWORK)).toBeTruthy();
   });
 });
