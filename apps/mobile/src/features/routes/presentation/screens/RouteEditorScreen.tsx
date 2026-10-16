@@ -1,14 +1,8 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { fonts, TOUCH_TARGET } from '../../../../core/theme/typography';
 import { Route, RouteDirection } from '../../domain/entities/Route';
 import {
   CORRIDOR_MAX_METERS,
@@ -19,6 +13,8 @@ import { RouteMap } from '../map/RouteMap';
 import { DIRECTION_LABELS, ROUTE_READ_ONLY_NOTICE } from '../routeMessages';
 import { useRouteEditorViewModel } from '../viewModels/useRouteEditorViewModel';
 import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
+import { TextField } from '../../../../core/theme/TextField';
 
 type RouteEditorScreenProps = {
   manageRoutes: ManageRoutes;
@@ -64,7 +60,11 @@ export function RouteEditorScreen({
             onPress={vm.undo}
             disabled={vm.points.length === 0 || vm.isSaving}
             accessibilityRole="button"
+            accessibilityLabel="Deshacer"
+            hitSlop={8}
+            style={({ pressed }) => [local.undo, pressed && local.pressed]}
           >
+            <Ionicons name="arrow-undo" size={18} color={colors.primary} />
             <Text style={styles.linkText}>Deshacer</Text>
           </Pressable>
         </View>
@@ -80,7 +80,7 @@ export function RouteEditorScreen({
           accessibilityRole="button"
           accessibilityLabel="Reducir corredor"
         >
-          <Text style={local.stepText}>−</Text>
+          <Ionicons name="remove" size={26} color={colors.primary} />
         </Pressable>
         <Text style={local.range}>
           {CORRIDOR_MIN_METERS}–{CORRIDOR_MAX_METERS} m
@@ -92,14 +92,14 @@ export function RouteEditorScreen({
           accessibilityRole="button"
           accessibilityLabel="Ampliar corredor"
         >
-          <Text style={local.stepText}>+</Text>
+          <Ionicons name="add" size={26} color={colors.primary} />
         </Pressable>
       </View>
       {!!vm.fieldErrors.corridor && <Text style={styles.error}>{vm.fieldErrors.corridor}</Text>}
 
       <Text style={local.label}>Duración esperada (min)</Text>
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="time-outline"
         placeholder="Entre 5 y 120"
         accessibilityLabel="Duración esperada en minutos"
         value={vm.duration}
@@ -111,20 +111,7 @@ export function RouteEditorScreen({
       {!!vm.fieldErrors.duration && <Text style={styles.error}>{vm.fieldErrors.duration}</Text>}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
-      {!readOnly && (
-        <Pressable
-          style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-          onPress={vm.save}
-          disabled={vm.isSaving}
-          accessibilityRole="button"
-        >
-          {vm.isSaving ? (
-            <ActivityIndicator color={colors.onPrimary} />
-          ) : (
-            <Text style={styles.buttonText}>Guardar ruta</Text>
-          )}
-        </Pressable>
-      )}
+      {!readOnly && <Button title="Guardar ruta" onPress={vm.save} loading={vm.isSaving} />}
     </ScrollView>
   );
 }
@@ -137,18 +124,37 @@ const local = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 8,
   },
-  hint: { color: colors.textMuted, flexShrink: 1 },
-  label: { marginTop: 12, marginBottom: 8, fontSize: 16, fontWeight: '600', color: colors.text },
-  stepper: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  hint: { ...fonts.regular, color: colors.textMuted, flexShrink: 1 },
+  // A4 (Sprint 02): área táctil de 48 dp para no fallar el toque.
+  undo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    minHeight: TOUCH_TARGET,
+    minWidth: TOUCH_TARGET,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: colors.primarySoft,
+  },
+  pressed: { opacity: 0.7 },
+  label: { ...fonts.semibold, marginTop: 16, marginBottom: 8, fontSize: 16, color: colors.text },
+  stepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 8,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   stepButton: {
     width: 52,
     height: 52,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: colors.primary,
+    borderRadius: 14,
+    backgroundColor: colors.primarySoft,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  stepText: { color: colors.primary, fontSize: 24, fontWeight: '700' },
-  range: { color: colors.textMuted },
+  range: { ...fonts.medium, color: colors.textMuted },
 });

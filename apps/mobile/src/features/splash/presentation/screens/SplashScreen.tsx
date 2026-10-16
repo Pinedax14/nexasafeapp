@@ -4,6 +4,7 @@ import { colors } from '../../../../core/theme/colors';
 import { LOGO_RATIO, PinShape, ShieldShape } from '../../../../core/theme/Logo';
 import { LOGO_SHIFT, useSplashAnimation } from '../viewModels/useSplashAnimation';
 import { useSplashViewModel } from '../viewModels/useSplashViewModel';
+import { fonts } from '../../../../core/theme/typography';
 
 type SplashScreenProps = {
   onFinish: () => void;
@@ -91,6 +92,6 @@ const styles = StyleSheet.create({
     marginTop: LOGO_HEIGHT / 2 - LOGO_SHIFT + 24,
     alignItems: 'center',
   },
-  name: { color: colors.onPrimary, fontSize: 34, fontWeight: '800', letterSpacing: 0.5 },
-  tagline: { color: colors.onPrimary, opacity: 0.85, fontSize: 15, marginTop: 6 },
+  name: { ...fonts.extrabold, color: colors.onPrimary, fontSize: 34, letterSpacing: 0.5 },
+  tagline: { ...fonts.medium, color: colors.onPrimary, opacity: 0.85, fontSize: 15, marginTop: 6 },
 });

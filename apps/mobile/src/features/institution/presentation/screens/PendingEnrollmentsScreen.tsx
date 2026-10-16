@@ -5,6 +5,7 @@ import { PendingEnrollment } from '../../domain/entities/EnrollmentReview';
 import { ValidateEnrollment } from '../../domain/useCases/ValidateEnrollment';
 import { usePendingEnrollmentsViewModel } from '../viewModels/usePendingEnrollmentsViewModel';
 import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
 
 type PendingEnrollmentsScreenProps = {
   validateEnrollment: ValidateEnrollment;
@@ -62,9 +63,7 @@ export function PendingEnrollmentsScreen({
         ))
       )}
 
-      <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-        <Text style={styles.linkText}>Cerrar sesión</Text>
-      </Pressable>
+      <Button title="Cerrar sesión" onPress={onSignOut} variant="ghost" icon="log-out-outline" />
     </ScrollView>
   );
 }

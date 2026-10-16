@@ -1,5 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput } from 'react-native';
-import { colors } from '../../../../core/theme/colors';
+import { ScrollView, Text } from 'react-native';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { User } from '../../../auth/domain/entities/User';
 import { MIN_PASSWORD_LENGTH } from '../../../auth/domain/useCases/RegisterGuardian';
@@ -7,6 +6,8 @@ import { SupportNetwork } from '../../domain/useCases/SupportNetwork';
 import { SUPPORT_CONFIRMATION_MESSAGE, SUPPORT_SCOPE_NOTICE } from '../networkMessages';
 import { useAcceptInvitationViewModel } from '../viewModels/useAcceptInvitationViewModel';
 import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
+import { TextField } from '../../../../core/theme/TextField';
 
 type AcceptInvitationScreenProps = {
   supportNetwork: SupportNetwork;
@@ -30,9 +31,7 @@ export function AcceptInvitationScreen({
       <ScrollView contentContainerStyle={styles.screen}>
         <Text style={styles.title}>Revisa tu correo</Text>
         <Text style={styles.notice}>{SUPPORT_CONFIRMATION_MESSAGE}</Text>
-        <Pressable style={styles.button} onPress={onBack} accessibilityRole="button">
-          <Text style={styles.buttonText}>Ir a iniciar sesión</Text>
-        </Pressable>
+        <Button title="Ir a iniciar sesión" onPress={onBack} />
       </ScrollView>
     );
   }
@@ -45,8 +44,8 @@ export function AcceptInvitationScreen({
         <>
           <Text style={styles.title}>Tengo una invitación</Text>
           <Text style={styles.subtitle}>Pega el código o el enlace que te enviaron.</Text>
-          <TextInput
-            style={styles.input}
+          <TextField
+            icon="ticket-outline"
             placeholder="Código o enlace de invitación"
             accessibilityLabel="Código de invitación"
             value={vm.code}
@@ -56,18 +55,7 @@ export function AcceptInvitationScreen({
             editable={!vm.isBusy}
           />
           {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
-          <Pressable
-            style={[styles.button, vm.isBusy && styles.buttonDisabled]}
-            onPress={vm.check}
-            disabled={vm.isBusy}
-            accessibilityRole="button"
-          >
-            {vm.isBusy ? (
-              <ActivityIndicator color={colors.onPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>Continuar</Text>
-            )}
-          </Pressable>
+          <Button title="Continuar" onPress={vm.check} loading={vm.isBusy} />
         </>
       ) : (
         <>
@@ -76,8 +64,8 @@ export function AcceptInvitationScreen({
           </Text>
           <Text style={styles.subtitle}>Invitación de {vm.preview.guardianName}.</Text>
 
-          <TextInput
-            style={styles.input}
+          <TextField
+            icon="person-outline"
             placeholder="Tu nombre"
             accessibilityLabel="Nombre completo"
             value={vm.name}
@@ -85,8 +73,8 @@ export function AcceptInvitationScreen({
             editable={!vm.isBusy}
           />
           {!!vm.fieldErrors.name && <Text style={styles.error}>{vm.fieldErrors.name}</Text>}
-          <TextInput
-            style={styles.input}
+          <TextField
+            icon="mail-outline"
             placeholder="Correo"
             accessibilityLabel="Correo"
             value={vm.email}
@@ -96,8 +84,8 @@ export function AcceptInvitationScreen({
             editable={!vm.isBusy}
           />
           {!!vm.fieldErrors.email && <Text style={styles.error}>{vm.fieldErrors.email}</Text>}
-          <TextInput
-            style={styles.input}
+          <TextField
+            icon="lock-closed-outline"
             placeholder={`Contraseña (mínimo ${MIN_PASSWORD_LENGTH} caracteres)`}
             accessibilityLabel="Contraseña"
             value={vm.password}
@@ -108,18 +96,7 @@ export function AcceptInvitationScreen({
           {!!vm.fieldErrors.password && <Text style={styles.error}>{vm.fieldErrors.password}</Text>}
           {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
-          <Pressable
-            style={[styles.button, vm.isBusy && styles.buttonDisabled]}
-            onPress={vm.register}
-            disabled={vm.isBusy}
-            accessibilityRole="button"
-          >
-            {vm.isBusy ? (
-              <ActivityIndicator color={colors.onPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>Crear cuenta y aceptar</Text>
-            )}
-          </Pressable>
+          <Button title="Crear cuenta y aceptar" onPress={vm.register} loading={vm.isBusy} />
           <Text style={styles.empty}>{SUPPORT_SCOPE_NOTICE}</Text>
         </>
       )}

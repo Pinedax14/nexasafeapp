@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
@@ -15,6 +14,9 @@ import { RegisterProtegido } from '../../domain/useCases/RegisterProtegido';
 import { POLICY_SECTIONS } from '../policyText';
 import { useRegisterProtegidoViewModel } from '../viewModels/useRegisterProtegidoViewModel';
 import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
+import { TextField } from '../../../../core/theme/TextField';
+import { fonts } from '../../../../core/theme/typography';
 
 type RegisterProtegidoScreenProps = {
   registerProtegido: RegisterProtegido;
@@ -54,8 +56,8 @@ export function RegisterProtegidoScreen({
         Quedará pendiente hasta que el colegio valide su matrícula.
       </Text>
 
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="person-outline"
         placeholder="Nombre completo del menor"
         accessibilityLabel="Nombre del menor"
         value={vm.name}
@@ -64,8 +66,8 @@ export function RegisterProtegidoScreen({
       />
       {!!vm.fieldErrors.name && <Text style={styles.error}>{vm.fieldErrors.name}</Text>}
 
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="card-outline"
         placeholder="Número de documento"
         accessibilityLabel="Documento del menor"
         value={vm.document}
@@ -142,18 +144,7 @@ export function RegisterProtegidoScreen({
       {!!vm.fieldErrors.consent && <Text style={styles.error}>{vm.fieldErrors.consent}</Text>}
 
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
-      <Pressable
-        style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-        onPress={vm.submit}
-        disabled={vm.isSaving}
-        accessibilityRole="button"
-      >
-        {vm.isSaving ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Registrar menor</Text>
-        )}
-      </Pressable>
+      <Button title="Registrar menor" onPress={vm.submit} loading={vm.isSaving} />
     </ScrollView>
   );
 }
@@ -168,8 +159,8 @@ const local = StyleSheet.create({
     marginBottom: 8,
   },
   optionSelected: { borderColor: colors.primary },
-  optionText: { fontSize: 16, color: colors.text },
-  optionTextSelected: { color: colors.primary, fontWeight: '700' },
+  optionText: { ...fonts.medium, fontSize: 16, color: colors.text },
+  optionTextSelected: { ...fonts.bold, color: colors.primary },
   photo: { width: 120, height: 120, borderRadius: 12, marginBottom: 8 },
   secondaryButton: {
     borderWidth: 1,
@@ -182,5 +173,5 @@ const local = StyleSheet.create({
   policySection: { marginBottom: 10 },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', marginVertical: 12 },
   checkbox: { fontSize: 22, marginRight: 10, color: colors.primary },
-  checkboxText: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 21 },
+  checkboxText: { ...fonts.regular, flex: 1, fontSize: 15, color: colors.text, lineHeight: 21 },
 });

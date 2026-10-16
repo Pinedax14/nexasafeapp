@@ -101,6 +101,15 @@ describe('RouteEditorScreen (E3-01a, E3-02, E3-03)', () => {
     expect(repository.save).not.toHaveBeenCalled();
   });
 
+  it('"Deshacer" tiene un área táctil de al menos 48 dp (prueba A4 del Sprint 02)', async () => {
+    await setup();
+
+    expect(screen.getByLabelText('Deshacer')).toHaveStyle({
+      minHeight: 48,
+      minWidth: 48,
+    });
+  });
+
   it('pide una duración entre 5 y 120 minutos', async () => {
     const { repository } = await setup({ initialRoute: route });
 

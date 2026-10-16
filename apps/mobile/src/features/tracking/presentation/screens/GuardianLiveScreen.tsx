@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text } from 'react-native';
+import { ActivityIndicator, ScrollView, Text } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';

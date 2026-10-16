@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text } from 'react-native';
+import { ActivityIndicator, ScrollView, Text } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { AlertSummary } from '../../../alerts/domain/entities/AlertSummary';
@@ -6,6 +6,7 @@ import { RespondToAlerts } from '../../../alerts/domain/useCases/RespondToAlerts
 import { AlertList } from '../../../alerts/presentation/components/AlertList';
 import { useAlertListViewModel } from '../../../alerts/presentation/viewModels/useAlertListViewModel';
 import { NO_ALERTS_MESSAGE, SUPPORT_SCOPE_NOTICE } from '../networkMessages';
+import { Button } from '../../../../core/theme/Button';
 
 type SupportHomeScreenProps = {
   respondToAlerts: RespondToAlerts;
@@ -34,9 +35,7 @@ export function SupportHomeScreen({
         <AlertList alerts={vm.alerts} emptyText={NO_ALERTS_MESSAGE} onOpen={onOpenAlert} />
       )}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
-      <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-        <Text style={styles.linkText}>Cerrar sesión</Text>
-      </Pressable>
+      <Button title="Cerrar sesión" onPress={onSignOut} variant="ghost" icon="log-out-outline" />
     </ScrollView>
   );
 }

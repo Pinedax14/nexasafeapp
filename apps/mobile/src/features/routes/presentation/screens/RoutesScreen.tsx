@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
@@ -56,7 +57,7 @@ export function RoutesScreen({
                   {route ? routeSummary(route) : ROUTE_NOT_DEFINED}
                 </Text>
               </View>
-              <Text style={styles.linkText}>›</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
             </Pressable>
           );
         })

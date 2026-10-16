@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { contactStatus } from '../../domain/entities/SupportContact';
@@ -6,6 +6,7 @@ import { SupportNetwork } from '../../domain/useCases/SupportNetwork';
 import { contactLabel, contactStatusLabel, INVITE_NOTICE } from '../networkMessages';
 import { ShareText, useSupportNetworkViewModel } from '../viewModels/useSupportNetworkViewModel';
 import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
 
 type SupportNetworkScreenProps = {
   supportNetwork: SupportNetwork;
@@ -36,18 +37,7 @@ export function SupportNetworkScreen({
       <Text style={styles.title}>Red de apoyo de {protegidoName}</Text>
       <Text style={styles.subtitle}>Recibirán las alertas del menor.</Text>
 
-      <Pressable
-        style={[styles.button, vm.isInviting && styles.buttonDisabled]}
-        onPress={vm.invite}
-        disabled={vm.isInviting}
-        accessibilityRole="button"
-      >
-        {vm.isInviting ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Invitar a un contacto</Text>
-        )}
-      </Pressable>
+      <Button title="Invitar a un contacto" onPress={vm.invite} loading={vm.isInviting} />
       <Text style={styles.empty}>{INVITE_NOTICE}</Text>
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
