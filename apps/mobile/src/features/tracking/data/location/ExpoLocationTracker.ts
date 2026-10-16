@@ -8,12 +8,19 @@ import { SHARING_SETTINGS } from '../../domain/useCases/ShareLocation';
 
 export const LOCATION_TASK = 'nexasafe-ubicacion';
 
-/** Notificación fija del servicio en primer plano de Android (D18). */
+/** Notificación fija del servicio en primer plano de Android en el trayecto (D18). */
 export const FOREGROUND_NOTIFICATION = {
   notificationTitle: 'NexaSafe te está acompañando',
   notificationBody:
     'Tu ubicación se comparte con tu acudiente mientras dura el trayecto o la alerta.',
   notificationColor: colors.primary,
+};
+
+/** E6-04 (D30): durante una alerta la notificación no revela que se pidió ayuda. */
+export const DISCREET_NOTIFICATION = {
+  notificationTitle: 'NexaSafe',
+  notificationBody: 'Servicio activo',
+  notificationColor: colors.textMuted,
 };
 
 type PositionsHandler = (positions: Position[]) => Promise<void>;
@@ -74,7 +81,10 @@ export class ExpoLocationTracker implements LocationTracker {
         timeInterval: SHARING_SETTINGS[mode].intervalMs,
         distanceInterval: SHARING_SETTINGS[mode].distanceMeters,
         pausesUpdatesAutomatically: false,
-        foregroundService: { ...FOREGROUND_NOTIFICATION, killServiceOnDestroy: false },
+        foregroundService: {
+          ...(mode === 'ALERT' ? DISCREET_NOTIFICATION : FOREGROUND_NOTIFICATION),
+          killServiceOnDestroy: false,
+        },
       });
       this.mode = mode;
       return true;

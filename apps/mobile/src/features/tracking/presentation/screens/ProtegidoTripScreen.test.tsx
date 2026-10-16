@@ -2,8 +2,8 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { Alert } from '../../../alerts/domain/entities/Alert';
 import { AlertRepository } from '../../../alerts/domain/repositories/AlertRepository';
 import { PanicAlerts } from '../../../alerts/domain/useCases/PanicAlerts';
+import { ALERT_REFRESH_MS } from '../../../alerts/presentation/viewModels/usePanicViewModel';
 import {
-  ALERT_ACTIVE_MESSAGE,
   ALERT_CANCELLED_MESSAGE,
   ALERT_ERROR_MESSAGES,
   ALERT_SENT_TITLE,
@@ -59,6 +59,9 @@ type Options = {
   permission?: LocationPermission;
   requested?: LocationPermission;
 };
+
+const PAST = '2000-01-01T00:00:00Z';
+const FUTURE = '2999-01-01T00:00:00Z';
 
 const sentAlert: Alert = {
   id: 'al-1',
@@ -279,7 +282,15 @@ describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
     expect(screen.getByText(ALERT_SENT_TITLE)).toBeTruthy();
   });
 
-  it('pasados 10 s ya no se puede cancelar', async () => {
+  function expectDiscreet() {
+    expect(screen.getByLabelText('Acompañamiento activo')).toBeTruthy();
+    expect(screen.queryByText(/alerta/i)).toBeNull();
+    expect(screen.queryByLabelText('PIN para cancelar')).toBeNull();
+    expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
+    expect(screen.queryByText('¿A dónde vas?')).toBeNull();
+  }
+
+  it('pasados 10 s la pantalla entra en modo discreto (E6-04)', async () => {
     await setup();
     await hold(3000);
 
@@ -287,11 +298,11 @@ describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
       jest.advanceTimersByTime(11000);
     });
 
-    expect(await screen.findByText(ALERT_ACTIVE_MESSAGE)).toBeTruthy();
-    expect(screen.queryByLabelText('PIN para cancelar')).toBeNull();
+    expect(screen.getByText('Hola, Menor 👋')).toBeTruthy();
+    expectDiscreet();
   });
 
-  it('si el servidor dice que la ventana venció, se muestra la alerta activa', async () => {
+  it('si el servidor dice que la ventana venció, entra en modo discreto sin mostrar el error', async () => {
     await setup({
       alerts: { cancel: jest.fn().mockResolvedValue({ ok: false, reason: 'NOT_CANCELLABLE' }) },
     });
@@ -300,8 +311,25 @@ describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
     await fireEvent.changeText(await screen.findByLabelText('PIN para cancelar'), '1234');
     await fireEvent.press(screen.getByText('Cancelar'));
 
-    expect(await screen.findByText(ALERT_ERROR_MESSAGES.NOT_CANCELLABLE)).toBeTruthy();
-    expect(screen.getByText(ALERT_ACTIVE_MESSAGE)).toBeTruthy();
+    expect(await screen.findByLabelText('Acompañamiento activo')).toBeTruthy();
+    expect(screen.queryByText(ALERT_ERROR_MESSAGES.NOT_CANCELLABLE)).toBeNull();
+    expectDiscreet();
+  });
+
+  it('cuando cierran la alerta sale del modo discreto (E9-02, E11-04)', async () => {
+    const active = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: true, value: { ...sentAlert, cancellableUntil: PAST } })
+      .mockResolvedValue({ ok: true, value: null });
+    await setup({ alerts: { active } });
+    expect(await screen.findByLabelText('Acompañamiento activo')).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(ALERT_REFRESH_MS);
+    });
+
+    expect(await screen.findByLabelText('Botón de ayuda')).toBeTruthy();
+    expect(screen.queryByLabelText('Acompañamiento activo')).toBeNull();
   });
 
   it('muestra el error si no pudo disparar', async () => {
@@ -314,13 +342,30 @@ describe('ProtegidoTripScreen · botón de pánico (E6-01, E6-03)', () => {
     expect(await screen.findByText(ALERT_ERROR_MESSAGES.RATE_LIMITED)).toBeTruthy();
   });
 
-  it('al abrir la app recupera la alerta activa', async () => {
+  it('al abrir la app dentro de la ventana muestra la cuenta regresiva', async () => {
     await setup({
-      alerts: { active: jest.fn().mockResolvedValue({ ok: true, value: sentAlert }) },
+      alerts: {
+        active: jest
+          .fn()
+          .mockResolvedValue({ ok: true, value: { ...sentAlert, cancellableUntil: FUTURE } }),
+      },
     });
 
     expect(await screen.findByText(ALERT_SENT_TITLE)).toBeTruthy();
     expect(screen.queryByLabelText('Botón de ayuda')).toBeNull();
+  });
+
+  it('al abrir la app con una alerta ya enviada sigue en modo discreto', async () => {
+    await setup({
+      alerts: {
+        active: jest
+          .fn()
+          .mockResolvedValue({ ok: true, value: { ...sentAlert, cancellableUntil: PAST } }),
+      },
+    });
+
+    expect(await screen.findByLabelText('Acompañamiento activo')).toBeTruthy();
+    expectDiscreet();
   });
 });
 

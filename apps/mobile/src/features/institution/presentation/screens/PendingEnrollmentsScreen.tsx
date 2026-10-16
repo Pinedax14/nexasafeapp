@@ -9,6 +9,8 @@ type PendingEnrollmentsScreenProps = {
   validateEnrollment: ValidateEnrollment;
   userName: string;
   onReview: (enrollment: PendingEnrollment) => void;
+  /** E8-01: vuelve a las alertas activas del puesto de control. */
+  onOpenControlRoom?: () => void;
   onSignOut: () => void;
 };
 
@@ -16,12 +18,18 @@ export function PendingEnrollmentsScreen({
   validateEnrollment,
   userName,
   onReview,
+  onOpenControlRoom,
   onSignOut,
 }: PendingEnrollmentsScreenProps) {
   const vm = usePendingEnrollmentsViewModel(validateEnrollment);
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
+      {onOpenControlRoom && (
+        <Pressable onPress={onOpenControlRoom} accessibilityRole="button">
+          <Text style={styles.linkText}>‹ Alertas activas</Text>
+        </Pressable>
+      )}
       <Text style={styles.title}>Puesto de control</Text>
       <Text style={styles.subtitle}>Hola, {userName}. Valida las matrículas de tu colegio.</Text>
 
