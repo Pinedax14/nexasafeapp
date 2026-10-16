@@ -124,6 +124,11 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # React, React Native y las librerías nativas deben tener las versiones exactas de
+      # la SDK 54: si no coinciden, el APK se cierra al abrirse (16/10/2026).
+      - name: Versiones fijadas por Expo SDK 54
+        run: npx expo install --check
+
       - name: ESLint
         run: npm run lint
 
