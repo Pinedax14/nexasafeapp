@@ -23,7 +23,8 @@ export function PinLoginScreen({ loginWithPin, onLoginSuccess, onBack }: PinLogi
       subtitle="Entra con tu documento y tu PIN de 4 números."
       footer={
         <Button
-          title="‹ Soy acudiente o del colegio"
+          title="Soy acudiente o del colegio"
+          icon="arrow-back"
           onPress={onBack}
           variant="ghost"
           accessibilityRole="button"

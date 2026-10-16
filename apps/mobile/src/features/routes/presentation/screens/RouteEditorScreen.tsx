@@ -18,6 +18,7 @@ import {
 import { RouteMap } from '../map/RouteMap';
 import { DIRECTION_LABELS, ROUTE_READ_ONLY_NOTICE } from '../routeMessages';
 import { useRouteEditorViewModel } from '../viewModels/useRouteEditorViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type RouteEditorScreenProps = {
   manageRoutes: ManageRoutes;
@@ -45,9 +46,7 @@ export function RouteEditorScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Rutas</Text>
-      </Pressable>
+      <BackLink label="Rutas" onPress={onBack} />
       <Text style={[styles.title, local.title]}>{DIRECTION_LABELS[direction]}</Text>
 
       <RouteMap

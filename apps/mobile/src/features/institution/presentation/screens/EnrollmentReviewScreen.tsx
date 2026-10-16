@@ -11,6 +11,7 @@ import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { ValidateEnrollment } from '../../domain/useCases/ValidateEnrollment';
 import { useEnrollmentReviewViewModel } from '../viewModels/useEnrollmentReviewViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type EnrollmentReviewScreenProps = {
   validateEnrollment: ValidateEnrollment;
@@ -28,9 +29,7 @@ export function EnrollmentReviewScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Matrículas pendientes</Text>
-      </Pressable>
+      <BackLink label="Matrículas pendientes" onPress={onBack} />
       <Text style={styles.title}>Revisar matrícula</Text>
       <Text style={styles.subtitle}>
         Verifica que el menor esté matriculado en tu colegio antes de activarlo.

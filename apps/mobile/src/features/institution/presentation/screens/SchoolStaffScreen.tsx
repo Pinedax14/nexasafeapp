@@ -13,6 +13,7 @@ import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { School } from '../../domain/entities/School';
 import { ManageStaff } from '../../domain/useCases/ManageStaff';
 import { useSchoolStaffViewModel } from '../viewModels/useSchoolStaffViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type SchoolStaffScreenProps = {
   manageStaff: ManageStaff;
@@ -25,9 +26,7 @@ export function SchoolStaffScreen({ manageStaff, school, onBack }: SchoolStaffSc
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Colegios</Text>
-      </Pressable>
+      <BackLink label="Colegios" onPress={onBack} />
       <Text style={styles.title}>{school.name}</Text>
       <Text style={styles.subtitle}>Personal del puesto de control</Text>
 

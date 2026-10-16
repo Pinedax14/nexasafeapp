@@ -11,6 +11,7 @@ import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { Protegido } from '../../domain/entities/Protegido';
 import { AssignPin } from '../../domain/useCases/AssignPin';
 import { useAssignPinViewModel } from '../viewModels/useAssignPinViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type AssignPinScreenProps = {
   assignPin: AssignPin;
@@ -23,9 +24,7 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Mis menores</Text>
-      </Pressable>
+      <BackLink label="Mis menores" onPress={onBack} />
       <Text style={styles.title}>PIN de {protegido.name}</Text>
       <Text style={styles.subtitle}>
         Con su número de documento y este PIN de 4 números, el menor entra a NexaSafe en su celular.

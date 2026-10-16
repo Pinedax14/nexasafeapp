@@ -32,6 +32,7 @@ import {
   STATUS_LABELS,
 } from '../alertMessages';
 import { useAlertDetailViewModel } from '../viewModels/useAlertDetailViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type AlertDetailScreenProps = {
   respondToAlerts: RespondToAlerts;
@@ -61,9 +62,7 @@ export function AlertDetailScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Volver</Text>
-      </Pressable>
+      <BackLink label="Volver" onPress={onBack} />
       <Text style={styles.title}>{alertTitle(vm.alert.childName)}</Text>
       <Text style={styles.subtitle}>
         Enviada a las {formatTime(vm.alert.createdAt)} · {STATUS_LABELS[vm.alert.status]}

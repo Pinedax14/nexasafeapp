@@ -6,6 +6,7 @@ import { MIN_PASSWORD_LENGTH } from '../../../auth/domain/useCases/RegisterGuard
 import { SupportNetwork } from '../../domain/useCases/SupportNetwork';
 import { SUPPORT_CONFIRMATION_MESSAGE, SUPPORT_SCOPE_NOTICE } from '../networkMessages';
 import { useAcceptInvitationViewModel } from '../viewModels/useAcceptInvitationViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type AcceptInvitationScreenProps = {
   supportNetwork: SupportNetwork;
@@ -38,9 +39,7 @@ export function AcceptInvitationScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Volver</Text>
-      </Pressable>
+      <BackLink label="Volver" onPress={onBack} />
 
       {!vm.preview ? (
         <>

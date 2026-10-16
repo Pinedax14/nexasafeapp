@@ -5,6 +5,7 @@ import { contactStatus } from '../../domain/entities/SupportContact';
 import { SupportNetwork } from '../../domain/useCases/SupportNetwork';
 import { contactLabel, contactStatusLabel, INVITE_NOTICE } from '../networkMessages';
 import { ShareText, useSupportNetworkViewModel } from '../viewModels/useSupportNetworkViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type SupportNetworkScreenProps = {
   supportNetwork: SupportNetwork;
@@ -31,9 +32,7 @@ export function SupportNetworkScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Mis menores</Text>
-      </Pressable>
+      <BackLink label="Mis menores" onPress={onBack} />
       <Text style={styles.title}>Red de apoyo de {protegidoName}</Text>
       <Text style={styles.subtitle}>Recibirán las alertas del menor.</Text>
 

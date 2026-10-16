@@ -14,6 +14,7 @@ import { PhotoFile } from '../../domain/entities/Protegido';
 import { RegisterProtegido } from '../../domain/useCases/RegisterProtegido';
 import { POLICY_SECTIONS } from '../policyText';
 import { useRegisterProtegidoViewModel } from '../viewModels/useRegisterProtegidoViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type RegisterProtegidoScreenProps = {
   registerProtegido: RegisterProtegido;
@@ -47,9 +48,7 @@ export function RegisterProtegidoScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onCancel} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Volver</Text>
-      </Pressable>
+      <BackLink label="Volver" onPress={onCancel} />
       <Text style={styles.title}>Registrar menor</Text>
       <Text style={styles.subtitle}>
         Quedará pendiente hasta que el colegio valide su matrícula.
