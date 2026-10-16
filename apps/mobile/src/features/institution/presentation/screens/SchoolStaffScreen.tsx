@@ -1,18 +1,13 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, ScrollView, Switch, Text, View } from 'react-native';
 import { MIN_PASSWORD_LENGTH } from '../../../auth/domain/useCases/RegisterGuardian';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { School } from '../../domain/entities/School';
 import { ManageStaff } from '../../domain/useCases/ManageStaff';
 import { useSchoolStaffViewModel } from '../viewModels/useSchoolStaffViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
+import { TextField } from '../../../../core/theme/TextField';
 
 type SchoolStaffScreenProps = {
   manageStaff: ManageStaff;
@@ -25,15 +20,13 @@ export function SchoolStaffScreen({ manageStaff, school, onBack }: SchoolStaffSc
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Colegios</Text>
-      </Pressable>
+      <BackLink label="Colegios" onPress={onBack} />
       <Text style={styles.title}>{school.name}</Text>
       <Text style={styles.subtitle}>Personal del puesto de control</Text>
 
       <Text style={styles.sectionTitle}>Registrar personal</Text>
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="person-outline"
         placeholder="Nombre completo"
         accessibilityLabel="Nombre completo"
         value={vm.values.name}
@@ -41,8 +34,8 @@ export function SchoolStaffScreen({ manageStaff, school, onBack }: SchoolStaffSc
         editable={!vm.isSaving}
       />
       {!!vm.fieldErrors.name && <Text style={styles.error}>{vm.fieldErrors.name}</Text>}
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="briefcase-outline"
         placeholder="Cargo (opcional)"
         accessibilityLabel="Cargo"
         value={vm.values.position}
@@ -50,8 +43,8 @@ export function SchoolStaffScreen({ manageStaff, school, onBack }: SchoolStaffSc
         editable={!vm.isSaving}
       />
       {!!vm.fieldErrors.position && <Text style={styles.error}>{vm.fieldErrors.position}</Text>}
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="mail-outline"
         placeholder="Correo"
         accessibilityLabel="Correo"
         value={vm.values.email}
@@ -62,8 +55,8 @@ export function SchoolStaffScreen({ manageStaff, school, onBack }: SchoolStaffSc
         editable={!vm.isSaving}
       />
       {!!vm.fieldErrors.email && <Text style={styles.error}>{vm.fieldErrors.email}</Text>}
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="lock-closed-outline"
         placeholder={`Contraseña temporal (mínimo ${MIN_PASSWORD_LENGTH} caracteres)`}
         accessibilityLabel="Contraseña temporal"
         value={vm.values.temporaryPassword}
@@ -78,18 +71,7 @@ export function SchoolStaffScreen({ manageStaff, school, onBack }: SchoolStaffSc
       )}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
       {!!vm.notice && <Text style={styles.notice}>{vm.notice}</Text>}
-      <Pressable
-        style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-        onPress={vm.registerStaff}
-        disabled={vm.isSaving}
-        accessibilityRole="button"
-      >
-        {vm.isSaving ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Registrar personal</Text>
-        )}
-      </Pressable>
+      <Button title="Registrar personal" onPress={vm.registerStaff} loading={vm.isSaving} />
 
       <Text style={styles.sectionTitle}>Personal registrado</Text>
       {vm.isLoading ? (

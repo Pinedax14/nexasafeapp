@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
@@ -5,6 +6,7 @@ import { Route, ROUTE_DIRECTIONS, RouteDirection } from '../../domain/entities/R
 import { ManageRoutes } from '../../domain/useCases/ManageRoutes';
 import { DIRECTION_LABELS, ROUTE_NOT_DEFINED, ROUTES_OFFLINE_NOTICE } from '../routeMessages';
 import { useRoutesViewModel } from '../viewModels/useRoutesViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type RoutesScreenProps = {
   manageRoutes: ManageRoutes;
@@ -29,9 +31,7 @@ export function RoutesScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Mis menores</Text>
-      </Pressable>
+      <BackLink label="Mis menores" onPress={onBack} />
       <Text style={styles.title}>Rutas de {protegidoName}</Text>
       <Text style={styles.subtitle}>Hasta 2 rutas: ida y regreso.</Text>
 
@@ -57,7 +57,7 @@ export function RoutesScreen({
                   {route ? routeSummary(route) : ROUTE_NOT_DEFINED}
                 </Text>
               </View>
-              <Text style={styles.linkText}>›</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
             </Pressable>
           );
         })

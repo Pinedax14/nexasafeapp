@@ -1,6 +1,8 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput } from 'react-native';
-import { colors } from '../../../../core/theme/colors';
+import { Text } from 'react-native';
+import { BrandLayout } from '../../../../core/theme/BrandLayout';
+import { Button } from '../../../../core/theme/Button';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { TextField } from '../../../../core/theme/TextField';
 import { User } from '../../domain/entities/User';
 import { ChangePassword } from '../../domain/useCases/ChangePassword';
 import { useChangePasswordViewModel } from '../viewModels/useChangePasswordViewModel';
@@ -21,15 +23,17 @@ export function ChangePasswordScreen({
   const vm = useChangePasswordViewModel({ changePassword, onChanged });
 
   return (
-    <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title}>Cambia tu contraseña</Text>
+    <BrandLayout
+      title="Cambia tu contraseña"
+      footer={<Button title="Cerrar sesión" onPress={onSignOut} variant="ghost" />}
+    >
       <Text style={styles.subtitle}>
         Hola, {userName}. Entraste con una contraseña temporal que te dio el administrador. Para
         proteger los datos de los menores, crea una contraseña nueva que solo tú conozcas.
       </Text>
 
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="lock-closed-outline"
         placeholder="Nueva contraseña"
         accessibilityLabel="Nueva contraseña"
         value={vm.password}
@@ -37,11 +41,10 @@ export function ChangePasswordScreen({
         secureTextEntry
         autoCapitalize="none"
         editable={!vm.isSaving}
+        error={vm.fieldErrors.password}
       />
-      {!!vm.fieldErrors.password && <Text style={styles.error}>{vm.fieldErrors.password}</Text>}
-
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="lock-closed-outline"
         placeholder="Repite la nueva contraseña"
         accessibilityLabel="Confirmar contraseña"
         value={vm.confirmation}
@@ -49,28 +52,11 @@ export function ChangePasswordScreen({
         secureTextEntry
         autoCapitalize="none"
         editable={!vm.isSaving}
+        error={vm.fieldErrors.confirmation}
       />
-      {!!vm.fieldErrors.confirmation && (
-        <Text style={styles.error}>{vm.fieldErrors.confirmation}</Text>
-      )}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
-      <Pressable
-        style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-        onPress={vm.save}
-        disabled={vm.isSaving}
-        accessibilityRole="button"
-      >
-        {vm.isSaving ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Guardar contraseña</Text>
-        )}
-      </Pressable>
-
-      <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-        <Text style={styles.linkText}>Cerrar sesión</Text>
-      </Pressable>
-    </ScrollView>
+      <Button title="Guardar contraseña" onPress={vm.save} loading={vm.isSaving} />
+    </BrandLayout>
   );
 }

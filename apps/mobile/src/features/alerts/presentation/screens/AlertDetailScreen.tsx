@@ -1,14 +1,10 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../../../core/theme/Button';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { TextField } from '../../../../core/theme/TextField';
+import { fonts } from '../../../../core/theme/typography';
 import { RouteMap } from '../../../routes/presentation/map/RouteMap';
 import { WatchLive } from '../../../tracking/domain/useCases/WatchLive';
 import {
@@ -32,6 +28,7 @@ import {
   STATUS_LABELS,
 } from '../alertMessages';
 import { useAlertDetailViewModel } from '../viewModels/useAlertDetailViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type AlertDetailScreenProps = {
   respondToAlerts: RespondToAlerts;
@@ -61,9 +58,7 @@ export function AlertDetailScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Volver</Text>
-      </Pressable>
+      <BackLink label="Volver" onPress={onBack} />
       <Text style={styles.title}>{alertTitle(vm.alert.childName)}</Text>
       <Text style={styles.subtitle}>
         Enviada a las {formatTime(vm.alert.createdAt)} · {STATUS_LABELS[vm.alert.status]}
@@ -71,49 +66,54 @@ export function AlertDetailScreen({
       </Text>
 
       {vm.alert.status !== 'CERRADA' && (
-        <>
+        <View style={[styles.card, local.mapCard]}>
           <RouteMap points={[]} corridorMeters={50} editable={false} live={live} />
-          <Text style={styles.empty}>
-            {vm.secondsAgo === null ? NO_LIVE_POSITION : lastPositionText(vm.secondsAgo)}
-          </Text>
-        </>
+          <View style={local.position}>
+            <Ionicons name="location" size={18} color={colors.primary} />
+            <Text style={local.positionText}>
+              {vm.secondsAgo === null ? NO_LIVE_POSITION : lastPositionText(vm.secondsAgo)}
+            </Text>
+          </View>
+        </View>
       )}
 
       {vm.canRespond && (
-        <Pressable
-          style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-          onPress={vm.respond}
-          disabled={vm.isSaving}
-          accessibilityRole="button"
-        >
-          <Text style={styles.buttonText}>Voy en camino</Text>
-        </Pressable>
+        <Button title="Voy en camino" icon="navigate" onPress={vm.respond} loading={vm.isSaving} />
       )}
 
       {vm.canClose && !vm.isClosing && (
-        <Pressable style={styles.link} onPress={vm.startClosing} accessibilityRole="button">
-          <Text style={styles.linkText}>Cerrar alerta</Text>
-        </Pressable>
+        <Button
+          title="Cerrar alerta"
+          icon="checkmark-done"
+          onPress={vm.startClosing}
+          variant="secondary"
+        />
       )}
 
       {vm.isClosing && (
-        <View style={local.closeCard}>
-          <Text style={styles.sectionTitle}>{CLOSE_PROMPT}</Text>
-          {CLASSIFICATIONS.map((option) => (
-            <Pressable
-              key={option}
-              style={local.option}
-              onPress={() => vm.setClassification(option)}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: vm.classification === option }}
-            >
-              <Text style={local.optionText}>
-                {vm.classification === option ? '◉' : '○'} {CLASSIFICATION_LABELS[option]}
-              </Text>
-            </Pressable>
-          ))}
-          <TextInput
-            style={styles.input}
+        <View style={[styles.card, local.closeCard]}>
+          <Text style={local.closeTitle}>{CLOSE_PROMPT}</Text>
+          {CLASSIFICATIONS.map((option) => {
+            const selected = vm.classification === option;
+            return (
+              <Pressable
+                key={option}
+                style={[local.option, selected && local.optionSelected]}
+                onPress={() => vm.setClassification(option)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+              >
+                <Ionicons
+                  name={selected ? 'radio-button-on' : 'radio-button-off'}
+                  size={22}
+                  color={selected ? colors.primary : colors.textMuted}
+                />
+                <Text style={local.optionText}>{CLASSIFICATION_LABELS[option]}</Text>
+              </Pressable>
+            );
+          })}
+          <TextField
+            style={local.note}
             value={vm.note}
             onChangeText={vm.setNote}
             placeholder={NOTE_LABEL}
@@ -121,49 +121,69 @@ export function AlertDetailScreen({
             multiline
             accessibilityLabel="Nota del cierre"
           />
-          <Pressable
-            style={[styles.button, vm.isSaving && styles.buttonDisabled]}
+          <Button
+            title="Cerrar alerta"
             onPress={vm.close}
-            disabled={vm.isSaving}
-            accessibilityRole="button"
+            loading={vm.isSaving}
             accessibilityLabel="Confirmar cierre"
-          >
-            {vm.isSaving ? (
-              <ActivityIndicator color={colors.onPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>Cerrar alerta</Text>
-            )}
-          </Pressable>
-          <Pressable style={styles.link} onPress={vm.cancelClosing} accessibilityRole="button">
-            <Text style={styles.linkText}>Volver a la alerta</Text>
-          </Pressable>
+          />
+          <Button title="Volver a la alerta" onPress={vm.cancelClosing} variant="ghost" />
         </View>
       )}
 
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
-      {!!vm.notice && <Text style={local.notice}>{vm.notice}</Text>}
+      {!!vm.notice && <Text style={styles.notice}>{vm.notice}</Text>}
 
       <Text style={styles.sectionTitle}>Bitácora</Text>
-      {vm.events.map((event, index) => (
-        <Text key={`${event.at}-${index}`} style={local.event}>
-          {formatTime(event.at)} · {EVENT_LABELS[event.type]} · {event.actor}
-          {detailText(event.detail)}
-        </Text>
-      ))}
+      <View style={[styles.card, local.timeline]}>
+        {vm.events.map((event, index) => (
+          <View key={`${event.at}-${index}`} style={local.event}>
+            <View style={local.rail}>
+              <View style={local.dot} />
+              {index < vm.events.length - 1 && <View style={local.line} />}
+            </View>
+            <Text style={local.eventText}>
+              {formatTime(event.at)} · {EVENT_LABELS[event.type]} · {event.actor}
+              {detailText(event.detail)}
+            </Text>
+          </View>
+        ))}
+      </View>
     </ScrollView>
   );
 }
 
 const local = StyleSheet.create({
-  closeCard: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
+  mapCard: { padding: 8, marginBottom: 8 },
+  position: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8 },
+  positionText: { ...fonts.medium, fontSize: 14, color: colors.textMuted },
+  closeCard: { marginVertical: 12 },
+  closeTitle: { ...fonts.bold, fontSize: 18, color: colors.text, marginBottom: 12 },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 52,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    borderRadius: 14,
+    borderWidth: 1.5,
     borderColor: colors.border,
-    marginVertical: 12,
   },
-  option: { paddingVertical: 10 },
-  optionText: { fontSize: 16, color: colors.text },
-  notice: { fontSize: 16, color: colors.success, marginVertical: 8 },
-  event: { fontSize: 15, color: colors.text, marginBottom: 6 },
+  optionSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
+  optionText: { ...fonts.medium, fontSize: 16, color: colors.text },
+  note: { minHeight: 80, textAlignVertical: 'top' },
+  timeline: { paddingVertical: 16 },
+  event: { flexDirection: 'row', gap: 12 },
+  rail: { alignItems: 'center', width: 12 },
+  dot: { width: 12, height: 12, borderRadius: 6, marginTop: 4, backgroundColor: colors.primary },
+  line: { flex: 1, width: 2, marginVertical: 2, backgroundColor: colors.border },
+  eventText: {
+    ...fonts.regular,
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 21,
+    color: colors.text,
+    paddingBottom: 14,
+  },
 });

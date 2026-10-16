@@ -1,4 +1,6 @@
-import { Pressable, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { formatTime } from '../../../tracking/presentation/tripMessages';
 import { AlertSummary } from '../../domain/entities/AlertSummary';
@@ -23,16 +25,31 @@ export function AlertList({ alerts, emptyText, onOpen }: AlertListProps) {
           accessibilityRole="button"
           accessibilityLabel={`Abrir alerta de ${alert.childName}`}
         >
-          <View>
-            <Text style={styles.rowTitle}>🚨 {alert.childName}</Text>
+          <View style={local.icon}>
+            <Ionicons name="warning" size={20} color={colors.error} />
+          </View>
+          <View style={local.text}>
+            <Text style={styles.rowTitle}>{alert.childName}</Text>
             <Text style={styles.rowSubtitle}>
               {formatTime(alert.createdAt)} · {STATUS_LABELS[alert.status]}
               {alert.classification ? ` · ${CLASSIFICATION_LABELS[alert.classification]}` : ''}
             </Text>
           </View>
-          <Text style={styles.linkText}>›</Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
         </Pressable>
       ))}
     </View>
   );
 }
+
+const local = StyleSheet.create({
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.errorSoft,
+  },
+  text: { flex: 1 },
+});

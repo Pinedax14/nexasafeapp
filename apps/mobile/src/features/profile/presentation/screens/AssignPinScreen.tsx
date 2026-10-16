@@ -1,16 +1,13 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { Protegido } from '../../domain/entities/Protegido';
 import { AssignPin } from '../../domain/useCases/AssignPin';
 import { useAssignPinViewModel } from '../viewModels/useAssignPinViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
+import { TextField } from '../../../../core/theme/TextField';
+import { fonts } from '../../../../core/theme/typography';
 
 type AssignPinScreenProps = {
   assignPin: AssignPin;
@@ -23,9 +20,7 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Mis menores</Text>
-      </Pressable>
+      <BackLink label="Mis menores" onPress={onBack} />
       <Text style={styles.title}>PIN de {protegido.name}</Text>
       <Text style={styles.subtitle}>
         Con su número de documento y este PIN de 4 números, el menor entra a NexaSafe en su celular.
@@ -48,8 +43,9 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
 
       <Text style={local.or}>o escribe uno tú mismo</Text>
 
-      <TextInput
-        style={[styles.input, local.pin]}
+      <TextField
+        icon="keypad-outline"
+        style={local.pin}
         placeholder="PIN"
         accessibilityLabel="Nuevo PIN"
         value={vm.pin}
@@ -61,8 +57,9 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
       />
       {!!vm.fieldErrors.pin && <Text style={styles.error}>{vm.fieldErrors.pin}</Text>}
 
-      <TextInput
-        style={[styles.input, local.pin]}
+      <TextField
+        icon="keypad-outline"
+        style={local.pin}
         placeholder="Repite el PIN"
         accessibilityLabel="Confirmar PIN"
         value={vm.confirmation}
@@ -78,24 +75,13 @@ export function AssignPinScreen({ assignPin, protegido, onBack }: AssignPinScree
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
       {!!vm.notice && <Text style={styles.notice}>{vm.notice}</Text>}
 
-      <Pressable
-        style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-        onPress={vm.save}
-        disabled={vm.isSaving}
-        accessibilityRole="button"
-      >
-        {vm.isSaving ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Guardar PIN</Text>
-        )}
-      </Pressable>
+      <Button title="Guardar PIN" onPress={vm.save} loading={vm.isSaving} />
     </ScrollView>
   );
 }
 
 const local = StyleSheet.create({
-  pin: { fontSize: 24, letterSpacing: 12, textAlign: 'center' },
+  pin: { ...fonts.bold, fontSize: 24, letterSpacing: 12, textAlign: 'center' },
   secondaryButton: {
     borderWidth: 2,
     borderColor: colors.primary,
@@ -104,11 +90,11 @@ const local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  secondaryButtonText: { color: colors.primary, fontSize: 16, fontWeight: '700' },
+  secondaryButtonText: { ...fonts.semibold, color: colors.primary, fontSize: 16 },
   generatedPin: {
     marginTop: 16,
+    ...fonts.extrabold,
     fontSize: 40,
-    fontWeight: '700',
     letterSpacing: 16,
     textAlign: 'center',
     color: colors.text,

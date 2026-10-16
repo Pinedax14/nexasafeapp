@@ -1,7 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../../../core/theme/Button';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { fonts, shadow, TOP_INSET } from '../../../../core/theme/typography';
 import { PanicAlerts } from '../../../alerts/domain/useCases/PanicAlerts';
 import { AlertPanel } from '../../../alerts/presentation/components/AlertPanel';
 import { PanicButton } from '../../../alerts/presentation/components/PanicButton';
@@ -70,7 +73,7 @@ export function ProtegidoTripScreen({
   return (
     <View style={local.container}>
       <AccompanimentBanner trip={vm.trip} discreet={panic.discreet} />
-      <ScrollView contentContainerStyle={styles.screen}>
+      <ScrollView contentContainerStyle={[styles.screen, local.content]}>
         <Text style={styles.title}>Hola, {userName} 👋</Text>
 
         {/* E6-04 (D30): en modo discreto no se ve nada que delate la alerta. */}
@@ -86,53 +89,65 @@ export function ProtegidoTripScreen({
               />
             )}
             {!!panic.errorMessage && <Text style={styles.error}>{panic.errorMessage}</Text>}
-            {!!panic.notice && <Text style={local.notice}>{panic.notice}</Text>}
+            {!!panic.notice && <Text style={styles.notice}>{panic.notice}</Text>}
 
             {vm.needsPermission && (
-              <View style={local.permissionCard}>
-                <Text style={styles.sectionTitle}>{LOCATION_PERMISSION_TITLE}</Text>
-                <Text style={local.tripText}>{LOCATION_PERMISSION_TEXT}</Text>
-                <Pressable
-                  style={styles.button}
-                  onPress={vm.confirmPermission}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.buttonText}>Continuar</Text>
-                </Pressable>
+              <View style={[styles.card, local.block]}>
+                <View style={local.iconBubble}>
+                  <Ionicons name="location" size={26} color={colors.primary} />
+                </View>
+                <Text style={local.cardTitle}>{LOCATION_PERMISSION_TITLE}</Text>
+                <Text style={local.cardText}>{LOCATION_PERMISSION_TEXT}</Text>
+                <Button title="Continuar" onPress={vm.confirmPermission} />
               </View>
             )}
 
             {vm.isLoading ? (
-              <ActivityIndicator color={colors.primary} />
+              <ActivityIndicator color={colors.primary} style={local.block} />
             ) : vm.trip ? (
-              <View style={local.tripCard}>
-                <Text style={styles.sectionTitle}>
-                  {tripRoute ? DIRECTION_LABELS[tripRoute.direction] : 'Trayecto en curso'}
-                </Text>
-                <Text style={local.tripText}>{tripSince(vm.trip.startedAt)}</Text>
-                <Text style={local.tripText}>Tu acudiente sabe que vas en camino.</Text>
+              <View style={[local.tripCard, local.block]}>
+                <View style={local.tripHeader}>
+                  <Ionicons name="navigate-circle" size={30} color={colors.success} />
+                  <Text style={local.cardTitle}>
+                    {tripRoute ? DIRECTION_LABELS[tripRoute.direction] : 'Trayecto en curso'}
+                  </Text>
+                </View>
+                <Text style={local.cardText}>{tripSince(vm.trip.startedAt)}</Text>
+                <Text style={local.cardText}>Tu acudiente sabe que vas en camino.</Text>
               </View>
             ) : vm.routes.length === 0 ? (
               !vm.routesFailed && <Text style={styles.empty}>{NO_ROUTES_MESSAGE}</Text>
             ) : (
-              <>
-                <Text style={styles.subtitle}>¿A dónde vas?</Text>
+              <View style={local.block}>
+                <Text style={styles.sectionTitle}>¿A dónde vas?</Text>
                 {vm.routes.map((route) => (
                   <Pressable
                     key={route.id}
-                    style={[local.routeButton, vm.isStarting && styles.buttonDisabled]}
+                    style={({ pressed }) => [
+                      local.routeButton,
+                      pressed && local.pressed,
+                      vm.isStarting && styles.buttonDisabled,
+                    ]}
                     onPress={() => vm.start(route)}
                     disabled={vm.isStarting}
                     accessibilityRole="button"
                     accessibilityLabel={`Iniciar trayecto ${DIRECTION_LABELS[route.direction]}`}
                   >
-                    <Text style={local.routeButtonText}>▶ {DIRECTION_LABELS[route.direction]}</Text>
+                    <View style={local.routeIcon}>
+                      <Ionicons
+                        name={route.direction === 'CASA_COLEGIO' ? 'school' : 'home'}
+                        size={24}
+                        color={colors.primary}
+                      />
+                    </View>
+                    <Text style={local.routeButtonText}>{DIRECTION_LABELS[route.direction]}</Text>
+                    <Ionicons name="play-circle" size={32} color={colors.onPrimary} />
                   </Pressable>
                 ))}
                 <Text style={local.hint}>
                   Un toque inicia el trayecto y tu acudiente te acompaña.
                 </Text>
-              </>
+              </View>
             )}
 
             {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
@@ -141,39 +156,55 @@ export function ProtegidoTripScreen({
           </>
         )}
 
-        <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-          <Text style={styles.linkText}>Cerrar sesión</Text>
-        </Pressable>
+        <Button title="Cerrar sesión" icon="log-out-outline" onPress={onSignOut} variant="ghost" />
       </ScrollView>
     </View>
   );
 }
 
 const local = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, paddingTop: TOP_INSET, backgroundColor: colors.background },
+  content: { paddingTop: 20 },
+  block: { marginTop: 16 },
+  pressed: { opacity: 0.9, transform: [{ scale: 0.98 }] },
   routeButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    minHeight: 72,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    minHeight: 76,
     marginBottom: 12,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    ...shadow(5),
+  },
+  routeIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    backgroundColor: colors.onPrimary,
   },
-  routeButtonText: { color: colors.onPrimary, fontSize: 20, fontWeight: '700' },
-  hint: { color: colors.textMuted, marginTop: 4 },
+  routeButtonText: { ...fonts.bold, flex: 1, color: colors.onPrimary, fontSize: 19 },
+  hint: { ...fonts.regular, color: colors.textMuted, marginTop: 2, fontSize: 14 },
+  iconBubble: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primarySoft,
+    marginBottom: 12,
+  },
   tripCard: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: colors.successBackground,
-    marginBottom: 16,
-  },
-  tripText: { fontSize: 16, color: colors.text, marginBottom: 4 },
-  notice: { fontSize: 16, color: colors.success, marginBottom: 8 },
-  permissionCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: 20,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 16,
+    borderColor: '#A7F3D0',
+    backgroundColor: colors.successBackground,
   },
+  tripHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
+  cardTitle: { ...fonts.bold, fontSize: 18, color: colors.text, marginBottom: 4 },
+  cardText: { ...fonts.regular, fontSize: 16, lineHeight: 22, color: colors.text, marginBottom: 4 },
 });

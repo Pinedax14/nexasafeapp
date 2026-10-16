@@ -1,16 +1,11 @@
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { ValidateEnrollment } from '../../domain/useCases/ValidateEnrollment';
 import { useEnrollmentReviewViewModel } from '../viewModels/useEnrollmentReviewViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
+import { fonts } from '../../../../core/theme/typography';
 
 type EnrollmentReviewScreenProps = {
   validateEnrollment: ValidateEnrollment;
@@ -28,9 +23,7 @@ export function EnrollmentReviewScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Matrículas pendientes</Text>
-      </Pressable>
+      <BackLink label="Matrículas pendientes" onPress={onBack} />
       <Text style={styles.title}>Revisar matrícula</Text>
       <Text style={styles.subtitle}>
         Verifica que el menor esté matriculado en tu colegio antes de activarlo.
@@ -58,18 +51,7 @@ export function EnrollmentReviewScreen({
           {!!vm.notice && <Text style={styles.notice}>{vm.notice}</Text>}
 
           {isPending && (
-            <Pressable
-              style={[styles.button, vm.isValidating && styles.buttonDisabled]}
-              onPress={vm.validate}
-              disabled={vm.isValidating}
-              accessibilityRole="button"
-            >
-              {vm.isValidating ? (
-                <ActivityIndicator color={colors.onPrimary} />
-              ) : (
-                <Text style={styles.buttonText}>Validar matrícula</Text>
-              )}
-            </Pressable>
+            <Button title="Validar matrícula" onPress={vm.validate} loading={vm.isValidating} />
           )}
         </View>
       )}
@@ -79,5 +61,5 @@ export function EnrollmentReviewScreen({
 
 const local = StyleSheet.create({
   photo: { width: 160, height: 160, borderRadius: 12, marginBottom: 16 },
-  value: { fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: 12 },
+  value: { ...fonts.semibold, fontSize: 18, color: colors.text, marginBottom: 12 },
 });

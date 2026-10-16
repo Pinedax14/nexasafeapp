@@ -12,11 +12,24 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#6D28D9"
         }
       ],
       "expo-secure-store",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./node_modules/@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf",
+            "./node_modules/@expo-google-fonts/inter/500Medium/Inter_500Medium.ttf",
+            "./node_modules/@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf",
+            "./node_modules/@expo-google-fonts/inter/700Bold/Inter_700Bold.ttf",
+            "./node_modules/@expo-google-fonts/inter/800ExtraBold/Inter_800ExtraBold.ttf"
+          ]
+        }
+      ],
       [
         "expo-location",
         {
@@ -40,7 +53,7 @@
       "package": "com.nexasafe.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true
     },

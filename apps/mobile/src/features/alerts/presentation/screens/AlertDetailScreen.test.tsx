@@ -224,7 +224,7 @@ describe('AlertDetailScreen (W11, W12)', () => {
   it('vuelve atrás', async () => {
     const { onBack } = await setup();
 
-    await fireEvent.press(screen.getByText('‹ Volver'));
+    await fireEvent.press(screen.getByText('Volver'));
 
     expect(onBack).toHaveBeenCalled();
   });
