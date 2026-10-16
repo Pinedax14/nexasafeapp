@@ -1,6 +1,9 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../../../core/theme/Button';
 import { colors } from '../../../../core/theme/colors';
-import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { TextField } from '../../../../core/theme/TextField';
+import { fonts, shadow } from '../../../../core/theme/typography';
 import { ALERT_SENT_TITLE, CANCEL_PROMPT } from '../alertMessages';
 
 type AlertPanelProps = {
@@ -24,13 +27,19 @@ export function AlertPanel({
 }: AlertPanelProps) {
   return (
     <View style={local.card}>
-      <Text style={local.title}>{ALERT_SENT_TITLE}</Text>
+      <View style={local.header}>
+        <Ionicons name="warning" size={26} color={colors.error} />
+        <Text style={local.title}>{ALERT_SENT_TITLE}</Text>
+      </View>
       <Text style={local.text}>{CANCEL_PROMPT}</Text>
-      <Text style={local.countdown} accessibilityLabel={`${secondsLeft} segundos para cancelar`}>
-        {secondsLeft} s
-      </Text>
-      <TextInput
-        style={styles.input}
+      <View style={local.countdownCircle}>
+        <Text style={local.countdown} accessibilityLabel={`${secondsLeft} segundos para cancelar`}>
+          {secondsLeft} s
+        </Text>
+      </View>
+      <TextField
+        icon="keypad-outline"
+        style={local.pin}
         value={pin}
         onChangeText={onChangePin}
         placeholder="PIN"
@@ -39,31 +48,37 @@ export function AlertPanel({
         maxLength={4}
         accessibilityLabel="PIN para cancelar"
       />
-      <Pressable
-        style={[styles.button, isCancelling && styles.buttonDisabled]}
-        onPress={onCancel}
-        disabled={isCancelling}
-        accessibilityRole="button"
-      >
-        {isCancelling ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Cancelar</Text>
-        )}
-      </Pressable>
+      <Button title="Cancelar" variant="danger" onPress={onCancel} loading={isCancelling} />
     </View>
   );
 }
 
 const local = StyleSheet.create({
   card: {
-    padding: 16,
-    borderRadius: 12,
+    padding: 20,
+    borderRadius: 20,
     borderWidth: 2,
     borderColor: colors.error,
+    backgroundColor: colors.surface,
+    marginBottom: 16,
+    ...shadow(4),
+    shadowColor: colors.error,
+  },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  title: { ...fonts.extrabold, fontSize: 22, color: colors.error },
+  text: { ...fonts.regular, fontSize: 16, lineHeight: 22, color: colors.text, marginBottom: 12 },
+  countdownCircle: {
+    alignSelf: 'center',
+    width: 104,
+    height: 104,
+    borderRadius: 52,
+    borderWidth: 4,
+    borderColor: colors.error,
+    backgroundColor: colors.errorSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
-  title: { fontSize: 22, fontWeight: '800', color: colors.error, marginBottom: 8 },
-  text: { fontSize: 16, color: colors.text, marginBottom: 8 },
-  countdown: { fontSize: 40, fontWeight: '800', color: colors.error, textAlign: 'center' },
+  countdown: { ...fonts.extrabold, fontSize: 32, color: colors.error },
+  pin: { ...fonts.bold, fontSize: 22, letterSpacing: 12 },
 });

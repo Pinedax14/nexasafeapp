@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
+import { fonts, shadow } from '../../../../core/theme/typography';
 import { Trip } from '../../domain/entities/Trip';
 
 export const ACCOMPANIMENT_TEXT = '🛡 Te estamos acompañando';
@@ -31,6 +32,7 @@ export function AccompanimentBanner({ trip, discreet = false }: AccompanimentBan
       accessibilityRole="alert"
       accessibilityLabel="Trayecto acompañado en curso"
     >
+      <View style={styles.dot} />
       <Text style={styles.text}>{ACCOMPANIMENT_TEXT}</Text>
     </View>
   );
@@ -38,12 +40,20 @@ export function AccompanimentBanner({ trip, discreet = false }: AccompanimentBan
 
 const styles = StyleSheet.create({
   banner: {
-    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginHorizontal: 16,
+    marginTop: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    alignItems: 'center',
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    ...shadow(4),
   },
-  text: { color: colors.onPrimary, fontSize: 16, fontWeight: '700' },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#4ADE80' },
+  text: { ...fonts.semibold, color: colors.onPrimary, fontSize: 16 },
   discreet: { paddingVertical: 4, paddingHorizontal: 16, alignItems: 'flex-start' },
   discreetText: { fontSize: 14 },
 });
