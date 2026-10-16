@@ -1,9 +1,11 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { School } from '../../domain/entities/School';
 import { ManageSchools } from '../../domain/useCases/ManageSchools';
 import { useAdminSchoolsViewModel } from '../viewModels/useAdminSchoolsViewModel';
+import { Button } from '../../../../core/theme/Button';
+import { TextField } from '../../../../core/theme/TextField';
 
 type AdminSchoolsScreenProps = {
   manageSchools: ManageSchools;
@@ -26,8 +28,8 @@ export function AdminSchoolsScreen({
       <Text style={styles.subtitle}>Hola, {userName}. Gestiona los colegios y su personal.</Text>
 
       <Text style={styles.sectionTitle}>Nuevo colegio</Text>
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="business-outline"
         placeholder="Nombre del colegio"
         accessibilityLabel="Nombre del colegio"
         value={vm.values.name}
@@ -35,8 +37,8 @@ export function AdminSchoolsScreen({
         editable={!vm.isSaving}
       />
       {!!vm.fieldErrors.name && <Text style={styles.error}>{vm.fieldErrors.name}</Text>}
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="barcode-outline"
         placeholder="NIT (ej. 900123456-7)"
         accessibilityLabel="NIT"
         value={vm.values.nit}
@@ -46,18 +48,7 @@ export function AdminSchoolsScreen({
       />
       {!!vm.fieldErrors.nit && <Text style={styles.error}>{vm.fieldErrors.nit}</Text>}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
-      <Pressable
-        style={[styles.button, vm.isSaving && styles.buttonDisabled]}
-        onPress={vm.createSchool}
-        disabled={vm.isSaving}
-        accessibilityRole="button"
-      >
-        {vm.isSaving ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Crear colegio</Text>
-        )}
-      </Pressable>
+      <Button title="Crear colegio" onPress={vm.createSchool} loading={vm.isSaving} />
 
       <Text style={styles.sectionTitle}>Colegios</Text>
       {vm.isLoading ? (
@@ -82,9 +73,7 @@ export function AdminSchoolsScreen({
         ))
       )}
 
-      <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-        <Text style={styles.linkText}>Cerrar sesión</Text>
-      </Pressable>
+      <Button title="Cerrar sesión" onPress={onSignOut} variant="ghost" icon="log-out-outline" />
     </ScrollView>
   );
 }

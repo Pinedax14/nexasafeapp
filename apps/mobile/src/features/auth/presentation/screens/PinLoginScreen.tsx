@@ -1,13 +1,9 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-} from 'react-native';
-import { colors } from '../../../../core/theme/colors';
+import { StyleSheet, Text } from 'react-native';
+import { BrandLayout } from '../../../../core/theme/BrandLayout';
+import { Button } from '../../../../core/theme/Button';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { TextField } from '../../../../core/theme/TextField';
+import { fonts } from '../../../../core/theme/typography';
 import { User } from '../../domain/entities/User';
 import { LoginWithPin } from '../../domain/useCases/LoginWithPin';
 import { usePinLoginViewModel } from '../viewModels/usePinLoginViewModel';
@@ -22,15 +18,21 @@ export function PinLoginScreen({ loginWithPin, onLoginSuccess, onBack }: PinLogi
   const vm = usePinLoginViewModel({ loginWithPin, onLoginSuccess });
 
   return (
-    <ScrollView
-      contentContainerStyle={[styles.screen, local.centered]}
-      keyboardShouldPersistTaps="handled"
+    <BrandLayout
+      title="Hola 👋"
+      subtitle="Entra con tu documento y tu PIN de 4 números."
+      footer={
+        <Button
+          title="Soy acudiente o del colegio"
+          icon="arrow-back"
+          onPress={onBack}
+          variant="ghost"
+          accessibilityRole="button"
+        />
+      }
     >
-      <Text style={styles.title}>Hola 👋</Text>
-      <Text style={styles.subtitle}>Entra con tu documento y tu PIN de 4 números.</Text>
-
-      <TextInput
-        style={styles.input}
+      <TextField
+        icon="card-outline"
         placeholder="Número de documento"
         accessibilityLabel="Número de documento"
         value={vm.document}
@@ -38,11 +40,11 @@ export function PinLoginScreen({ loginWithPin, onLoginSuccess, onBack }: PinLogi
         autoCapitalize="characters"
         autoCorrect={false}
         editable={!vm.isLoading}
+        error={vm.fieldErrors.document}
       />
-      {!!vm.fieldErrors.document && <Text style={styles.error}>{vm.fieldErrors.document}</Text>}
-
-      <TextInput
-        style={[styles.input, local.pin]}
+      <TextField
+        icon="keypad-outline"
+        style={local.pin}
         placeholder="PIN"
         accessibilityLabel="PIN"
         value={vm.pin}
@@ -51,31 +53,15 @@ export function PinLoginScreen({ loginWithPin, onLoginSuccess, onBack }: PinLogi
         maxLength={4}
         secureTextEntry
         editable={!vm.isLoading}
+        error={vm.fieldErrors.pin}
       />
-      {!!vm.fieldErrors.pin && <Text style={styles.error}>{vm.fieldErrors.pin}</Text>}
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
 
-      <Pressable
-        style={[styles.button, vm.isLoading && styles.buttonDisabled]}
-        onPress={vm.login}
-        disabled={vm.isLoading}
-        accessibilityRole="button"
-      >
-        {vm.isLoading ? (
-          <ActivityIndicator color={colors.onPrimary} />
-        ) : (
-          <Text style={styles.buttonText}>Entrar</Text>
-        )}
-      </Pressable>
-
-      <Pressable style={styles.link} onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Soy acudiente o del colegio</Text>
-      </Pressable>
-    </ScrollView>
+      <Button title="Entrar" icon="arrow-forward" onPress={vm.login} loading={vm.isLoading} />
+    </BrandLayout>
   );
 }
 
 const local = StyleSheet.create({
-  centered: { justifyContent: 'center' },
-  pin: { fontSize: 24, letterSpacing: 12, textAlign: 'center' },
+  pin: { ...fonts.bold, fontSize: 22, letterSpacing: 12 },
 });

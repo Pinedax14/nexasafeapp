@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text } from 'react-native';
+import { ActivityIndicator, ScrollView, Text } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { ManageRoutes } from '../../../routes/domain/useCases/ManageRoutes';
@@ -8,6 +8,7 @@ import { TrackTrips } from '../../domain/useCases/TrackTrips';
 import { WatchLive } from '../../domain/useCases/WatchLive';
 import { arrivedAtText, lastPositionText, NO_LIVE_POSITION, tripSince } from '../tripMessages';
 import { useGuardianLiveViewModel } from '../viewModels/useGuardianLiveViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
 
 type GuardianLiveScreenProps = {
   watchLive: WatchLive;
@@ -34,9 +35,7 @@ export function GuardianLiveScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Pressable onPress={onBack} accessibilityRole="button">
-        <Text style={styles.linkText}>‹ Mis menores</Text>
-      </Pressable>
+      <BackLink label="Mis menores" onPress={onBack} />
       <Text style={styles.title}>
         {protegidoName}
         {vm.route ? ` · ${DIRECTION_LABELS[vm.route.direction]}` : ''}

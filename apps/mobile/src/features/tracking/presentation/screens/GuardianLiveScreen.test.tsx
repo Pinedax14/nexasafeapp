@@ -153,7 +153,7 @@ describe('GuardianLiveScreen (E4-02, E4-03)', () => {
   it('vuelve a Mis menores', async () => {
     const { onBack } = await setup();
 
-    await fireEvent.press(await screen.findByText('‹ Mis menores'));
+    await fireEvent.press(await screen.findByText('Mis menores'));
 
     expect(onBack).toHaveBeenCalled();
   });

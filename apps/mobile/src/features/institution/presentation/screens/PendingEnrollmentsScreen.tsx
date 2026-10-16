@@ -4,6 +4,8 @@ import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { PendingEnrollment } from '../../domain/entities/EnrollmentReview';
 import { ValidateEnrollment } from '../../domain/useCases/ValidateEnrollment';
 import { usePendingEnrollmentsViewModel } from '../viewModels/usePendingEnrollmentsViewModel';
+import { BackLink } from '../../../../core/theme/BackLink';
+import { Button } from '../../../../core/theme/Button';
 
 type PendingEnrollmentsScreenProps = {
   validateEnrollment: ValidateEnrollment;
@@ -25,11 +27,7 @@ export function PendingEnrollmentsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      {onOpenControlRoom && (
-        <Pressable onPress={onOpenControlRoom} accessibilityRole="button">
-          <Text style={styles.linkText}>‹ Alertas activas</Text>
-        </Pressable>
-      )}
+      {onOpenControlRoom && <BackLink label="Alertas activas" onPress={onOpenControlRoom} />}
       <Text style={styles.title}>Puesto de control</Text>
       <Text style={styles.subtitle}>Hola, {userName}. Valida las matrículas de tu colegio.</Text>
 
@@ -65,9 +63,7 @@ export function PendingEnrollmentsScreen({
         ))
       )}
 
-      <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-        <Text style={styles.linkText}>Cerrar sesión</Text>
-      </Pressable>
+      <Button title="Cerrar sesión" onPress={onSignOut} variant="ghost" icon="log-out-outline" />
     </ScrollView>
   );
 }

@@ -1,6 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../../../core/theme/Button';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
+import { ActionChip, Avatar, StatusPill } from '../../../../core/theme/Pill';
+import { fonts, shadow } from '../../../../core/theme/typography';
 import { AlertSummary } from '../../../alerts/domain/entities/AlertSummary';
 import { RespondToAlerts } from '../../../alerts/domain/useCases/RespondToAlerts';
 import { useAlertListViewModel } from '../../../alerts/presentation/viewModels/useAlertListViewModel';
@@ -10,6 +14,12 @@ import { Protegido } from '../../domain/entities/Protegido';
 import { ListMyProtegidos } from '../../domain/useCases/ListMyProtegidos';
 import { STATUS_LABELS } from '../profileMessages';
 import { useGuardianHomeViewModel } from '../viewModels/useGuardianHomeViewModel';
+
+const STATUS_TONES = {
+  ACTIVO: 'success',
+  PENDIENTE_VALIDACION: 'warning',
+  INACTIVO: 'neutral',
+} as const;
 
 type GuardianHomeScreenProps = {
   listMyProtegidos: ListMyProtegidos;
@@ -44,92 +54,146 @@ export function GuardianHomeScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <Text style={styles.title}>Hola, {userName}</Text>
-      <Text style={styles.subtitle}>Los menores que acompañas con NexaSafe.</Text>
+      <View style={local.header}>
+        <View style={local.headerText}>
+          <Text style={styles.title}>Hola, {userName}</Text>
+          <Text style={[styles.subtitle, local.subtitle]}>
+            Los menores que acompañas con NexaSafe.
+          </Text>
+        </View>
+        <Avatar name={userName} />
+      </View>
 
-      <Pressable style={styles.button} onPress={onRegisterProtegido} accessibilityRole="button">
-        <Text style={styles.buttonText}>Registrar menor</Text>
-      </Pressable>
+      <Button title="Registrar menor" icon="person-add-outline" onPress={onRegisterProtegido} />
 
       <Text style={styles.sectionTitle}>Mis menores</Text>
       {!!vm.errorMessage && <Text style={styles.error}>{vm.errorMessage}</Text>}
       {vm.isLoading ? (
         <ActivityIndicator color={colors.primary} />
       ) : vm.protegidos.length === 0 ? (
-        <Text style={styles.empty}>Todavía no has registrado ningún menor.</Text>
+        <View style={[styles.card, local.emptyCard]}>
+          <Ionicons name="people-outline" size={40} color={colors.primary} />
+          <Text style={styles.empty}>Todavía no has registrado ningún menor.</Text>
+        </View>
       ) : (
-        vm.protegidos.map((protegido) => (
-          <View key={protegido.id} style={styles.row}>
-            <View>
-              <Text style={styles.rowTitle}>{protegido.name}</Text>
-              <Text style={styles.rowSubtitle}>{STATUS_LABELS[protegido.status]}</Text>
-              {!!vm.activeTrips[protegido.id] && (
-                <Text style={local.trip}>
-                  En trayecto · {tripSince(vm.activeTrips[protegido.id].startedAt).toLowerCase()}
-                </Text>
-              )}
+        vm.protegidos.map((protegido) => {
+          const trip = vm.activeTrips[protegido.id];
+          return (
+            <View key={protegido.id} style={[styles.card, local.card]}>
+              <View style={local.cardHeader}>
+                <Avatar name={protegido.name} size={52} />
+                <View style={local.headerText}>
+                  <Text style={local.name}>{protegido.name}</Text>
+                  <StatusPill
+                    label={STATUS_LABELS[protegido.status]}
+                    tone={STATUS_TONES[protegido.status]}
+                  />
+                </View>
+              </View>
+
               {activeAlerts
                 .filter((alert) => alert.protegidoId === protegido.id)
                 .map((alert) => (
                   <Pressable
                     key={alert.id}
+                    style={local.alert}
                     onPress={() => onOpenAlert?.(alert)}
                     accessibilityRole="button"
                     accessibilityLabel={`Alerta activa de ${protegido.name}`}
                   >
-                    <Text style={local.alert}>🚨 Alerta activa ›</Text>
+                    <Ionicons name="warning" size={20} color={colors.onPrimary} />
+                    <Text style={local.alertText}>🚨 Alerta activa ›</Text>
                   </Pressable>
                 ))}
-              {!!vm.activeTrips[protegido.id] && onOpenLive && (
-                <Pressable
-                  onPress={() => onOpenLive(protegido)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Ver en vivo a ${protegido.name}`}
-                >
-                  <Text style={styles.linkText}>Ver en vivo ›</Text>
-                </Pressable>
+
+              {!!trip && (
+                <View style={local.trip}>
+                  <View style={local.dot} />
+                  <Text style={local.tripText}>
+                    En trayecto · {tripSince(trip.startedAt).toLowerCase()}
+                  </Text>
+                  {onOpenLive && (
+                    <Pressable
+                      onPress={() => onOpenLive(protegido)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Ver en vivo a ${protegido.name}`}
+                      style={local.live}
+                    >
+                      <Text style={local.liveText}>Ver en vivo ›</Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
+
+              {protegido.status === 'ACTIVO' && (
+                <View style={local.actions}>
+                  <ActionChip
+                    label="Rutas"
+                    icon="map-outline"
+                    onPress={() => onOpenRoutes(protegido)}
+                    accessibilityLabel={`Rutas de ${protegido.name}`}
+                  />
+                  {onOpenNetwork && (
+                    <ActionChip
+                      label="Red"
+                      icon="people-outline"
+                      onPress={() => onOpenNetwork(protegido)}
+                      accessibilityLabel={`Red de apoyo de ${protegido.name}`}
+                    />
+                  )}
+                  <ActionChip
+                    label="PIN"
+                    icon="keypad-outline"
+                    onPress={() => onAssignPin(protegido)}
+                    accessibilityLabel={`Asignar PIN a ${protegido.name}`}
+                  />
+                </View>
               )}
             </View>
-            {protegido.status === 'ACTIVO' && (
-              <View style={local.actions}>
-                <Pressable
-                  onPress={() => onOpenRoutes(protegido)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Rutas de ${protegido.name}`}
-                >
-                  <Text style={styles.linkText}>Rutas ›</Text>
-                </Pressable>
-                {onOpenNetwork && (
-                  <Pressable
-                    onPress={() => onOpenNetwork(protegido)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Red de apoyo de ${protegido.name}`}
-                  >
-                    <Text style={styles.linkText}>Red ›</Text>
-                  </Pressable>
-                )}
-                <Pressable
-                  onPress={() => onAssignPin(protegido)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Asignar PIN a ${protegido.name}`}
-                >
-                  <Text style={styles.linkText}>PIN ›</Text>
-                </Pressable>
-              </View>
-            )}
-          </View>
-        ))
+          );
+        })
       )}
 
-      <Pressable style={styles.link} onPress={onSignOut} accessibilityRole="button">
-        <Text style={styles.linkText}>Cerrar sesión</Text>
-      </Pressable>
+      <Button title="Cerrar sesión" icon="log-out-outline" onPress={onSignOut} variant="ghost" />
     </ScrollView>
   );
 }
 
 const local = StyleSheet.create({
-  actions: { flexDirection: 'row', gap: 16 },
-  trip: { fontSize: 14, fontWeight: '600', color: colors.success },
-  alert: { fontSize: 15, fontWeight: '700', color: colors.error },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 4 },
+  headerText: { flex: 1 },
+  subtitle: { marginBottom: 12 },
+  emptyCard: { alignItems: 'center', paddingVertical: 28 },
+  card: { marginBottom: 14 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  name: { ...fonts.bold, fontSize: 18, color: colors.text },
+  alert: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minHeight: 48,
+    marginTop: 14,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: colors.error,
+    ...shadow(4),
+    shadowColor: colors.error,
+  },
+  alertText: { ...fonts.bold, fontSize: 15, color: colors.onPrimary },
+  trip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: colors.successBackground,
+  },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.success },
+  tripText: { ...fonts.semibold, flex: 1, fontSize: 14, color: colors.success },
+  live: { minHeight: 36, justifyContent: 'center' },
+  liveText: { ...fonts.bold, fontSize: 14, color: colors.primary },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 },
 });
