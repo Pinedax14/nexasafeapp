@@ -19,7 +19,6 @@ export const PANIC_LABEL = 'AYUDA';
 export const PANIC_HINT = 'Mantén presionado 3 segundos';
 export const ALERT_SENT_TITLE = 'Alerta enviada';
 export const CANCEL_PROMPT = '¿Fue un error? Escribe tu PIN para cancelar';
-export const ALERT_ACTIVE_MESSAGE = 'Tu alerta está activa. Tus acudientes van a ser avisados.';
 export const ALERT_CANCELLED_MESSAGE = 'Alerta cancelada.';
 
 /** W11 · Alerta recibida, W12 · Cierre y W13 · Puesto de control (Sprint 04). */
