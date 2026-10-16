@@ -51,18 +51,18 @@ Marcar cada prueba con **OK** o **Falla**. Si falla, anotar qué pasó y tomar u
 
 | # | Pasos | Resultado esperado | Resultado |
 |---|---|---|---|
-| C1 | Menor: tocar y soltar "AYUDA" antes de 3 s | No pasa nada | OK |
-| C2 | Mantener "AYUDA" 3 s | "Alerta enviada" con la cuenta regresiva de 10 s y el campo de PIN | OK |
-| C3 | Escribir un PIN incorrecto → "Cancelar" | "El PIN no es correcto." y la alerta sigue | OK |
-| C4 | Escribir el PIN correcto antes de 10 s → "Cancelar" | "Alerta cancelada." y vuelve el botón AYUDA | OK |
-| C5 | Disparar otra alerta y dejar pasar los 10 s | La pantalla entra en modo discreto (Sprint 04, prueba A1) | OK |
+| C1 | Menor: tocar y soltar "AYUDA" antes de 3 s | No pasa nada | |
+| C2 | Mantener "AYUDA" 3 s | "Alerta enviada" con la cuenta regresiva de 10 s y el campo de PIN | |
+| C3 | Escribir un PIN incorrecto → "Cancelar" | "El PIN no es correcto." y la alerta sigue | |
+| C4 | Escribir el PIN correcto antes de 10 s → "Cancelar" | "Alerta cancelada." y vuelve el botón AYUDA | |
+| C5 | Disparar otra alerta y dejar pasar los 10 s | La pantalla entra en modo discreto (Sprint 04, prueba A1) | |
 
 ## D. Ubicación durante la alerta (E6-05)
 
 | # | Pasos | Resultado esperado | Resultado |
 |---|---|---|---|
 | D1 | Con una alerta activa y **sin trayecto**, caminar | El acudiente ve la posición actualizarse cada ~5 s en la pantalla de la alerta | |
-| D2 | El acudiente cierra la alerta (Sprint 04, prueba C4) | En menos de 30 s el menor sale del modo discreto y la notificación fija desaparece | OK |
+| D2 | El acudiente cierra la alerta (Sprint 04, prueba C4) | En menos de 30 s el menor sale del modo discreto y la notificación fija desaparece | |
 
 ## Resultado de la sesión
 
@@ -70,5 +70,5 @@ Marcar cada prueba con **OK** o **Falla**. Si falla, anotar qué pasó y tomar u
 |---|---|---|---|
 | A. Ubicación en vivo (E4-02) | 2 | 0 | A1–A2 OK. PENDIENTE: A3–A6 (necesitan GPS en Colombia; el celular remoto está fuera, D15) |
 | B. Llegada (E4-03) | 0 | 0 | PENDIENTE: B1–B2 (necesitan GPS en Colombia) |
-| C. Pánico y cancelación (E6-01, E6-03) | 5 | 0 | |
-| D. Ubicación en la alerta (E6-05) | 1 | 0 | D2 OK. PENDIENTE: D1 (necesita GPS en Colombia) |
+| C. Pánico y cancelación (E6-01, E6-03) | | | PENDIENTE: repetir; el registro de dev del 16/10/2026 no muestra alertas canceladas |
+| D. Ubicación en la alerta (E6-05) | | | PENDIENTE: D2 (con C4 de Sprint 04) y D1 (necesita GPS en Colombia) |

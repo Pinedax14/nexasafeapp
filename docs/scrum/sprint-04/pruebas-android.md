@@ -23,8 +23,8 @@ Lista para verificar a mano E6-04, E7-01, E7-02, E9-01, E9-02, E8-01 y E11-04 en
 
 | # | Pasos | Resultado esperado | Resultado |
 |---|---|---|---|
-| A1 | Menor: mantener AYUDA 3 s y dejar pasar los 10 s | Solo se ve "Hola, …" y un escudo 🛡 pequeño: sin "alerta", sin botón, sin mensajes | OK |
-| A2 | Bajar la barra de notificaciones del menor | La notificación fija dice "NexaSafe · Servicio activo" | OK |
+| A1 | Menor: mantener AYUDA 3 s y dejar pasar los 10 s | Solo se ve "Hola, …" y un escudo 🛡 pequeño: sin "alerta", sin botón, sin mensajes | |
+| A2 | Bajar la barra de notificaciones del menor | La notificación fija dice "NexaSafe · Servicio activo" | |
 
 ## B. Push (E7-01)
 
@@ -42,7 +42,7 @@ Lista para verificar a mano E6-04, E7-01, E7-02, E9-01, E9-02, E8-01 y E11-04 en
 | C2 | Contacto de apoyo: "Voy en camino" | "Avisamos que vas en camino." y la alerta pasa a "Atendida" | |
 | C3 | Acudiente: abrir la alerta | La bitácora muestra Disparada, Notificada y Voy en camino con nombres y horas | |
 | C4 | Acudiente: "Cerrar alerta" → "Situación resuelta" → nota → "Cerrar alerta" | "La alerta quedó cerrada." y la bitácora agrega "Cerrada · (nombre) · Situación resuelta" | |
-| C5 | Menor (E11-04) | En menos de 30 s sale del modo discreto y desaparece la notificación fija | OK |
+| C5 | Menor (E11-04) | En menos de 30 s sale del modo discreto y desaparece la notificación fija | |
 
 ## D. Puesto de control (E8-01)
 
@@ -59,7 +59,7 @@ Lista para verificar a mano E6-04, E7-01, E7-02, E9-01, E9-02, E8-01 y E11-04 en
 
 | Bloque | OK | Falla | Observaciones |
 |---|---|---|---|
-| A. Modo discreto (E6-04) | 2 | 0 | |
+| A. Modo discreto (E6-04) | | | PENDIENTE |
 | B. Push (E7-01) | | | |
-| C. Respuesta, cierre y bitácora | 1 | 0 | C5 OK (lado del menor). PENDIENTE: C1–C4 |
+| C. Respuesta, cierre y bitácora | | | PENDIENTE |
 | D. Puesto de control (E8-01) | | | |
