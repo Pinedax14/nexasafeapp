@@ -25,9 +25,9 @@ Issues con las etiquetas `sprint:04`, `epic:E6` / `epic:E7` / `epic:E8` / `epic:
 - [x] Decisiones D25–D31 aprobadas: [`refinement.md`](refinement.md).
 - [x] Wireframes W10–W13 aprobados: [`wireframes.md`](wireframes.md).
 - [x] STRIDE de E6/E7 y E8/E9 en [`threat-model.md`](../../security/threat-model.md).
-- [ ] Migración con RLS y prueba pgTAP de cada política.
-- [ ] Proyecto de Firebase y credencial de FCM V1 en EAS (bloqueante de E7-01).
-- [ ] PIA: tokens push, bitácora y acceso del colegio y del contacto de apoyo a las alertas.
+- [x] Migración con RLS y prueba pgTAP de cada política (#85, 46 pruebas).
+- [x] Proyecto de Firebase y credencial de FCM V1 en EAS (16/10/2026).
+- [x] PIA: tokens push, bitácora y acceso del colegio y del contacto de apoyo a las alertas (16/10/2026).
 
 ## Criterios de aceptación (Gherkin)
 

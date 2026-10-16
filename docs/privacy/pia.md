@@ -27,6 +27,9 @@
 | Inicio de cada trayecto (Sprint 02) | Menor | Sí: revela cuándo sale de casa o del colegio | `trayectos` (`inicio_en` con hora del servidor, ruta y estado), con RLS: solo el menor y su guardián; auditado con `INICIAR_TRAYECTO` | Acompañar el trayecto (RF-12). Sin ubicación: la posición en vivo llega con E4-02 (Sprint 03) |
 | Ubicación del menor (Sprint 03) | Menor | Sí: revela dónde está en tiempo real | `posiciones`, con latitud y longitud cifradas por columna (`pgcrypto`, llave en Vault, RNF-02, D19); solo se guarda con un trayecto `EN_CURSO` o una alerta activa (RF-41); nadie la lee directamente: el guardián ve la última con una lectura auditada y la recibe en vivo por un canal privado de Realtime (D20). En el teléfono se captura con el servicio en primer plano de Android y su notificación fija, cada 15 s o 20 m en el trayecto y cada 5 s en una alerta (D18). Retención: 90 días con purga automática en la fase 2 (RF-39) | Acompañar el trayecto (RF-13), cerrarlo al llegar (RF-14) y dar trazabilidad a una alerta (RF-24) |
 | Alertas del menor (Sprint 03) | Menor | Sí | `alertas` (tipo, estado, hora del servidor y trayecto si lo hay), con RLS: solo el menor y su guardián; disparo y cancelación auditados | Pedir ayuda con el botón de pánico (RF-20) y cancelarla con el PIN (RF-22) |
+| Bitácora del incidente (Sprint 04) | Menor y quienes responden | Sí | `eventos_incidente` append-only (sin modificar ni borrar), con actor y hora del servidor; la leen solo quienes ven la alerta y cada lectura queda en `audit_log` (D27) | Dejar constancia auditable de cada alerta (RF-32) |
+| Token push del teléfono (Sprint 04) | Guardián, contacto de apoyo y personal del colegio | No | `dispositivos_push` (token de Expo, sin acceso directo); se borra al cerrar sesión; Expo y Firebase Cloud Messaging lo reciben para entregar el aviso (D25) | Avisar la alerta con sonido prioritario (RF-26) |
+| Acceso del colegio y del contacto de apoyo a la alerta (Sprint 04) | Menor | Sí | Ven la alerta y la última posición solo mientras está activa, nunca el trayecto diario (D26, RF-41); el gráfico del colegio muestra solo conteos sin nombres | Atender la alerta desde el puesto de control (RF-29) y la red de apoyo (D8) |
 | Nombre y correo del contacto de apoyo (Sprint 02) | Contacto de apoyo | No | Supabase Auth (rol `apoyo`) y `contactos_apoyo` (nombre, menor, fecha de aceptación); la invitación guarda solo el hash del token | Que el guardián sepa quién recibirá las alertas del menor (RF-06). Antes de aceptar, el contacto solo ve el primer nombre del menor (D17) |
 
 **No se recolecta en este sprint:** ubicación, fecha de nacimiento, dirección ni teléfono (decisión D6). La ubicación empieza en el Sprint 02 y solo durante trayectos o alertas (RF-41).
@@ -66,6 +69,8 @@ Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─►
 | Seguimiento de la ubicación fuera del trayecto o la alerta | Baja | Crítico | El servidor rechaza posiciones sin trayecto ni alerta activos y la app deja de capturar cuando el servidor lo indica, al llegar y al cerrar sesión (RF-41); la notificación fija de Android muestra cuándo se comparte | Bajo |
 | Fuga del historial de ubicaciones | Baja | Crítico | Cifrado por columna con llave en Vault; sin lectura directa; lectura de la última posición auditada | Bajo |
 | Un tercero escucha la ubicación en vivo | Baja | Crítico | Canal privado de Realtime autorizado por RLS solo para el guardián del menor (D20) | Bajo |
+| El contenido del push revela datos del menor en la pantalla bloqueada | Media | Medio | Solo el primer nombre y "pidió ayuda", sin ubicación; canal con visibilidad privada en la pantalla de bloqueo | Bajo |
+| Un agresor nota en el teléfono del menor que se pidió ayuda | Media | Alto | Modo discreto tras la ventana de 10 s y notificación fija con texto neutro (D30) | Medio |
 | Toma de una cuenta de administrador | Baja | Crítico | Un solo administrador creado desde el panel; contraseña robusta; revisión de `audit_log` en cada Security Review | Medio |
 
 ## 5. Acciones pendientes
@@ -75,3 +80,4 @@ Protegido ─► documento + PIN ─► auth-pin (ingresar) ─► huella ─►
 - [ ] PENDIENTE: definir el canal de contacto para peticiones de habeas data (ver `politica-tratamiento.md`).
 - [x] Declarar el servidor de teselas de OpenStreetMap y las rutas del menor (09/10/2026, E3-01a).
 - [x] Actualizar esta evaluación para incluir la ubicación en vivo y las alertas (15/10/2026, Sprint 03).
+- [x] Incluir la bitácora, los tokens push (Expo y Firebase como encargados) y el acceso del colegio y del contacto de apoyo a las alertas (16/10/2026, Sprint 04).
