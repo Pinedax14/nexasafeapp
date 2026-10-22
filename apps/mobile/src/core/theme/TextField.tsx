@@ -1,6 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  View,
+} from 'react-native';
 import { IconName } from './Button';
 import { colors } from './colors';
 import { fonts, TOUCH_TARGET } from './typography';
@@ -10,10 +18,26 @@ type TextFieldProps = TextInputProps & {
   error?: string;
 };
 
+let edgeRevealIconHidden = false;
+
+/** En Edge/IE los <input type="password"> traen su propio ícono de "mostrar", que
+ * se duplica con el nuestro. Solo aplica en web; en Android/iOS no existe ese ícono. */
+function hideEdgeNativeRevealIcon() {
+  if (Platform.OS !== 'web' || edgeRevealIconHidden) return;
+  edgeRevealIconHidden = true;
+  const style = document.createElement('style');
+  style.textContent = 'input[type="password"]::-ms-reveal { display: none; }';
+  document.head.appendChild(style);
+}
+
 /** Campo con ícono, borde morado al enfocarlo y botón para ver la contraseña. */
 export function TextField({ icon, error, secureTextEntry, style, ...props }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(true);
+
+  useEffect(() => {
+    if (secureTextEntry) hideEdgeNativeRevealIcon();
+  }, [secureTextEntry]);
 
   return (
     <View style={styles.wrapper}>

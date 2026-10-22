@@ -79,8 +79,20 @@ export function RegisterProtegidoScreen({
       {!!vm.fieldErrors.document && <Text style={styles.error}>{vm.fieldErrors.document}</Text>}
 
       <Text style={styles.sectionTitle}>Colegio</Text>
-      {vm.schools.length === 0 ? (
+      {vm.hasSchools && (
+        <TextField
+          icon="search-outline"
+          placeholder="Buscar colegio por nombre"
+          accessibilityLabel="Buscar colegio"
+          value={vm.schoolQuery}
+          onChangeText={vm.updateSchoolQuery}
+          editable={!vm.isSaving}
+        />
+      )}
+      {!vm.hasSchools ? (
         <Text style={styles.empty}>Aún no hay colegios registrados.</Text>
+      ) : vm.schools.length === 0 ? (
+        <Text style={styles.empty}>{`Ningún colegio coincide con "${vm.schoolQuery}".`}</Text>
       ) : (
         vm.schools.map((school) => {
           const isSelected = vm.schoolId === school.id;

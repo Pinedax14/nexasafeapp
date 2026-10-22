@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { matchesQuery } from '../../../../core/text/searchMatch';
 import { School } from '../../domain/entities/School';
 import { ManageSchools, SchoolErrors, SchoolField } from '../../domain/useCases/ManageSchools';
 import { ADMIN_ERROR_MESSAGES } from '../adminMessages';
 
 export function useAdminSchoolsViewModel(manageSchools: ManageSchools) {
   const [schools, setSchools] = useState<School[]>([]);
+  const [schoolQuery, setSchoolQuery] = useState('');
   const [values, setValues] = useState<Record<SchoolField, string>>({ name: '', nit: '' });
   const [fieldErrors, setFieldErrors] = useState<SchoolErrors>({});
   const [errorMessage, setErrorMessage] = useState('');
@@ -53,8 +55,16 @@ export function useAdminSchoolsViewModel(manageSchools: ManageSchools) {
     );
   }, [manageSchools, values]);
 
+  const filteredSchools = useMemo(
+    () => schools.filter((school) => matchesQuery(school.name, schoolQuery)),
+    [schools, schoolQuery],
+  );
+
   return {
-    schools,
+    schools: filteredSchools,
+    hasSchools: schools.length > 0,
+    schoolQuery,
+    updateSchoolQuery: setSchoolQuery,
     values,
     fieldErrors,
     errorMessage,
