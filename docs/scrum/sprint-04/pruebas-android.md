@@ -6,11 +6,11 @@ Lista para verificar a mano E6-04, E7-01, E7-02, E9-01, E9-02, E8-01 y E11-04 en
 
 | Dato | Valor |
 |---|---|
-| Fecha | |
-| Quién probó | |
-| Celulares (marca y modelo) | |
-| Versión de Android (mínimo 9) | |
-| Build de EAS (perfil `preview`) | |
+| Fecha | 20/10/2026 |
+| Quién probó | Juan Felipe Pineda Cardona |
+| Celulares (marca y modelo) | OPPO Reno 11 |
+| Versión de Android (mínimo 9) | 15 |
+| Build de EAS (perfil `preview`) | `preview` |
 | Ambiente | dev |
 
 ## Antes de empezar
@@ -59,7 +59,7 @@ Lista para verificar a mano E6-04, E7-01, E7-02, E9-01, E9-02, E8-01 y E11-04 en
 
 | Bloque | OK | Falla | Observaciones |
 |---|---|---|---|
-| A. Modo discreto (E6-04) | | | |
-| B. Push (E7-01) | | | |
-| C. Respuesta, cierre y bitácora | | | |
-| D. Puesto de control (E8-01) | | | |
+| A. Modo discreto (E6-04) | ✅ | | |
+| B. Push (E7-01) | ✅ | | |
+| C. Respuesta, cierre y bitácora | ✅ | | |
+| D. Puesto de control (E8-01) | ✅ | | |

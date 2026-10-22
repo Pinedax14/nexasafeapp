@@ -393,6 +393,8 @@ Y la app indica que no pudo verificar el PIN por falta de conexión
 
 > El Sprint 4 (32 pts en una semana efectiva) supera la velocidad objetivo. Si la velocidad real del Sprint 1 y la revisión de alcance en H3 lo confirman, se adelantan historias del Sprint 4 a los Sprints 2–3 o se renegocia el alcance con el PO.
 
+> **Fechas reales de ejecución (confirmadas por el PO el 22/10/2026):** la tabla de arriba es la planificación de la v1.2. En la práctica, el Sprint 1 cerró el 09/10, el Sprint 2 el 15/10, y los Sprints 3 y 4 se trabajaron juntos del 15/10 al 22/10/2026 (26 y 32 pts, ambos completos). La sustentación se adelantó al **30/10/2026** — ver los Hitos corregidos abajo y la sección 0 de la Guía.
+
 ### Fuera del roadmap del semestre (fase 2)
 
 El backlog completo suma 233 puntos y los Sprints 0–4 comprometen 131 (18+29+26+26+32). Los 102 puntos restantes quedan declarados como **trabajo de la fase 2**, no como alcance comprometido:
@@ -414,15 +416,17 @@ El backlog completo suma 233 puntos y los Sprints 0–4 comprometen 131 (18+29+2
 
 ### Hitos
 
-| Hito | Fecha | Criterio de cumplimiento |
-|---|---|---|
-| **H0 — Documentación de ingeniería entregada** | 22 sep | Los cinco documentos exigidos radicados |
-| **H1 — Pipeline verde** | 2 oct | Todo PR ejecuta lint + test + SAST + SCA automáticamente |
-| **H2 — Primer incremento demostrable** | 17 oct | Alta de usuario funcionando en dispositivo real |
-| **H3 — Núcleo de trayecto** | 31 oct | Ruta definida sobre mapa y trayecto acompañado iniciado (`EN_CURSO`) con indicador activo; revisión de alcance (R6) |
-| **H4 — MVP funcional completo** | 24 nov | Ubicación en vivo y flujo alerta → notificación → respuesta → cierre completo; fin del desarrollo |
-| **H5 — Release candidate** | 25 nov | Build firmado, sin hallazgos High/Critical abiertos |
-| **H6 — Sustentación** | 28 nov | Demo en vivo + informe + repositorio entregado |
+| Hito | Fecha planificada (v1.2) | Fecha real | Criterio de cumplimiento |
+|---|---|---|---|
+| **H0 — Documentación de ingeniería entregada** | 22 sep | 22 sep | Los cinco documentos exigidos radicados |
+| **H1 — Pipeline verde** | 2 oct | 2 oct | Todo PR ejecuta lint + test + SAST + SCA automáticamente |
+| **H2 — Primer incremento demostrable** | 17 oct | 09 oct | Alta de usuario funcionando en dispositivo real |
+| **H3 — Núcleo de trayecto** | 31 oct | 15 oct | Ruta definida sobre mapa y trayecto acompañado iniciado (`EN_CURSO`) con indicador activo; revisión de alcance (R6) |
+| **H4 — MVP funcional completo** | 24 nov | 22 oct | Ubicación en vivo y flujo alerta → notificación → respuesta → cierre completo; fin del desarrollo |
+| **H5 — Release candidate** | 25 nov | 22 oct | Build firmado (perfil `production`), sin hallazgos High/Critical abiertos |
+| **H6 — Sustentación** | 28 nov | **30 oct** | Demo en vivo + informe + repositorio entregado |
+
+> **Corrección del 22/10/2026 (confirmada por el PO):** la sustentación se adelantó del 28 de noviembre al **30 de octubre de 2026**. El equipo comprimió el trabajo de los Sprints 2 a 4 entre el 09 y el 22 de octubre para llegar con el MVP completo. Ver `docs/GUIA_PROYECTO_NEXASAFE.md`, sección 0.
 
 ---
 
@@ -760,3 +764,4 @@ Entonces <resultado esperado>
 | 1.0 | — | Versión inicial |
 | 1.1 | 19 sep 2026 | Backend migrado de FastAPI/PostGIS/Redis/Docker a Supabase. Dashboard web eliminado: el puesto de control opera dentro de la app móvil. Canal SMS reemplazado por WhatsApp Cloud API. Disparo por botón físico reemplazado por sacudida en modo trayecto. Escalamiento a autoridad declarado como simulado. Roadmap recalendarizado al cierre de noviembre y alcance recortado con lista explícita de trabajo futuro. |
 | 1.2 | 3 oct 2026 | Coherencia con los entregables v1.1: alcance separado en fase 1 y fase 2; prioridad `W` para los `Must` fuera del roadmap; backlog recontado (220 pts) y capacidad 126 pts; Sprint 4 de 32 pts (17–24 nov) y cierre 25–28 nov; H3 y H4 redefinidos; Sprint Goals 2 y 3 alineados con sus historias; GitHub Flow sin `develop`; SCA bloquea desde High; credenciales solo en Supabase Auth; PIN verificado en el servidor; tablas `personal_institucion` y `consentimientos`; "Sprint 6" reemplazado por fase 2; nombres del equipo. Además: PostgreSQL 17; E6-03 sin conexión no cancela la alerta; caché local de la ruta en E3-01 y gráfico interactivo en E8-01; rol administrador (E1-06, RF-42) en el Sprint 1 (29 pts), backlog 225 pts y capacidad 131 pts; E1-07 (Google, RF-43, `Should`) fuera del roadmap, backlog 230 pts (05/10/2026); E1-08 (huella del celular, RF-44, `Could`) fuera del roadmap, backlog 233 pts (05/10/2026). Ceremonias con tiempos fijos de la plantilla del docente: Planning 8 h, Review 4 h y Retrospective 3 h (12/10/2026). |
+| 1.3 | 22 oct 2026 | Fecha de sustentación adelantada del 28 nov al **30 oct 2026** (confirmada por el PO). Hitos H2–H6 corregidos con fecha planificada y fecha real; los Sprints 2–4 se comprimieron entre el 09 y el 22 de octubre. Registrado en la sección 0 de la Guía. |

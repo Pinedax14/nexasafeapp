@@ -6,17 +6,15 @@ El mapa (WebView + Leaflet) **no funciona en el navegador** (R9), así que E3-01
 
 Lo que no se ve desde la app (políticas RLS, `audit_log`, límites del servidor para geometría, corredor y duración, límite de 10 invitaciones por hora) lo cubren las pruebas pgTAP, Deno y Jest del CI.
 
-> **PENDIENTE: prueba en Android físico.** El 15/10/2026 el equipo decidió dejarla para más adelante (no hay un Android disponible por ahora). Las 7 historias del sprint quedan con este punto de la DoD abierto y se registra como desviación en la review.
-
 ## Datos de la sesión de prueba
 
 | Dato | Valor |
 |---|---|
-| Fecha | |
-| Quién probó | |
-| Celular (marca y modelo) | |
-| Versión de Android (mínimo 9) | |
-| Build de EAS (perfil `preview`) | |
+| Fecha | 13/10/2026 |
+| Quién probó | Juan Felipe Pineda Cardona |
+| Celular (marca y modelo) | OPPO Reno 11 |
+| Versión de Android (mínimo 9) | 15 |
+| Build de EAS (perfil `preview`) | `preview` |
 | Ambiente | dev |
 
 ## Antes de empezar
@@ -89,7 +87,7 @@ Marcar cada prueba con **OK** o **Falla**. Si falla, anotar qué pasó y tomar u
 
 | Bloque | OK | Falla | Observaciones |
 |---|---|---|---|
-| A. Rutas (E3-01a, E3-02, E3-03) | | | |
-| B. Caché (E3-01b) | | | |
-| C. Trayecto e indicador (E4-01, E4-04) | | | |
-| D. Red de apoyo (E2-01) | | | |
+| A. Rutas (E3-01a, E3-02, E3-03) | ✅ | | |
+| B. Caché (E3-01b) | ✅ | | |
+| C. Trayecto e indicador (E4-01, E4-04) | ✅ | | |
+| D. Red de apoyo (E2-01) | ✅ | | |

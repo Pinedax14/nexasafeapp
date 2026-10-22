@@ -8,11 +8,11 @@ Lo que no se ve desde la app (RLS, cifrado de `posiciones`, `audit_log`, límite
 
 | Dato | Valor |
 |---|---|
-| Fecha | |
-| Quién probó | |
-| Celular (marca y modelo) | |
-| Versión de Android (mínimo 9) | |
-| Build de EAS (perfil `preview`) | |
+| Fecha | 20/10/2026 |
+| Quién probó | Juan Felipe Pineda Cardona |
+| Celular (marca y modelo) | OPPO Reno 11 |
+| Versión de Android (mínimo 9) | 15 |
+| Build de EAS (perfil `preview`) | `preview` |
 | Ambiente | dev |
 
 ## Antes de empezar
@@ -68,7 +68,7 @@ Marcar cada prueba con **OK** o **Falla**. Si falla, anotar qué pasó y tomar u
 
 | Bloque | OK | Falla | Observaciones |
 |---|---|---|---|
-| A. Ubicación en vivo (E4-02) | | | |
-| B. Llegada (E4-03) | | | |
-| C. Pánico y cancelación (E6-01, E6-03) | | | |
-| D. Ubicación en la alerta (E6-05) | | | |
+| A. Ubicación en vivo (E4-02) | ✅ | | |
+| B. Llegada (E4-03) | ✅ | | |
+| C. Pánico y cancelación (E6-01, E6-03) | ✅ | | |
+| D. Ubicación en la alerta (E6-05) | ✅ | | |
