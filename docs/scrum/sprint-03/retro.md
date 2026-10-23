@@ -8,7 +8,7 @@ Los puntos los propuso la IA a partir del registro del sprint (git, el código y
 
 | Acción | Resultado |
 |---|---|
-| Conseguir un Android 9+ fijo y correr la lista de pruebas del Sprint 02 antes de E4-02 | Cumplida, aunque tarde: se hizo el 13/10/2026 (después de empezar a programar), con un OPPO Reno 11 (Android 15) |
+| Conseguir un Android 9+ fijo y correr la lista de pruebas del Sprint 02 antes de E4-02 | Cumplida, aunque tarde: se hizo el 16/10/2026 (después de empezar a programar), con un Samsung Galaxy del Samsung Remote Test Lab |
 | Investigar R1 (la ubicación en segundo plano se detiene) antes de construir E4-02 | PENDIENTE: no quedó registro de una investigación aparte; se verificó junto con la prueba de E4-02 del 20/10/2026 |
 | Fusionar cada PR en cuanto el CI esté verde | PENDIENTE confirmar sin `gh` autenticado |
 | Revisión de pares en los PR de documentación | PENDIENTE confirmar sin `gh` autenticado |
