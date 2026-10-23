@@ -51,6 +51,10 @@ supabase/.temp/
 # notas privadas (contraseñas, tokens): nunca se suben
 clave.txt
 *.local.txt
+*.local.md
 
 # E7-01 (D25): configuración de Firebase/FCM; en EAS llega como variable de tipo archivo
 apps/mobile/google-services.json
+
+# scripts de un solo uso (no son parte del producto)
+.scratch/

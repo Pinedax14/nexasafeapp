@@ -1,20 +1,20 @@
 # Registro de riesgos — NexaSafe
 
-Última actualización: Security Review del Sprint 02 (15/10/2026)
+Última actualización: cierre de los Sprints 03 y 04 (22/10/2026)
 
 Fuente: Plan de Desarrollo v1.1, capítulo 8 (`PLAN_NEXASAFE.md` v1.2, sección 15).
 
 | ID | Riesgo | Prob. | Impacto | Respuesta | Estado | Responsable | Última revisión |
 |---|---|---|---|---|---|---|---|
-| R1 | Ubicación en 2º plano detenida por optimización de batería (Xiaomi, Huawei) | Alta | Alto | Investigación en Sprint 2, antes de E4-02; foreground service + guía de exclusión. Sprint 02: la investigación no se hizo porque no hubo un Android disponible (R9); bloquea E4-02 en el Sprint 03 | Abierto | PENDIENTE: asignar | Sprint 02 |
+| R1 | Ubicación en 2º plano detenida por optimización de batería (Xiaomi, Huawei) | Media | Alto | Investigación en Sprint 2, antes de E4-02; foreground service + guía de exclusión. Sprint 03: probado en un OPPO Reno 11 (Android 15) el 20/10/2026, con la app en segundo plano y la pantalla apagada; la ubicación siguió llegando. Sigue sin probarse en Xiaomi/Huawei, donde la optimización de batería es más agresiva | Abierto | Juan Felipe Pineda Cardona | Sprint 03 |
 | R2 | Falsas alarmas erosionan la confianza | Media | Alto | Corredor configurable + PIN; sin sanción por falsa alarma | Abierto | PENDIENTE: asignar | Sprint 00 |
 | R3 | Colegio sin responsable del puesto de control | Media | Alto | Tabla `personal_institucion` (varios responsables por colegio); flujo que funcione solo con la red de apoyo | Abierto | PENDIENTE: asignar | Sprint 00 |
 | R4 | Fuga de datos de menores | Baja | Crítico | Cifrado, RLS, minimización, auditoría; pentest en fase 2. Sprint 01: RLS en las tablas de E1 y en el bucket de fotos con pruebas pgTAP, documento cifrado con llave en Vault, PIN con Argon2id, `audit_log` en cada lectura del detalle del menor y sin políticas para `admin`. Sprint 02: `rutas` sin acceso directo (solo `guardar_ruta` y `obtener_rutas`, que verifican al guardián y escriben en `audit_log`), `trayectos` de solo lectura para el menor y su guardián, rol `apoyo` sin acceso a rutas ni trayectos, token de invitación guardado como hash, y caché de rutas en `expo-secure-store` borrada al cerrar sesión | Abierto | Juan Felipe Pineda Cardona (Security Champion) | Sprint 02 |
 | R5 | WhatsApp limitado a 5 destinatarios | Alta | Medio | Push como canal principal; WhatsApp pasa a fase 2 | Mitigado | PENDIENTE: asignar | Sprint 00 |
-| R6 | Alcance excesivo (Sprint 4 = 32 pts) | Alta | Alto | MoSCoW + revisión de alcance en H3; recalibrar con la velocidad del Sprint 1. Sprint 01: las 7 historias (29 pts) ya están integradas en `main`; la velocidad oficial se fija en la review. Sprint 01: 29/29 pts. Sprint 02: las 7 historias (26 pts) integradas en `main` el 12/10/2026 | Abierto | PENDIENTE: asignar | Sprint 02 |
+| R6 | Alcance excesivo (Sprint 4 = 32 pts) | Media | Alto | MoSCoW + revisión de alcance en H3; recalibrar con la velocidad del Sprint 1. Sprint 01: 29/29 pts. Sprint 02: 26/26 pts. 15/10/2026: el equipo decidió mantener el alcance completo de los Sprints 03 (26 pts) y 04 (32 pts) con un solo integrante. 22/10/2026: ambos se cerraron completos (26/26 y 32/32 pts) y probados en Android — el riesgo no se materializó, aunque exigió concentrar todo el trabajo de ambos sprints en la misma semana | Mitigado | Juan Felipe Pineda Cardona | Sprint 04 |
 | R7 | Baja disponibilidad de un integrante | Media | Medio | Propiedad colectiva del código y documentación en el repo | Materializado | PENDIENTE: asignar | Sprint 00 |
 | R8 | Falsos positivos por sacudida | Alta | Medio | Aplica a la fase 2 (E6-02) | Abierto | PENDIENTE: asignar | Sprint 00 |
-| R9 | Sin Android físico para probar: el hito H2 (17/10), la demo de la review, la DoD de cada historia y la prueba E2E con Maestro lo necesitan | Alta | Alto | Conseguir un Android 9+ prestado e instalar el APK de EAS (`preview`); mientras tanto se prueba en el navegador. 05/10/2026: APK `preview` (build EAS 773d8111) instalado en un Android prestado; el flujo completo funcionó según el equipo. Celular OPPO; versión de Android no registrada. Falta la prueba E2E con Maestro. 15/10/2026: el Android prestado ya no está disponible; las 7 historias del Sprint 02 quedan sin probar en un celular y el mapa (WebView + Leaflet) nunca se ha probado fuera del CI | Materializado | Juan Felipe Pineda Cardona | Sprint 02 |
+| R9 | Sin Android físico para probar: el hito H2 (17/10), la demo de la review, la DoD de cada historia y la prueba E2E con Maestro lo necesitan | Media | Alto | Conseguir un Android 9+ e instalar el APK de EAS (`preview`). 05/10/2026: APK `preview` (build EAS 773d8111) en un Android prestado, flujo completo OK. 15/10/2026: el Android prestado dejó de estar disponible; Sprint 02 quedó sin probar. 16/10/2026: Sprint 02 probado completo (todas OK) en un Samsung Galaxy del Samsung Remote Test Lab; el Sprint 03 quedó parcial porque ese celular remoto no está en Colombia (sin GPS real). 20/10/2026: con un OPPO Reno 11 (Android 15) propio se completaron las pruebas pendientes del Sprint 03 y las del Sprint 04 completas — todas OK. Sigue sin montarse la prueba E2E con Maestro | Mitigado | Juan Felipe Pineda Cardona | Sprint 04 |
 | R10 | Pérdida o fuga de las llaves de Vault (`documento_cifrado_key`, `documento_huella_key`) | Baja | Crítico | Llaves solo en Supabase Vault, leídas por funciones `security definer`; nunca en el repo ni en la app. Sin las llaves los documentos no se pueden descifrar: definir un respaldo antes del piloto | Abierto | Juan Felipe Pineda Cardona (Security Champion) | Sprint 01 |
 | R11 | Bloqueo del PIN usado contra el menor: quien conozca su documento puede fallar 5 veces y bloquear su ingreso 15 minutos | Baja | Medio | El bloqueo solo afecta un ingreso nuevo (la sesión guardada sigue activa), asignar un PIN nuevo lo levanta y el límite por IP (SEC-01) frena al atacante; riesgo aceptado (SEC-02) | Abierto | Juan Felipe Pineda Cardona (Security Champion) | Sprint 01 |
 
@@ -30,6 +30,7 @@ Fuente: Plan de Desarrollo v1.1, capítulo 8 (`PLAN_NEXASAFE.md` v1.2, sección 
 | 01 | 08/10/2026: el gate de SCA bloqueó un hallazgo Critical nuevo en `shell-quote` (GHSA-pqg4-j6r4-53mv); corregido con `overrides` a 1.12.0, sin excepción. |
 | 01 | 05/10/2026: R9 mitigado con la prueba del APK en un Android físico (hito H2). |
 | 02 | Security Review (15/10/2026): R9 pasa a materializado (sin Android para probar el Sprint 02); R1 sigue sin investigar y bloquea E4-02; R4 y R6 actualizados. Hallazgos SEC-05 y SEC-06; SEC-04 suma `sprintf-js`. Las excepciones EX-001 a EX-003 se revisan y siguen hasta el 31/10/2026. |
+| 03-04 | Cierre conjunto (22/10/2026): R9 y R1 pasan a mitigado — Sprint 02 probado completo el 16/10 (Samsung Remote Test Lab, todas OK); Sprint 03 quedó parcial ese mismo día (sin GPS real en el celular remoto) y se completó el 20/10 en un OPPO Reno 11 (Android 15) propio, junto con el Sprint 04 completo — todas OK. R6 pasa a mitigado: los dos sprints (58 pts) se cerraron completos con un solo integrante. Hallazgos Critical/High: 0, verificado localmente (`npm run audit:gate`); sin `gh` autenticado no se pudieron confirmar los runs de CodeQL/secret scanning de GitHub ni abrir una Security Review completa — queda `PENDIENTE`. |
 
 ## Hallazgos de la Security Review del Sprint 01 (05/10/2026)
 
@@ -61,5 +62,13 @@ Fuentes: pipeline de `main` en verde (CI y CodeQL sobre `3e2299c`), `npm audit` 
 
 **Pendientes de verificación (requieren la sesión del Security Champion):**
 
-- PENDIENTE (desde el Sprint 01): confirmar en Supabase (dev y staging) que **Confirm email** está activo.
-- PENDIENTE: prueba en Android físico de las historias del Sprint 02 (R9).
+- PENDIENTE (desde el Sprint 01): confirmar en Supabase (dev y staging) que **Confirm email** está activo. Nota del 22/10/2026: en `nexasafe-dev` quedó **desactivado** a propósito, porque el plan gratuito de Supabase agotó su límite de envío de correos (`over_email_send_rate_limit`) al crear las cuentas de prueba; hay que decidir si se reactiva antes del cierre o si se documenta como excepción de ambiente de desarrollo.
+- ~~Prueba en Android físico de las historias del Sprint 02 (R9).~~ Hecha el 16/10/2026, Samsung Remote Test Lab (ver R9).
+
+## Pendientes del cierre (22/10/2026)
+
+No hubo una Security Review formal en el cierre de los Sprints 03 y 04 — esta sesión no tuvo `gh` autenticado para sacar los datos de GitHub (runs de CodeQL, secret scanning, alertas de Dependabot) que las Security Review anteriores sí citan como fuente. Antes de la sustentación falta:
+
+- PENDIENTE: Security Review real de los Sprints 03 y 04 con `gh` autenticado (runs de CI, CodeQL, secret scanning, PR fusionados).
+- PENDIENTE: renovar o corregir las excepciones EX-001 a EX-003 (vencen el 31/10/2026).
+- PENDIENTE: decidir sobre "Confirm email" en `nexasafe-dev` (ver arriba).

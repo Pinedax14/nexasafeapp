@@ -1,7 +1,7 @@
 # Guía paso a paso — Proyecto NexaSafe
 
 **Ingeniería de Software I · FUSM · 2026-2**
-Periodo: 22 sep – 28 nov 2026 · Marco: Scrum + DevSecOps · Sprints de 2 semanas
+Periodo: 22 sep – 30 oct 2026 (sustentación adelantada el 22/10/2026, ver fila 27 de la sección 0) · Marco: Scrum + DevSecOps · Sprints de 2 semanas
 
 Esta guía resume **qué hacer, en qué orden y qué archivos deben existir** en cada fase. Se basa en los 5 documentos entregados (Requisitos, Plan de Desarrollo, Cronograma, Diseño Arquitectónico e Informe de Pruebas), en su versión **v1.1**.
 
@@ -39,6 +39,7 @@ Al cruzar los 5 documentos v1.0 aparecían contradicciones. Quedaron corregidas 
 | 24 | Se pidió permitir el inicio de sesión con Google, que ningún documento contemplaba (RF-01 solo pide correo y contraseña) | Nueva historia E1-07 y RF-43 como `Should`, fuera del roadmap: backlog 230 pts, trabajo futuro 99 pts. Se construye solo si sobra capacidad tras H3 (decisión del 05/10/2026) |
 | 25 | Se pidió, como valor agregado, entrar con la huella del celular (como en Nequi), que ningún documento contemplaba | Nueva historia E1-08 y RF-44 como `Could`, fuera del roadmap: backlog 233 pts, trabajo futuro 102 pts. La huella solo desbloquea la sesión guardada en el dispositivo; no reemplaza la contraseña ni la verificación del PIN en el servidor (decisión del 05/10/2026) |
 | 26 | El Plan fijaba Planning 2 h, Review 1 h y Retrospective 45 min, pero la plantilla del docente (`Ejecucion del Sprint.xls`) usa Planning 8 h, Review 4 h y Retrospective 3 h, y el docente pide tiempos fijos | Se adoptan los de la plantilla en todos los documentos, sin cambios entre sprints: Daily 15 min, Planning 480 min, Review 240 min y Retrospective 180 min. Refinement (60 min) y Security Review (30 min) siguen como en el Plan (12/10/2026) |
+| 27 | El Cronograma (03) y `PLAN_NEXASAFE.md` v1.2 fijaban la sustentación (H6) el 28 de noviembre, pero el Product Owner confirmó el 22/10/2026 que la fecha real es el **30 de octubre de 2026** | `PLAN_NEXASAFE.md` sube a v1.3: hitos H2–H6 corregidos con fecha planificada y fecha real; los Sprints 2 a 4 se comprimieron entre el 09 y el 22 de octubre (26 y 32 pts cada uno, cerrados completos y probados en Android). El Cronograma (03, PDF) queda **pendiente de corregir** — el cambio hoy solo está en el Plan y en esta Guía |
 
 **Regla desde ahora:** si aparece una contradicción nueva, no se resuelve en silencio. Se explica, se propone una opción y se registra aquí como fila nueva cuando el equipo la apruebe.
 

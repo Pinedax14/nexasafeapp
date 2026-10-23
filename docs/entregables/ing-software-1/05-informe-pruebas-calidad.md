@@ -66,3 +66,47 @@ Complementa al documento oficial [`05-informe-pruebas-calidad.pdf`](05-informe-p
 - Correr la lista de pruebas en Android del Sprint 02 en un Android fijo o en un emulador antes de E4-02.
 - Investigar R1 (ubicación en segundo plano) antes de construir E4-02.
 - Renovar o corregir EX-001 a EX-003 antes del 31/10/2026.
+
+## Resultados Sprint 03 (22/10/2026)
+
+| Elemento | Resultado |
+|---|---|
+| Cobertura unitaria (`domain` + `data` + `core/storage`) | 98,98 % sentencias, 97,08 % ramas, 98,77 % funciones, 99,72 % líneas (umbral de la DoD: 70 %) |
+| Pruebas unitarias | 488 pasan / 488 total (54 suites Jest, estado actual del repo) |
+| Pruebas de políticas RLS (RNF-27) | 43 aserciones pgTAP nuevas (`alertas`, `posiciones`), ejecutadas por el CI sobre una base de datos efímera |
+| Pruebas de Edge Functions | 10 pruebas Deno nuevas en `auth-pin` (acción `cancelar_alerta`) |
+| Flujos E2E ejecutados | Ninguno con Maestro. El flujo de ubicación en vivo y botón de pánico se verificó a mano con el APK `preview` en un Android físico (OPPO Reno 11, Android 15) el 20/10/2026: todos los bloques (A–D de `pruebas-android.md`) OK |
+| SAST (Semgrep / CodeQL) | `npm run audit:gate` y Semgrep locales sin hallazgos High/Critical. PENDIENTE: runs de CodeQL de GitHub Actions — `gh` instalado pero no autenticado en esta sesión |
+| SCA (`npm audit --audit-level=high`) | 0 Critical en la verificación local; excepciones EX-001 a EX-003 vigentes, vencen el 31/10/2026 |
+| Secretos (Gitleaks) | PENDIENTE: sin `gh` autenticado no se pudo confirmar el secret scanning de GitHub; no se corrió Gitleaks local en esta sesión |
+| Pipeline CI en `main` | PENDIENTE: requiere `gh` autenticado |
+| Bugs abiertos / cerrados | 0 / 0 en este sprint |
+
+**Defectos relevantes:** ninguno en las historias de este sprint.
+
+**Acciones para el siguiente sprint:**
+- Autenticar `gh` para completar los datos de CI, CodeQL y secret scanning.
+- Renovar o corregir EX-001 a EX-003 antes del 31/10/2026.
+
+## Resultados Sprint 04 (22/10/2026)
+
+| Elemento | Resultado |
+|---|---|
+| Cobertura unitaria (`domain` + `data` + `core/storage`) | 98,98 % sentencias, 97,08 % ramas, 98,77 % funciones, 99,72 % líneas (umbral de la DoD: 70 %) |
+| Pruebas unitarias | 488 pasan / 488 total (54 suites Jest) |
+| Pruebas de políticas RLS (RNF-27) | 46 aserciones pgTAP nuevas (`eventos_incidente`, cierre de alertas, `dispositivos_push`), ejecutadas por el CI sobre una base de datos efímera |
+| Pruebas de Edge Functions | 12 pruebas Deno nuevas en `notify-push` |
+| Flujos E2E ejecutados | Ninguno con Maestro. El flujo completo de alerta → notificación → respuesta → cierre y el puesto de control se verificaron a mano con el APK `preview` en un Android físico (OPPO Reno 11, Android 15) el 20/10/2026: todos los bloques (A–D de `pruebas-android.md`) OK |
+| SAST (Semgrep / CodeQL) | `npm run audit:gate` y Semgrep locales sin hallazgos High/Critical. PENDIENTE: runs de CodeQL de GitHub Actions — `gh` instalado pero no autenticado en esta sesión |
+| SCA (`npm audit --audit-level=high`) | 0 Critical en la verificación local; excepciones EX-001 a EX-003 vigentes, vencen el 31/10/2026 |
+| Secretos (Gitleaks) | PENDIENTE: sin `gh` autenticado no se pudo confirmar el secret scanning de GitHub |
+| Pipeline CI en `main` | PENDIENTE: requiere `gh` autenticado |
+| Bugs abiertos / cerrados | 1 / 1 — `ControlRoomScreen` (E8-01): el gráfico interactivo se caía con un colegio sin historial de alertas (`react-native-gifted-charts` leía `stacks[0]` de un arreglo vacío); corregido antes del cierre, con prueba dirigida (7/7 en `ControlRoomScreen.test.tsx`) |
+
+**Defectos relevantes:** el bug de `ControlRoomScreen` descrito arriba. Se detectó solo con una cuenta real de `institucion` sin alertas, porque las pruebas automáticas mockean el componente `BarChart` por completo y nunca ejercitan su lógica interna.
+
+**Acciones para el siguiente sprint:** no hay más sprints planificados en el semestre. Antes de la sustentación (30/10/2026):
+- Autenticar `gh` y completar una Security Review formal de los Sprints 03 y 04.
+- Renovar o corregir EX-001 a EX-003 antes del 31/10/2026.
+- Generar y probar el release candidate (`eas build --profile production`).
+- Decidir sobre la configuración "Confirm email" en `nexasafe-dev` (ver `risk-register.md`).
