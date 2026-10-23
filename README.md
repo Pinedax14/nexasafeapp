@@ -60,7 +60,7 @@ npm install
 
 ### 3. Configurar la conexión con Supabase (solo la primera vez)
 
-Copia `apps/mobile/.env.example` como `apps/mobile/.env` y completa la URL y la llave **Publishable** de `nexasafe-dev` (Supabase → Project Settings → API Keys). El archivo `.env` no se sube a GitHub.
+Copia `apps/mobile/.env.example` como `apps/mobile/.env` y completa la URL y la llave **Publishable** de `nexasafe-dev` (Supabase → Project Settings → Data API). El archivo `.env` no se sube a GitHub.
 
 ```powershell
 cd apps/mobile
@@ -119,7 +119,14 @@ Para revisar secretos antes de cada commit en tu equipo: `pip install pre-commit
    eas --version
    ```
 3. Iniciar sesión: `eas login`
-4. Compilar desde `apps/mobile`:
+4. Configurar las variables de Supabase en EAS (**solo la primera vez por perfil**: `development`, `preview` y `production`). El APK se compila en la nube, no en tu PC, así que no lee tu `apps/mobile/.env` local — hay que registrar ahí los mismos valores de la sección 3:
+   ```powershell
+   cd apps/mobile
+   eas env:create --environment preview --name EXPO_PUBLIC_SUPABASE_URL --value "https://<project-ref>.supabase.co" --visibility plaintext
+   eas env:create --environment preview --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value "sb_publishable_..." --visibility plaintext
+   ```
+   Repite cambiando `--environment` por `development` y luego por `production`. Verificar con `eas env:list --environment preview`.
+5. Compilar desde `apps/mobile`:
    ```powershell
    cd apps/mobile
    eas build -p android --profile preview
