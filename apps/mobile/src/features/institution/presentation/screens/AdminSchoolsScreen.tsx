@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../../../core/theme/colors';
 import { formStyles as styles } from '../../../../core/theme/formStyles';
 import { School } from '../../domain/entities/School';
@@ -24,8 +24,17 @@ export function AdminSchoolsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title}>Administración</Text>
-      <Text style={styles.subtitle}>Hola, {userName}. Gestiona los colegios y su personal.</Text>
+      <View style={local.header}>
+        <View style={local.headerText}>
+          <Text style={styles.title}>Administración</Text>
+          <Text style={styles.subtitle}>
+            Hola, {userName}. Gestiona los colegios y su personal.
+          </Text>
+        </View>
+        {/* El listado de colegios puede tener cientos de filas (catálogo real de Bogotá):
+            cerrar sesión no puede depender de bajar hasta el final de la pantalla. */}
+        <Button title="Cerrar sesión" icon="log-out-outline" onPress={onSignOut} variant="ghost" />
+      </View>
 
       <Text style={styles.sectionTitle}>Nuevo colegio</Text>
       <TextField
@@ -51,10 +60,21 @@ export function AdminSchoolsScreen({
       <Button title="Crear colegio" onPress={vm.createSchool} loading={vm.isSaving} />
 
       <Text style={styles.sectionTitle}>Colegios</Text>
+      {!vm.isLoading && vm.hasSchools && (
+        <TextField
+          icon="search-outline"
+          placeholder="Buscar colegio por nombre"
+          accessibilityLabel="Buscar colegio"
+          value={vm.schoolQuery}
+          onChangeText={vm.updateSchoolQuery}
+        />
+      )}
       {vm.isLoading ? (
         <ActivityIndicator color={colors.primary} />
-      ) : vm.schools.length === 0 ? (
+      ) : !vm.hasSchools ? (
         <Text style={styles.empty}>Todavía no hay colegios.</Text>
+      ) : vm.schools.length === 0 ? (
+        <Text style={styles.empty}>{`Ningún colegio coincide con "${vm.schoolQuery}".`}</Text>
       ) : (
         vm.schools.map((school) => (
           <Pressable
@@ -64,7 +84,7 @@ export function AdminSchoolsScreen({
             accessibilityRole="button"
             accessibilityLabel={`Ver personal de ${school.name}`}
           >
-            <View>
+            <View style={local.info}>
               <Text style={styles.rowTitle}>{school.name}</Text>
               <Text style={styles.rowSubtitle}>NIT {school.nit}</Text>
             </View>
@@ -72,8 +92,14 @@ export function AdminSchoolsScreen({
           </Pressable>
         ))
       )}
-
-      <Button title="Cerrar sesión" onPress={onSignOut} variant="ghost" icon="log-out-outline" />
     </ScrollView>
   );
 }
+
+const local = StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  headerText: { flex: 1 },
+  // Nombres de colegio largos (ej. catálogo real de Bogotá) deben partirse en
+  // varias líneas en vez de empujar "Personal ›" fuera de la tarjeta.
+  info: { flex: 1, marginRight: 12 },
+});

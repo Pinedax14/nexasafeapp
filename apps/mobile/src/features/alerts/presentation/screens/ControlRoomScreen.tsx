@@ -56,14 +56,19 @@ export function ControlRoomScreen({
 }: ControlRoomScreenProps) {
   const vm = useControlRoomViewModel(respondToAlerts, watchLive);
 
-  const stackData = vm.days.map((day, index) => ({
-    label: shortDay(day.day),
-    stacks: COUNT_ORDER.filter((key) => day.byClassification[key] > 0).map((key) => ({
+  const stackData = vm.days.map((day, index) => {
+    const stacks = COUNT_ORDER.filter((key) => day.byClassification[key] > 0).map((key) => ({
       value: day.byClassification[key],
       color: COUNT_COLORS[key],
-    })),
-    onPress: () => vm.selectDay(index),
-  }));
+    }));
+    return {
+      label: shortDay(day.day),
+      // react-native-gifted-charts lee stacks[0] sin validar: un día sin alertas
+      // necesita igual una entrada (en 0, transparente) o el BarChart revienta.
+      stacks: stacks.length > 0 ? stacks : [{ value: 0, color: 'transparent' }],
+      onPress: () => vm.selectDay(index),
+    };
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>

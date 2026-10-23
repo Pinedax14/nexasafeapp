@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { matchesQuery } from '../../../../core/text/searchMatch';
 import { PhotoFile, SchoolOption } from '../../domain/entities/Protegido';
 import {
   ProtegidoErrors,
@@ -21,6 +22,7 @@ export function useRegisterProtegidoViewModel({
   onRegistered,
 }: UseRegisterProtegidoProps) {
   const [schools, setSchools] = useState<SchoolOption[]>([]);
+  const [schoolQuery, setSchoolQuery] = useState('');
   const [policyVersion, setPolicyVersion] = useState('');
   const [name, setName] = useState('');
   const [document, setDocument] = useState('');
@@ -94,6 +96,11 @@ export function useRegisterProtegidoViewModel({
 
   const togglePolicy = useCallback(() => setIsPolicyVisible((current) => !current), []);
 
+  const filteredSchools = useMemo(
+    () => schools.filter((school) => matchesQuery(school.name, schoolQuery)),
+    [schools, schoolQuery],
+  );
+
   const submit = useCallback(async () => {
     setIsSaving(true);
     setErrorMessage('');
@@ -129,7 +136,10 @@ export function useRegisterProtegidoViewModel({
   ]);
 
   return {
-    schools,
+    schools: filteredSchools,
+    hasSchools: schools.length > 0,
+    schoolQuery,
+    updateSchoolQuery: setSchoolQuery,
     policyVersion,
     name,
     document,
